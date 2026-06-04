@@ -237,7 +237,7 @@ function Hero() {
       </div>
 
       {/* Large centered heading below the image (NEWLAB style) */}
-      <div className="w-full max-w-[1400px] mx-auto pt-8 md:pt-12 pb-12 md:pb-20">
+      <div className="w-full max-w-[1400px] mx-auto pt-8 md:pt-12 pb-4 md:pb-6">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -293,7 +293,7 @@ function BentoGrid() {
   ];
 
   return (
-    <section ref={ref} className="py-20 md:py-32 px-6 md:px-12 lg:px-20">
+    <section ref={ref} className="pt-8 md:pt-12 pb-20 md:pb-32 px-6 md:px-12 lg:px-20">
       <div className="w-full max-w-[1400px] mx-auto">
         {/* Section header */}
         <motion.div
