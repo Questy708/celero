@@ -1,0 +1,1222 @@
+"use client";
+
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
+import { motion, useInView } from "framer-motion";
+import { Link } from "@/artemis/router";
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Building2,
+  Rocket,
+  Coins,
+  Users,
+  MapPin,
+  Check,
+  Calendar,
+  Clock,
+  Star,
+  Zap,
+  TrendingUp,
+  Globe2,
+} from "lucide-react";
+import { ReviewSection } from "@/artemis/components/ReviewSection";
+import { routeLegs, MAP_LOCATIONS } from "@/artemis/data/routes";
+
+/* ── Data ── */
+
+const heroImages = [
+  {
+    src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80",
+    alt: "Laboratory",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
+    alt: "Tech workspace",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+    alt: "Earth from space",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1565792323902-486ad4b6a110?auto=format&fit=crop&w=1200&q=80",
+    alt: "Industrial infrastructure",
+  },
+];
+
+const stats = [
+  { value: 14.5, prefix: "$", suffix: "B+", label: "Target valuation growth of portfolio ventures", icon: TrendingUp },
+  { value: 264, prefix: "", suffix: "", label: "Days quicker to revenue milestone", icon: Zap },
+  { value: 4, prefix: "$", suffix: "B", label: "Capital mobilization target", icon: Coins },
+  { value: 190, prefix: "", suffix: "", label: "Hub locations across the Route", icon: Globe2 },
+];
+
+const pillars = [
+  {
+    id: "infrastructure",
+    icon: Building2,
+    heading: "Infrastructure",
+    subtext:
+      "M1 Core campuses, XEmbassy nodes, & distributed living labs",
+    description:
+      "We build and operate the physical and digital infrastructure that ventures need to move from prototype to production. M1 Core campuses provide 50,000+ sq ft of lab, maker, and co-working space in prime hub cities. XEmbassy nodes: compact 5,000 sq ft drop-in studios: extend reach into secondary markets. Distributed living labs connect field testing sites across the Route, giving ventures access to real-world validation environments from day one.",
+    images: [
+      {
+        src: "https://images.unsplash.com/photo-1565792323902-486ad4b6a110?auto=format&fit=crop&w=1200&q=80",
+        alt: "Factory infrastructure",
+      },
+      {
+        src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80",
+        alt: "Research laboratory",
+      },
+    ],
+    link: "/platform",
+  },
+  {
+    id: "ventures",
+    icon: Rocket,
+    heading: "Ventures",
+    subtext:
+      "Venture commercialization programs with industry & government partners",
+    description:
+      "We run structured commercialization programs that take ventures from idea to revenue. Each program is co-designed with industry and government partners who provide market access, pilot opportunities, and first-customer contracts. The Quest Fellowship: our flagship semester-long program run in collaboration with DDQIC at Queen's University: uses MIT's Disciplined Entrepreneurship framework to guide founders through 24 steps of validated learning. Programs run on the Route, connecting cohorts across hub cities for shared deal flow and peer support.",
+    images: [
+      {
+        src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
+        alt: "Collaborative workspace",
+      },
+      {
+        src: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+        alt: "Modern office space",
+      },
+    ],
+    link: "/programs",
+  },
+  {
+    id: "capital",
+    icon: Coins,
+    heading: "Capital",
+    subtext: "Aligned network of venture & non-dilutive capital",
+    description:
+      "We mobilize capital that matches the realities of building in the Global South. Our network includes venture funds, national development allocators, development finance institutions, and non-dilutive grant programs. Solidarity pricing ensures that founders in early-stage markets access the same quality of support at a fraction of Silicon Valley costs. We also operate a non-dilutive capital desk that matches ventures with grants, prizes, and government incentives across 39+ countries on the Route.",
+    images: [
+      {
+        src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+        alt: "Financial analytics",
+      },
+      {
+        src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+        alt: "Global network",
+      },
+    ],
+    link: "/capital",
+  },
+  {
+    id: "community",
+    icon: Users,
+    heading: "Community",
+    subtext:
+      "The XCitizens network, operators, founders, investors & mentors across the Route",
+    description:
+      "The fourth engine. Community is the connective tissue that turns individual efforts into collective momentum. The XCitizens network spans every hub on the Route: operators who run infrastructure, founders building ventures, investors deploying capital, and mentors transferring knowledge. Compound network effects mean every new member strengthens the whole, creating a flywheel that accelerates commercialization for everyone.",
+    images: [
+      {
+        src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+        alt: "Team collaboration",
+      },
+      {
+        src: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+        alt: "Community gathering",
+      },
+    ],
+    link: "/join",
+  },
+];
+
+const routeRegions = [
+  {
+    name: "Gulf of Guinea Arc",
+    description: "Lagos, Accra, Abidjan, Dakar: the commercial backbone of West Africa",
+  },
+  {
+    name: "East Africa Corridor",
+    description:
+      "Nairobi, Kampala, Kigali, Addis Ababa: innovation hubs of East Africa",
+  },
+  {
+    name: "Southern Africa Arc",
+    description:
+      "Cape Town, Johannesburg, Harare, Maputo: mining, manufacturing, and finance",
+  },
+  {
+    name: "Mediterranean Bridge",
+    description: "Cairo, Tunis, Casablanca: Mediterranean gateway to the continent",
+  },
+  {
+    name: "Sahel Band",
+    description: "Bamako, Ouagadougou, Niamey, N'Djamena: climate adaptation frontier",
+  },
+  {
+    name: "Central African Heartland",
+    description:
+      "Kinshasa, Brazzaville, Douala: mineral-rich, infrastructure-poor corridor",
+  },
+];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HOME
+   ══════════════════════════════════════════════════════════════════════════ */
+export function Home() {
+  return (
+    <div className="bg-white text-[#111111]">
+      <Hero />
+      <BentoGrid />
+      <NumbersSection />
+      <ThreePillarsSection />
+      <LocationsSection />
+      <UpcomingEventsSection />
+      <ReviewSection title="Dispatches from the field" />
+      <NewsletterSection />
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HERO, Contained image with heading below (NEWLAB style)
+   ══════════════════════════════════════════════════════════════════════════ */
+function Hero() {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section className="relative w-full px-6 md:px-12 lg:px-20 pt-4 md:pt-6">
+      {/* Contained image, not full-bleed */}
+      <div className="relative w-full max-w-[1400px] mx-auto h-[50vh] sm:h-[55vh] md:h-[65vh] lg:h-[75vh] overflow-hidden">
+        {heroImages.map((img, i) => (
+          <motion.div
+            key={i}
+            initial={false}
+            animate={{
+              opacity: i === currentImage ? 1 : 0,
+              scale: i === currentImage ? 1 : 1.03,
+            }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <img
+              src={img.src}
+              alt={img.alt}
+              className="w-full h-full object-cover"
+              loading={i === 0 ? "eager" : "lazy"}
+            />
+          </motion.div>
+        ))}
+        {/* Gradient overlay from bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+
+        {/* Image indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {heroImages.map((_, i) => (
+            <button
+              key={i}
+              suppressHydrationWarning
+              onClick={() => setCurrentImage(i)}
+              className={`h-[2px] transition-all duration-500 ${
+                i === currentImage ? "bg-[#FF4D00] w-10" : "bg-black/30 w-6"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Large centered heading below the image (NEWLAB style) */}
+      <div className="w-full max-w-[1400px] mx-auto pt-8 md:pt-12 pb-12 md:pb-20">
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+          className="text-[28px] sm:text-[44px] md:text-[64px] lg:text-[86px] xl:text-[104px] leading-[0.9] font-display font-medium tracking-[-0.03em] text-center uppercase"
+        >
+          Venture platform
+          <br />
+          for critical
+          <br />
+          technology
+        </motion.h1>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BENTO GRID — Modern asymmetric grid layout
+   ══════════════════════════════════════════════════════════════════════════ */
+function BentoGrid() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const bentoCards = [
+    {
+      title: "40+ Ventures",
+      description: "From energy to space, building critical technology for the next century",
+      icon: Rocket,
+      link: "/ventures",
+      className: "md:col-span-7 md:row-span-2",
+      image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
+      accent: true,
+    },
+    {
+      title: "190 Hubs",
+      description: "Physical infrastructure across 39+ countries on the Route",
+      icon: Globe2,
+      link: "/routes",
+      className: "md:col-span-5",
+      image: null,
+      accent: false,
+    },
+    {
+      title: "6 Investment Vehicles",
+      description: "From $500 to $250K+, aligned capital for every stage",
+      icon: Coins,
+      link: "/capital",
+      className: "md:col-span-5",
+      image: null,
+      accent: false,
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-20 md:py-32 px-6 md:px-12 lg:px-20">
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mb-12 md:mb-16"
+        >
+          <span className="text-[10px] font-mono font-bold tracking-[0.3em] uppercase text-[#FF4D00] mb-4 block">
+            The Platform
+          </span>
+          <h2 className="text-[32px] sm:text-[48px] md:text-[64px] font-display font-medium tracking-[-0.03em] leading-[0.95]">
+            Four engines,
+            <br />
+            <em className="italic font-serif text-[#FF4D00]">one thesis</em>.
+          </h2>
+        </motion.div>
+
+        {/* Bento grid */}
+        <div className="grid md:grid-cols-12 gap-4 md:gap-5">
+          {bentoCards.map((card, i) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className={`${card.className}`}
+              >
+                <Link to={card.link} className="group block h-full">
+                  <div className={`bento-card h-full p-6 md:p-8 rounded-lg relative overflow-hidden grain ${
+                    card.accent ? "min-h-[300px] md:min-h-[400px]" : "min-h-[200px] md:min-h-[240px]"
+                  }`}>
+                    {/* Background image */}
+                    {card.image && (
+                      <div className="absolute inset-0 z-0">
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                      <div className="flex items-start justify-between">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          card.accent ? "bg-[#FF4D00]/10" : "bg-[#111111]/5"
+                        }`}>
+                          <Icon className="w-5 h-5 text-[#FF4D00]" strokeWidth={1.5} />
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-[#111111]/20 group-hover:text-[#FF4D00] group-hover:translate-x-1 transition-all" />
+                      </div>
+
+                      <div>
+                        <h3 className="text-[24px] md:text-[32px] font-display font-medium tracking-tight mb-2 group-hover:text-[#FF4D00] transition-colors">
+                          {card.title}
+                        </h3>
+                        <p className="text-[14px] text-[#111111]/50 font-medium leading-[1.6]">
+                          {card.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
+
+          {/* Intro text card — spans full width */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="md:col-span-12"
+          >
+            <div className="bento-card p-8 md:p-12 rounded-lg grain">
+              <p className="text-[18px] sm:text-[22px] md:text-[26px] leading-[1.5] font-medium text-[#111111]/80 text-balance max-w-4xl">
+                Ventures are building the critical technologies that will define our future, but across the Global South, 90% never make it past the starting line.{" "}
+                <span className="text-[#111111]">
+                  xCelero unblocks commercialization through infrastructure, ventures, capital, and community
+                </span>{" "}
+                in the geographies that need it most, so the right ideas don&apos;t just survive, they scale.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NUMBERS SECTION — Animated counting stats
+   ══════════════════════════════════════════════════════════════════════════ */
+function AnimatedCounter({ value, prefix, suffix, duration = 2 }: {
+  value: number;
+  prefix: string;
+  suffix: string;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || hasAnimated) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          observer.disconnect();
+
+          let startTime: number | null = null;
+          let animationFrame: number;
+
+          const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(value * eased);
+
+            if (progress < 1) {
+              animationFrame = requestAnimationFrame(animate);
+            }
+          };
+
+          animationFrame = requestAnimationFrame(animate);
+          return () => cancelAnimationFrame(animationFrame);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasAnimated, value, duration]);
+
+  const displayValue = value % 1 === 0 ? Math.round(count) : count.toFixed(1);
+
+  return (
+    <div ref={ref} className="tabular-nums">
+      <span className="text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] font-display font-medium tracking-[-0.03em] leading-[1]">
+        {prefix}{displayValue}{suffix}
+      </span>
+    </div>
+  );
+}
+
+function NumbersSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section
+      ref={ref}
+      className="py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10 bg-[#FAFAFA]"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6 }}
+          className="mb-16 md:mb-24"
+        >
+          <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#FF4D00]">
+            By the numbers
+          </span>
+        </motion.div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-0">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 40 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{
+                  duration: 0.7,
+                  delay: i * 0.15,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className={`border-t border-[#111111]/10 pt-8 pb-8 ${
+                  i > 0 ? "lg:border-l lg:pl-8" : ""
+                } ${i % 2 === 1 ? "pl-6 sm:pl-8" : ""}`}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Icon className="w-4 h-4 text-[#FF4D00]" strokeWidth={1.5} />
+                  <span className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/30">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <AnimatedCounter
+                  value={stat.value}
+                  prefix={stat.prefix}
+                  suffix={stat.suffix}
+                />
+                <div className="text-[13px] md:text-[15px] leading-[1.5] text-[#111111]/50 font-medium max-w-[200px] mt-4">
+                  {stat.label}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THREE PILLARS SECTION, Each pillar: heading + subtext left, 2 images right
+   ══════════════════════════════════════════════════════════════════════════ */
+function ThreePillarsSection() {
+  return (
+    <section className="border-t border-[#111111]/10">
+      {pillars.map((pillar, idx) => (
+        <PillarBlock key={pillar.id} pillar={pillar} index={idx} />
+      ))}
+    </section>
+  );
+}
+
+function PillarBlock({
+  pillar,
+  index,
+}: {
+  pillar: (typeof pillars)[number];
+  index: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const Icon = pillar.icon;
+
+  return (
+    <div
+      ref={ref}
+      className={`py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10`}
+    >
+      <div className="w-full max-w-[1400px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        {/* Left: heading + subtext + description */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="lg:col-span-5"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full border border-[#111111]/10 flex items-center justify-center">
+              <Icon className="w-4 h-4 text-[#FF4D00]" strokeWidth={1.5} />
+            </div>
+            <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#111111]/40">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+
+          <h2 className="text-[36px] sm:text-[48px] md:text-[64px] lg:text-[80px] font-display font-medium tracking-[-0.03em] leading-[0.9] mb-4">
+            {pillar.heading}
+          </h2>
+
+          <p className="text-[16px] md:text-[18px] leading-[1.6] text-[#111111]/80 font-medium max-w-md mb-4">
+            {pillar.subtext}
+          </p>
+
+          <p className="text-[14px] md:text-[15px] leading-[1.7] text-[#111111]/50 font-medium max-w-md mb-8">
+            {pillar.description}
+          </p>
+
+          <Link
+            to={pillar.link}
+            className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors group"
+          >
+            Explore {pillar.heading}
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+
+        {/* Right: 2 image cards side by side */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="lg:col-span-7 grid grid-cols-2 gap-4"
+        >
+          {pillar.images.map((img, i) => (
+            <div
+              key={i}
+              className="aspect-[3/4] overflow-hidden group"
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+              />
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Upcoming Events Data ── */
+const homeEvents = [
+  {
+    title: "Accelerator Cohort 8 Demo Day",
+    date: "March 28, 2026",
+    time: "10:00 AM EAT",
+    location: "M1 Core Nairobi + Virtual",
+    type: "Demo Day",
+    description: "12 ventures present validated MVPs to investors and partners. Sector deep-dives in energy, life sciences, and digital finance.",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    title: "Route Summit: Gulf of Guinea Arc",
+    date: "April 12, 2026",
+    time: "9:00 AM WAT",
+    location: "XEmbassy Lagos",
+    type: "Summit",
+    description: "Operators and founders from Lagos, Accra, and Abidjan convene for cross-hub deal flow and peer mentorship.",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    title: "Building in Life Sciences: From Lab to Market",
+    date: "April 25, 2026",
+    time: "2:00 PM EAT",
+    location: "Virtual Masterclass",
+    type: "Masterclass",
+    description: "Regulatory pathways for diagnostics and therapeutics in African markets. Case studies from Refract and Allele.",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    title: "Capital Roundtable: Thematic Fund Deep Dive",
+    date: "May 15, 2026",
+    time: "11:00 AM CAT",
+    location: "M1 Core Cape Town + Virtual",
+    type: "Investor Event",
+    description: "Thematic Fund allocation strategy, portfolio construction, and co-investment opportunities for LPs.",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   UPCOMING EVENTS SECTION, Magazine-style editorial layout
+   ══════════════════════════════════════════════════════════════════════════ */
+function UpcomingEventsSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const featuredEvents = homeEvents.filter((e) => e.featured);
+  const otherEvents = homeEvents.filter((e) => !e.featured);
+  const heroEvent = featuredEvents[0];
+
+  const eventTypeStyle: Record<string, string> = {
+    "Demo Day": "bg-[#FF4D00] text-white",
+    Summit: "bg-[#111111] text-white",
+    Masterclass: "bg-[#FF4D00]/10 text-[#FF4D00]",
+    "Investor Event": "bg-[#FF4D00] text-white",
+  };
+
+  return (
+    <section
+      ref={ref}
+      className="py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10 bg-[#FAFAFA]"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mb-12 md:mb-16"
+        >
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div>
+              <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-[#FF4D00] mb-4 block">
+                Upcoming Events
+              </span>
+              <h2 className="text-[32px] sm:text-[44px] md:text-[56px] lg:text-[64px] font-display font-medium tracking-[-0.03em] leading-[0.95]">
+                Where the network
+                <br />
+                <em className="italic font-serif text-[#FF4D00]">convenes</em>.
+              </h2>
+            </div>
+            <Link
+              to="/community"
+              className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors group flex-shrink-0"
+            >
+              View all events
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Magazine layout: featured hero + compact list */}
+        <div className="grid lg:grid-cols-12 gap-5 md:gap-6">
+          {/* Left: Featured hero event */}
+          {heroEvent && (
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="lg:col-span-7 group border bg-white overflow-hidden hover:shadow-md transition-all duration-300 border-[#FF4D00]/30 hover:border-[#FF4D00]/50"
+            >
+              {/* Tall hero image */}
+              <div className="relative aspect-[4/3] lg:aspect-[3/2] overflow-hidden">
+                <img
+                  src={heroEvent.image}
+                  alt={heroEvent.title}
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                {/* Type badge */}
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <span className={`text-[9px] font-mono font-bold tracking-[0.1em] uppercase px-2.5 py-1 ${eventTypeStyle[heroEvent.type] || "bg-[#111111]/10 text-[#111111]"}`}>
+                    {heroEvent.type}
+                  </span>
+                  <span className="text-[9px] font-mono font-bold tracking-[0.1em] uppercase px-2.5 py-1 bg-[#FF4D00] text-white flex items-center gap-1">
+                    <Star className="w-3 h-3" />
+                    Featured
+                  </span>
+                </div>
+                {/* Title + date overlaid on image */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
+                  <h3 className="text-[22px] sm:text-[28px] md:text-[34px] font-display font-medium tracking-tight leading-[1.1] text-white mb-3 group-hover:text-[#FF4D00] transition-colors">
+                    {heroEvent.title}
+                  </h3>
+                  <p className="text-[13px] md:text-[15px] text-white/70 leading-[1.6] font-medium mb-4 line-clamp-2">
+                    {heroEvent.description}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-[11px] text-white/60 font-mono font-bold tracking-[0.05em] uppercase">
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-[#FF4D00]" />
+                      {heroEvent.date}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#FF4D00]" />
+                      {heroEvent.time}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#FF4D00]" />
+                      {heroEvent.location}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Right: Compact event list */}
+          <div className="lg:col-span-5 flex flex-col gap-5 md:gap-6">
+            {/* Second featured event (if any) */}
+            {featuredEvents[1] && (
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+                className="group border bg-white overflow-hidden hover:shadow-md transition-all duration-300 border-[#FF4D00]/30 hover:border-[#FF4D00]/50"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <img
+                    src={featuredEvents[1].image}
+                    alt={featuredEvents[1].title}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute top-3 left-3 flex items-center gap-2">
+                    <span className={`text-[9px] font-mono font-bold tracking-[0.1em] uppercase px-2 py-0.5 ${eventTypeStyle[featuredEvents[1].type] || "bg-[#111111]/10 text-[#111111]"}`}>
+                      {featuredEvents[1].type}
+                    </span>
+                    <span className="text-[9px] font-mono font-bold tracking-[0.1em] uppercase px-2 py-0.5 bg-[#FF4D00] text-white flex items-center gap-1">
+                      <Star className="w-3 h-3" />
+                      Featured
+                    </span>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-[18px] md:text-[20px] font-display font-medium tracking-tight leading-tight mb-2 group-hover:text-[#FF4D00] transition-colors">
+                    {featuredEvents[1].title}
+                  </h3>
+                  <p className="text-[12px] md:text-[13px] text-[#111111]/50 leading-[1.6] font-medium mb-3 line-clamp-2">
+                    {featuredEvents[1].description}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-[#111111]/40 font-mono font-bold tracking-[0.05em] uppercase">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-[#FF4D00]/60" />
+                      {featuredEvents[1].date}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-[#FF4D00]/60" />
+                      {featuredEvents[1].location}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Other events as compact rows */}
+            {otherEvents.map((event, i) => (
+              <motion.div
+                key={event.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.25 + i * 0.1, ease: "easeOut" }}
+                className="group border bg-white overflow-hidden hover:shadow-md transition-all duration-300 border-[#111111]/10 hover:border-[#111111]/25"
+              >
+                <div className="flex gap-4 p-4 md:p-5">
+                  {/* Date block */}
+                  <div className="flex-shrink-0 w-16 md:w-20 flex flex-col items-center justify-center border border-[#111111]/10 bg-white py-2">
+                    <span className="text-[10px] font-mono font-bold tracking-[0.1em] uppercase text-[#FF4D00]">
+                      {event.date.split(" ")[0]}
+                    </span>
+                    <span className="text-[24px] md:text-[28px] font-display font-medium leading-[1] text-[#111111]">
+                      {event.date.split(" ")[1].replace(",", "")}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold tracking-[0.1em] uppercase text-[#111111]/40">
+                      {event.date.split(" ")[2]}
+                    </span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`text-[8px] font-mono font-bold tracking-[0.1em] uppercase px-1.5 py-0.5 ${eventTypeStyle[event.type] || "bg-[#111111]/10 text-[#111111]"}`}>
+                        {event.type}
+                      </span>
+                    </div>
+                    <h3 className="text-[15px] md:text-[17px] font-display font-medium tracking-tight leading-tight mb-1.5 group-hover:text-[#FF4D00] transition-colors">
+                      {event.title}
+                    </h3>
+                    <div className="flex items-center gap-3 text-[10px] text-[#111111]/40 font-mono font-bold tracking-[0.05em] uppercase">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#FF4D00]/60" />
+                        {event.time}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-[#FF4D00]/60" />
+                        {event.location}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LOCATIONS SECTION, Interactive Blueprint Map with leg filters
+   ══════════════════════════════════════════════════════════════════════════ */
+function LocationsSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [activeLeg, setActiveLeg] = useState<string | null>(null);
+
+  return (
+    <section
+      ref={ref}
+      className="py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10 bg-white"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Header, centered, NEWLAB style */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-12 md:mb-16"
+        >
+          <h2 className="text-[36px] sm:text-[56px] md:text-[80px] lg:text-[110px] font-display font-medium tracking-[-0.03em] leading-[0.9] mb-4 uppercase">
+            The Route
+          </h2>
+          <p className="text-[14px] md:text-[16px] text-[#111111]/40 font-medium tracking-[0.1em] uppercase max-w-2xl mx-auto">
+            Global hubs in geographies prioritizing reindustrialization
+          </p>
+        </motion.div>
+
+        {/* Leg filter buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+          className="flex flex-wrap justify-center gap-2 mb-8 md:mb-12"
+        >
+          <button
+            onClick={() => setActiveLeg(null)}
+            className={`px-3 py-1.5 text-[11px] font-mono font-bold tracking-widest uppercase border transition-colors ${
+              activeLeg === null
+                ? "bg-[#111111] text-white border-[#111111]"
+                : "bg-white text-[#111111]/50 border-[#111111]/15 hover:border-[#111111]/30"
+            }`}
+          >
+            All Legs
+          </button>
+          {routeLegs.map((leg) => (
+            <button
+              key={leg.id}
+              onClick={() => setActiveLeg(activeLeg === leg.id ? null : leg.id)}
+              className={`px-3 py-1.5 text-[11px] font-mono font-bold tracking-widest uppercase border transition-colors ${
+                activeLeg === leg.id
+                  ? "text-white border-transparent"
+                  : "bg-white text-[#111111]/50 border-[#111111]/15 hover:border-[#111111]/30"
+              }`}
+              style={activeLeg === leg.id ? { backgroundColor: leg.color, borderColor: leg.color } : {}}
+            >
+              {leg.legNumber}. {leg.name.split(" ")[0]}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Blueprint Map */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="relative w-full mb-8 md:mb-12"
+        >
+          <BlueprintMap activeLeg={activeLeg} />
+        </motion.div>
+
+        {/* Legend */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-mono text-[#111111]/40 mb-8 md:mb-12"
+        >
+          {routeLegs.map((leg) => (
+            <button
+              key={leg.id}
+              onClick={() => setActiveLeg(activeLeg === leg.id ? null : leg.id)}
+              className="flex items-center gap-2 hover:text-[#111111]/70 transition-colors"
+            >
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: leg.color }} />
+              <span>
+                Leg {leg.legNumber}: {leg.name}
+              </span>
+            </button>
+          ))}
+        </motion.div>
+
+        {/* View Full Route Map link */}
+        <div className="text-center mb-16 md:mb-24">
+          <Link
+            to="/routes"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-[#111111] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-[#FF4D00] transition-colors duration-300 group"
+          >
+            View Full Route Map
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Accordion list of route regions */}
+        <div className="max-w-4xl mx-auto">
+          {routeRegions.map((region, i) => (
+            <LocationAccordion key={i} region={region} index={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Blueprint Map, Newlab topographic map with color-coded pin markers ── */
+function BlueprintMap({ activeLeg }: { activeLeg: string | null }) {
+  const isAnyActive = activeLeg !== null;
+
+  const visibleLocations = useMemo(
+    () => (isAnyActive ? MAP_LOCATIONS.filter((l) => l.legId === activeLeg) : MAP_LOCATIONS),
+    [isAnyActive, activeLeg]
+  );
+
+  return (
+    <div className="w-full relative">
+      <div className="relative w-full overflow-hidden bg-white">
+        {/* World map image, Newlab topographic map */}
+        <img
+          alt="World Map showing xCelero Routes"
+          className="w-full h-auto pointer-events-none select-none opacity-80"
+          src="/routes/newlab-map.avif"
+        />
+
+        {/* Pin markers with always-visible labels */}
+        {visibleLocations.map((loc, index) => (
+          <Link
+            key={loc.id}
+            to="/routes"
+            className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10"
+            style={{ left: `${loc.x}%`, top: `${loc.y}%` }}
+          >
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25, delay: index * 0.03 }}
+              className="relative flex items-center justify-center"
+            >
+              {/* Colored marker dot */}
+              <span
+                className="relative w-3.5 h-3.5 md:w-4 md:h-4 rounded-full shrink-0 cursor-pointer transition-all duration-200 border-[2.5px] border-transparent hover:border-black/20 hover:scale-110"
+                style={{ backgroundColor: loc.legColor }}
+                aria-label={`View ${loc.name} on Routes page`}
+              />
+
+              {/* Always-visible label */}
+              <div
+                className={`absolute bg-[#111111] text-white font-mono text-[8px] md:text-[10px] font-bold tracking-[0.15em] px-2 py-1 md:px-3 md:py-1.5 whitespace-nowrap top-1/2 -translate-y-1/2 pointer-events-none shadow-sm ${
+                  loc.labelPos === "left" ? "right-full mr-2 md:mr-3" : "left-full ml-2 md:ml-3"
+                }`}
+              >
+                {loc.name}
+              </div>
+            </motion.div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Location Accordion ── */
+function LocationAccordion({
+  region,
+  index,
+}: {
+  region: (typeof routeRegions)[number];
+  index: number;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      className="border-t border-[#111111]/10"
+    >
+      <button
+        suppressHydrationWarning
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between py-5 md:py-6 text-left group"
+      >
+        <div className="flex items-center gap-4">
+          <MapPin className="w-4 h-4 text-[#FF4D00]/60 group-hover:text-[#FF4D00] transition-colors" />
+          <span className="text-[18px] md:text-[22px] font-display font-medium tracking-tight">
+            {region.name}
+          </span>
+        </div>
+        <div className="text-[#111111]/30 group-hover:text-[#111111]/60 transition-colors">
+          {isOpen ? (
+            <ChevronUp className="w-5 h-5" />
+          ) : (
+            <ChevronDown className="w-5 h-5" />
+          )}
+        </div>
+      </button>
+      <motion.div
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <p className="pb-5 md:pb-6 pl-8 text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.6]">
+          {region.description}
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NEWSLETTER SECTION, Two-column: heading + form
+   ══════════════════════════════════════════════════════════════════════════ */
+function NewsletterSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleReturnToSite = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      className="border-t border-[#111111]/10"
+    >
+      <div className="py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-white">
+        <div className="w-full max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20">
+          {/* Left: Heading */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <h2 className="text-[28px] sm:text-[40px] md:text-[56px] font-display font-medium tracking-[-0.03em] leading-[0.95] uppercase mb-6">
+              Subscribe to the
+              <br />
+              xCelero Letter
+            </h2>
+            <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.6] max-w-md">
+              Quarterly dispatches on critical technology commercialization,
+              Route Deal insights, and venture infrastructure across the Global South.
+            </p>
+          </motion.div>
+
+          {/* Right: Form or Confirmation */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="flex flex-col justify-center"
+          >
+            {submitted ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="space-y-6"
+              >
+                {/* Checkmark icon */}
+                <div className="w-16 h-16 rounded-full border-2 border-[#FF4D00] flex items-center justify-center">
+                  <Check className="w-7 h-7 text-[#FF4D00]" strokeWidth={2.5} />
+                </div>
+
+                {/* Confirmation heading */}
+                <h3 className="text-[28px] sm:text-[36px] md:text-[44px] font-display font-medium tracking-[-0.02em] leading-[0.95]">
+                  Check your inbox
+                </h3>
+
+                {/* Confirmation body */}
+                <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.6] max-w-md">
+                  You&apos;re now subscribed to the xCelero Letter. Look for our quarterly dispatch on critical technology commercialization.
+                </p>
+
+                {/* Return to site link */}
+                <button
+                  onClick={handleReturnToSite}
+                  className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors group"
+                >
+                  Return to site
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </motion.div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSubmitted(true);
+                }}
+                className="space-y-6"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] font-mono tracking-[0.15em] uppercase text-[#111111]/40 mb-2">
+                      First Name *
+                    </label>
+                    <input
+                      suppressHydrationWarning
+                      type="text"
+                      required
+                      className="w-full border-b border-[#111111]/20 bg-transparent py-3 text-[15px] font-medium focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-[#111111]/20"
+                      placeholder="First name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-mono tracking-[0.15em] uppercase text-[#111111]/40 mb-2">
+                      Last Name *
+                    </label>
+                    <input
+                      suppressHydrationWarning
+                      type="text"
+                      required
+                      className="w-full border-b border-[#111111]/20 bg-transparent py-3 text-[15px] font-medium focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-[#111111]/20"
+                      placeholder="Last name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-mono tracking-[0.15em] uppercase text-[#111111]/40 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    suppressHydrationWarning
+                    type="email"
+                    required
+                    className="w-full border-b border-[#111111]/20 bg-transparent py-3 text-[15px] font-medium focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-[#111111]/20"
+                    placeholder="you@email.com"
+                  />
+                </div>
+                <p className="text-[11px] text-[#111111]/30 leading-[1.5]">
+                  By subscribing you agree to our{" "}
+                  <span className="text-[#2563EB] underline cursor-pointer">Privacy Policy</span>.
+                  We respect your data. Unsubscribe anytime.
+                </p>
+                <button
+                  suppressHydrationWarning
+                  type="submit"
+                  className="inline-flex items-center gap-3 px-10 py-4 bg-[#111111] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-[#FF4D00] transition-colors duration-300"
+                >
+                  Submit
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
