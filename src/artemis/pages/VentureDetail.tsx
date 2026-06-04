@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { useRouter, Link } from "@/artemis/router";
+import { motion, useInView } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,9 +11,14 @@ import {
   Rocket,
   DollarSign,
   Users,
+  FileText,
+  ShieldCheck,
 } from "lucide-react";
 import { venturesData } from "@/artemis/data/ventures";
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ORIGIN THESIS GENERATOR (preserved from original)
+   ══════════════════════════════════════════════════════════════════════════ */
 function generateOrigin(venture: (typeof venturesData)[number]): string[] {
   // Each vertical has a structured thesis with facts, observation, proof, and conclusion
   const originTheses: Record<string, { facts: string; observation: string; proof: string; thesis: string }> = {
@@ -189,6 +196,9 @@ function generateOrigin(venture: (typeof venturesData)[number]): string[] {
   return [origin.facts, origin.observation, origin.proof, origin.thesis];
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   VENTURE DETAIL PAGE — CaseStudies editorial layout
+   ══════════════════════════════════════════════════════════════════════════ */
 export function VentureDetail() {
   const { params, navigate } = useRouter();
   const id = params?.id;
@@ -196,16 +206,21 @@ export function VentureDetail() {
 
   if (!venture) {
     return (
-      <div className="bg-[#FAFAFA] min-h-screen text-[#111111] flex flex-col items-center justify-center">
-        <h1 className="text-[60px] font-display font-medium tracking-tight mb-8">
-          Not Found
-        </h1>
-        <button
-          onClick={() => navigate("/ventures")}
-          className="px-5 py-2.5 border border-[#111111] text-[11px] uppercase tracking-[0.1em] font-bold hover:bg-[#111111] hover:text-white transition-colors"
-        >
-          Return to Ventures
-        </button>
+      <div className="bg-white min-h-[80vh] text-[#111111] flex items-center justify-center">
+        <div className="max-w-xl mx-auto text-center px-6 py-24">
+          <p className="font-mono text-[10px] tracking-[0.4em] text-[#FF4D00] mb-6">404</p>
+          <h1 className="text-[80px] md:text-[120px] font-display font-medium leading-none tracking-tighter mb-6">404</h1>
+          <h2 className="text-2xl md:text-3xl font-display font-medium tracking-tight mb-4">Venture Not Found</h2>
+          <p className="text-[#111111]/50 font-medium leading-relaxed mb-10">
+            The venture you&apos;re looking for doesn&apos;t exist or has been moved.
+          </p>
+          <Link
+            to="/ventures"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-[#111111] text-white text-[12px] font-bold uppercase tracking-widest hover:bg-[#FF4D00] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Ventures
+          </Link>
+        </div>
       </div>
     );
   }
@@ -213,240 +228,447 @@ export function VentureDetail() {
   const originStory = generateOrigin(venture);
 
   return (
-    <div className="bg-[#FAFAFA] text-[#111111] min-h-screen">
-      {/* Back Link */}
-      <section className="pt-32 pb-0 px-6 md:px-12">
-        <div className="w-full max-w-7xl mx-auto">
-          <Link
-            to="/ventures"
-            className="text-[11px] font-mono uppercase tracking-[0.1em] text-[#111111]/50 hover:text-[#FF4D00] flex items-center gap-2 mb-12 w-fit transition-colors"
-          >
-            <ArrowLeft className="w-3 h-3" /> Back to Ventures
-          </Link>
-        </div>
-      </section>
-
-      {/* Hero Section */}
-      <section className="pb-16 px-6 md:px-12 border-b border-[#111111]/10">
-        <div className="w-full max-w-7xl mx-auto">
-          <div className="flex flex-wrap gap-3 mb-8">
-            <span className="px-4 py-2 border border-[#111111] bg-[#FF4D00]/10 text-[#FF4D00] text-[11px] font-mono tracking-widest uppercase font-bold">
-              {venture.vertical}
-            </span>
-            <span className="px-4 py-2 border border-[#111111] bg-[#111111]/5 text-[#111111] text-[11px] font-mono tracking-widest uppercase font-bold">
-              {venture.launchModel}
-            </span>
-            <span className="px-4 py-2 border border-[#111111]/10 text-[#111111]/40 text-[11px] font-mono tracking-widest uppercase font-bold">
-              {venture.code}
-            </span>
-          </div>
-
-          <h1 className="text-[50px] md:text-[80px] lg:text-[100px] leading-[0.9] font-display font-medium tracking-tight mb-6 uppercase text-balance">
-            {venture.name}
-          </h1>
-        </div>
-      </section>
-
-      {/* Two-Column Content */}
-      <section className="px-6 md:px-12 py-16">
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
-
-          {/* Left Column, Main Content */}
-          <div className="md:col-span-8">
-            {/* The Civilization Bottleneck */}
-            <div className="pb-16 border-b border-[#111111]/10">
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-6 block">
-                The Civilization Bottleneck
-              </span>
-              <p className="text-[18px] md:text-[22px] leading-[1.7] text-[#111111]/70 font-medium max-w-3xl">
-                {venture.problem}
-              </p>
-            </div>
-
-            {/* The Solution */}
-            <div className="py-16 border-b border-[#111111]/10 bg-white -mx-3 md:-mx-4 px-3 md:px-4">
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-6 block">
-                The Solution
-              </span>
-              <p className="text-[18px] md:text-[22px] leading-[1.7] text-[#111111]/70 font-medium max-w-3xl">
-                {venture.solution}
-              </p>
-            </div>
-
-            {/* Origins */}
-            <div className="py-16 border-b border-[#111111]/10">
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-10 block">
-                Origins
-              </span>
-              <div className="space-y-8 max-w-3xl">
-                <div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 mb-3 block">The Facts</span>
-                  <p className="text-[18px] md:text-[22px] leading-[1.7] text-[#111111]/70 font-medium">
-                    {originStory[0]}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 mb-3 block">The Observation</span>
-                  <p className="text-[18px] md:text-[22px] leading-[1.7] text-[#111111]/70 font-medium">
-                    {originStory[1]}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 mb-3 block">The Proof</span>
-                  <p className="text-[18px] md:text-[22px] leading-[1.7] text-[#111111]/70 font-medium">
-                    {originStory[2]}
-                  </p>
-                </div>
-                <div className="bg-[#FF4D00]/5 border-l-2 border-[#FF4D00] pl-6 py-4">
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-3 block">The Thesis</span>
-                  <p className="text-[18px] md:text-[22px] leading-[1.7] text-[#111111]/80 font-medium">
-                    {originStory[3]}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* CTA Section */}
-            <div className="pt-16 grid sm:grid-cols-2 gap-4">
-              <Link
-                to="/join"
-                className="group block bg-[#FF4D00] text-white p-8 md:p-10 transition-all hover:brightness-110"
-              >
-                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-white/60 mb-4 block">
-                  Capital
-                </span>
-                <h3 className="text-[24px] md:text-[32px] font-display font-medium tracking-tight mb-3">
-                  Invest in {venture.name.split(" ")[0]}
-                </h3>
-                <p className="text-[14px] text-white/80 font-medium leading-[1.6]">
-                  Express interest in backing this venture
-                </p>
-              </Link>
-
-              <Link
-                to="/join"
-                className="group block bg-[#111111] text-white p-8 md:p-10 transition-all hover:brightness-150"
-              >
-                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-white/60 mb-4 block">
-                  Operations
-                </span>
-                <h3 className="text-[24px] md:text-[32px] font-display font-medium tracking-tight mb-3">
-                  Join as Operator
-                </h3>
-                <p className="text-[14px] text-white/80 font-medium leading-[1.6]">
-                  Apply to help build this venture
-                </p>
-              </Link>
-            </div>
-
-            {/* Data Room Access */}
-            <div className="mt-6 border border-[#111111]/10 p-6 md:p-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-2 block">
-                    Data Room
-                  </span>
-                  <h3 className="text-[18px] md:text-[20px] font-display font-medium tracking-tight mb-1">
-                    Request Data Room Access
-                  </h3>
-                  <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6]">
-                    Due diligence materials available upon executed NDA
-                  </p>
-                </div>
-                <Link
-                  to="/join"
-                  className="group inline-flex items-center gap-3 px-6 py-3 bg-[#111111] text-white text-[11px] font-mono font-bold tracking-[0.15em] uppercase hover:bg-[#FF4D00] transition-colors shrink-0"
-                >
-                  Request Access
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column, At a Glance Sidebar */}
-          <div className="md:col-span-4">
-            <div className="sticky top-32">
-              <div className="bg-white border border-[#111111]/10 p-6 md:p-8">
-                {/* Code prominently displayed */}
-                <div className="mb-8 pb-6 border-b border-[#111111]/10">
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 mb-2 block">
-                    Venture Code
-                  </span>
-                  <span className="text-[28px] md:text-[32px] font-mono font-bold tracking-wider text-[#FF4D00]">
-                    {venture.code}
-                  </span>
-                </div>
-
-                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 mb-6 block">
-                  At a Glance
-                </span>
-
-                <div className="space-y-0">
-                  <SidebarItem
-                    icon={<MapPin className="w-4 h-4" />}
-                    label="Pilot Locations"
-                    value={venture.pilotLocations}
-                  />
-                  <SidebarItem
-                    icon={<Scale className="w-4 h-4" />}
-                    label="Legal Jurisdiction"
-                    value={venture.jurisdiction}
-                  />
-                  <SidebarItem
-                    icon={<Rocket className="w-4 h-4" />}
-                    label="Launch Model"
-                    value={venture.launchModel}
-                  />
-                  <SidebarItem
-                    icon={<DollarSign className="w-4 h-4" />}
-                    label="Cost to Launch"
-                    value={
-                      venture.costToLaunch
-                        ? `$${venture.costToLaunch.toLocaleString()}`
-                        : "TBD"
-                    }
-                  />
-                  <SidebarItem
-                    icon={<Users className="w-4 h-4" />}
-                    label="Anchor Partners"
-                    value={venture.anchorPartners}
-                    last
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="bg-white text-[#111111]">
+      <HeroSection venture={venture} originStory={originStory} />
+      <KeyMetricsSection venture={venture} />
+      <OriginThesisSection originStory={originStory} />
+      <ProblemMVVSection venture={venture} />
+      <AnchorPartnersSection venture={venture} />
+      <CTASection venture={venture} />
     </div>
   );
 }
 
-function SidebarItem({
-  icon,
-  label,
-  value,
-  last = false,
+/* ══════════════════════════════════════════════════════════════════════════
+   HERO SECTION — Editorial centered, dark bg with gradient
+   ══════════════════════════════════════════════════════════════════════════ */
+function HeroSection({
+  venture,
+  originStory,
 }: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  last?: boolean;
+  venture: (typeof venturesData)[number];
+  originStory: string[];
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
   return (
-    <div
-      className={`py-5 flex items-start gap-3 ${last ? "" : "border-b border-[#111111]/10"}`}
+    <section
+      ref={ref}
+      className="relative bg-[#111111] text-white py-20 md:py-28 px-6 md:px-12 lg:px-20 overflow-hidden"
     >
-      <div className="text-[#FF4D00] mt-0.5 shrink-0">{icon}</div>
-      <div className="min-w-0">
-        <p className="text-[10px] uppercase font-mono tracking-widest text-[#111111]/40 mb-1">
-          {label}
-        </p>
-        <p className="text-[14px] font-medium text-[#111111] leading-snug">
-          {value}
-        </p>
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#111111]/95 to-[#FF4D00]/10" />
+
+      <div className="relative w-full max-w-[1400px] mx-auto">
+        {/* Back link */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="mb-12 md:mb-16"
+        >
+          <Link
+            to="/ventures"
+            className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.15em] text-white/40 hover:text-[#FF4D00] transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Ventures
+          </Link>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-end">
+          {/* Left: Main info */}
+          <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              {/* Badges */}
+              <div className="flex flex-wrap gap-3 mb-8">
+                <span className="px-3 py-1.5 bg-[#FF4D00] text-white text-[10px] font-mono font-bold tracking-widest uppercase">
+                  {venture.vertical}
+                </span>
+                <span className="px-3 py-1.5 border border-white/20 text-white/60 text-[10px] font-mono font-bold tracking-widest uppercase">
+                  {venture.code}
+                </span>
+                <span className="px-3 py-1.5 border border-white/10 text-white/30 text-[10px] font-mono font-bold tracking-widest uppercase">
+                  {venture.launchModel}
+                </span>
+              </div>
+
+              <h1 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] font-display font-medium tracking-[-0.03em] leading-[0.9] mb-6 uppercase">
+                {venture.name}
+              </h1>
+
+              <p className="text-[15px] md:text-[17px] text-white/50 font-medium leading-[1.7] max-w-xl">
+                {venture.solution}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Right: Thesis card */}
+          <div className="lg:col-span-5">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="border border-white/10 p-8 md:p-10 bg-white/5"
+            >
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-6 block">
+                Origin Thesis
+              </span>
+              <p className="text-[15px] md:text-[17px] text-white/60 font-medium leading-[1.7] italic">
+                &ldquo;{originStory[3]}&rdquo;
+              </p>
+            </motion.div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KEY METRICS SECTION — White bg, 4-column grid with icon cards
+   ══════════════════════════════════════════════════════════════════════════ */
+function KeyMetricsSection({ venture }: { venture: (typeof venturesData)[number] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const metrics = [
+    {
+      icon: MapPin,
+      label: "Pilot Locations",
+      value: venture.pilotLocations,
+    },
+    {
+      icon: Scale,
+      label: "Jurisdiction",
+      value: venture.jurisdiction,
+    },
+    {
+      icon: Rocket,
+      label: "Launch Model",
+      value: venture.launchModel,
+    },
+    {
+      icon: DollarSign,
+      label: "Cost to Launch",
+      value: venture.costToLaunch
+        ? `$${venture.costToLaunch.toLocaleString()}`
+        : "TBD",
+    },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-b border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-10"
+        >
+          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
+            At a Glance
+          </span>
+          <h2 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.1] mt-3">
+            Key <em className="italic font-serif text-[#FF4D00]">metrics</em>
+          </h2>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {metrics.map((m, i) => {
+            const Icon = m.icon;
+            return (
+              <motion.div
+                key={m.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="border border-[#111111]/10 p-6 md:p-8 hover:border-[#FF4D00]/30 transition-colors group bg-white"
+              >
+                <Icon
+                  className="w-5 h-5 text-[#111111]/20 group-hover:text-[#FF4D00] transition-colors mb-4"
+                  strokeWidth={1.5}
+                />
+                <div className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 mb-3">
+                  {m.label}
+                </div>
+                <div className="text-[16px] md:text-[18px] font-display font-medium tracking-tight text-[#111111] group-hover:text-[#FF4D00] transition-colors leading-snug">
+                  {m.value}
+                </div>
+                <div className="mt-6 h-[2px] bg-[#111111]/5 group-hover:bg-[#FF4D00]/30 transition-colors" />
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ORIGIN THESIS SECTION — Light bg #FAFAFA, two-column layout
+   ══════════════════════════════════════════════════════════════════════════ */
+function OriginThesisSection({ originStory }: { originStory: string[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-[#FAFAFA] border-b border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-12 md:mb-16"
+        >
+          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
+            Origin Thesis
+          </span>
+          <h2 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.1] mt-3">
+            From evidence to <em className="italic font-serif text-[#FF4D00]">thesis</em>
+          </h2>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left: Facts + Observation */}
+          <div className="lg:col-span-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <div className="mb-10">
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
+                  The Facts
+                </span>
+                <p className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.7]">
+                  {originStory[0]}
+                </p>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
+                  The Observation
+                </span>
+                <p className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.7]">
+                  {originStory[1]}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right: Proof + Thesis */}
+          <div className="lg:col-span-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="mb-10">
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
+                  The Proof
+                </span>
+                <p className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.7]">
+                  {originStory[2]}
+                </p>
+              </div>
+
+              <div className="bg-white border-l-2 border-[#FF4D00] pl-6 py-5 pr-6">
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
+                  The Thesis
+                </span>
+                <p className="text-[15px] md:text-[16px] text-[#111111]/80 font-medium leading-[1.7]">
+                  {originStory[3]}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PROBLEM & MVV SECTION — White bg, two-column layout
+   ══════════════════════════════════════════════════════════════════════════ */
+function ProblemMVVSection({ venture }: { venture: (typeof venturesData)[number] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-b border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-12 md:mb-16"
+        >
+          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
+            Venture Blueprint
+          </span>
+          <h2 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.1] mt-3">
+            Problem &amp; <em className="italic font-serif text-[#FF4D00]">solution</em>
+          </h2>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left: The Problem */}
+          <div className="lg:col-span-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="border border-[#111111]/10 p-8 md:p-10 bg-white hover:border-[#FF4D00]/20 transition-colors"
+            >
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-6">
+                The Problem
+              </span>
+              <p className="text-[16px] md:text-[18px] text-[#111111]/70 font-medium leading-[1.7]">
+                {venture.problem}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Right: MVV */}
+          <div className="lg:col-span-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="border border-[#111111]/10 p-8 md:p-10 bg-white hover:border-[#FF4D00]/20 transition-colors"
+            >
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-6">
+                Minimum Viable Venture
+              </span>
+              <p className="text-[16px] md:text-[18px] text-[#111111]/70 font-medium leading-[1.7]">
+                {venture.mvv}
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ANCHOR PARTNERS SECTION — White bg, partner pills/badges
+   ══════════════════════════════════════════════════════════════════════════ */
+function AnchorPartnersSection({ venture }: { venture: (typeof venturesData)[number] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const partners = venture.anchorPartners.split(",").map((p) => p.trim()).filter(Boolean);
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-b border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-10"
+        >
+          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
+            Strategic Partners
+          </span>
+          <h2 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.1] mt-3">
+            Anchor <em className="italic font-serif text-[#FF4D00]">partners</em>
+          </h2>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="flex flex-wrap gap-3"
+        >
+          {partners.map((partner, i) => (
+            <motion.span
+              key={partner}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.3, delay: 0.15 + i * 0.05 }}
+              className="inline-flex items-center gap-2 px-5 py-3 border border-[#111111]/10 text-[13px] font-medium text-[#111111]/70 hover:border-[#FF4D00]/30 hover:text-[#FF4D00] transition-colors bg-white"
+            >
+              <Users className="w-3.5 h-3.5 text-[#111111]/30" strokeWidth={1.5} />
+              {partner}
+            </motion.span>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CTA SECTION — Dark bg #111111
+   ══════════════════════════════════════════════════════════════════════════ */
+function CTASection({ venture }: { venture: (typeof venturesData)[number] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section
+      ref={ref}
+      className="bg-[#111111] text-white py-16 md:py-24 px-6 md:px-12 lg:px-20"
+    >
+      <div className="w-full max-w-4xl mx-auto text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-8 block">
+            Data Room
+          </span>
+          <h2 className="text-[28px] sm:text-[40px] md:text-[56px] font-display font-medium tracking-[-0.03em] leading-[0.95] mb-6">
+            Access the {venture.name} data room.
+          </h2>
+          <p className="text-[15px] md:text-[17px] text-white/50 font-medium leading-[1.6] max-w-lg mx-auto mb-10">
+            Due diligence materials, financial models, and technical documentation
+            available upon executed NDA.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link
+              to="/join"
+              className="inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#FF4D00] text-white text-[12px] font-bold tracking-widest uppercase hover:bg-white hover:text-[#111111] transition-colors"
+            >
+              <FileText className="w-4 h-4" />
+              Request Data Room Access
+            </Link>
+            <Link
+              to="/ventures"
+              className="inline-flex items-center justify-center gap-3 px-10 py-5 border border-white/20 text-white text-[12px] font-bold tracking-widest uppercase hover:bg-white hover:text-[#111111] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Ventures
+            </Link>
+          </div>
+          <div className="mt-8 flex items-center justify-center gap-2 text-[11px] text-white/30 font-medium">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Confidential — NDA required for all materials</span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
