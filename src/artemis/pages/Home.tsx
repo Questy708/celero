@@ -237,7 +237,7 @@ function Hero() {
       </div>
 
       {/* Large centered heading below the image (NEWLAB style) */}
-      <div className="w-full max-w-[1400px] mx-auto pt-8 md:pt-12 pb-4 md:pb-6">
+      <div className="w-full max-w-[1400px] mx-auto pt-8 md:pt-12 pb-6 md:pb-10">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -250,6 +250,33 @@ function Hero() {
           <br />
           technology
         </motion.h1>
+
+        {/* Subtitle + CTA buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
+          className="mt-6 md:mt-8 text-center max-w-2xl mx-auto"
+        >
+          <p className="text-[15px] md:text-[17px] leading-[1.6] text-[#111111]/60 font-medium mb-8">
+            Uniting 190 hubs across 39 countries to commercialize the technology the next century needs — infrastructure, ventures, capital, and community, all on one platform.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/ventures"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-widest hover:bg-[#FF4D00]/90 transition-colors"
+            >
+              Explore Ventures
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              to="/capital"
+              className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#111111] text-[#111111] text-[12px] font-bold uppercase tracking-widest hover:bg-[#111111] hover:text-white transition-colors bg-transparent"
+            >
+              Invest from $500
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
