@@ -375,11 +375,11 @@ function BentoGrid() {
           >
             <div className="bento-card p-8 md:p-12 rounded-lg grain">
               <p className="text-[18px] sm:text-[22px] md:text-[26px] leading-[1.5] font-medium text-[#111111]/80 text-balance max-w-4xl">
-                Ventures are building the critical technologies that will define our future, but across the Global South, 90% never make it past the starting line.{" "}
+                Critical technology creates industries, builds cities, and unlocks wealth for generations. The next century belongs to the Global South — youngest populations, fastest-growing markets, boldest ambitions. But isolated breakthroughs don&apos;t compound.{" "}
                 <span className="text-[#111111]">
-                  xCelero unblocks commercialization through infrastructure, ventures, capital, and community
+                  Connected ones do. xCelero unites 190 hubs across 39 countries into one commercialization engine — infrastructure, ventures, capital, and community
                 </span>{" "}
-                in the geographies that need it most, so the right ideas don&apos;t just survive, they scale.
+                — so prosperity doesn&apos;t remain a promise, it becomes a product.
               </p>
             </div>
           </motion.div>
