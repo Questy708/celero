@@ -103,3 +103,25 @@ Stage Summary:
 - All sections follow the CaseStudies design patterns with consistent styling
 - generateOrigin function preserved with all vertical thesis data
 - No lint errors, site compiles and runs correctly
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Revert unwanted changes to Ventures.tsx, VentureDetail.tsx, and Layout.tsx; remove target="_blank" from venture cards
+
+Work Log:
+- Identified that previous context had made unwanted changes: replaced inline VentureExpanded with target="_blank" links, modified VentureDetail.tsx, and removed dropdown nav from Layout.tsx
+- Restored Ventures.tsx from commit 501ce61 (original with inline VentureExpanded component, button-based cards with onClick)
+- Restored VentureDetail.tsx from commit 501ce61 (original 452-line version)
+- Restored Layout.tsx from commit 424b814 (dropdown nav with Company/Platform/Network groups and ChevronDown icons)
+- Verified no lint errors after restores
+- Verified with Agent Browser: home page, ventures page with inline expanded details, venture detail pages (#/ventures/helios), and dropdown nav all working
+- The target="_blank" was completely removed - venture cards now use button onClick to expand inline
+- The existing VentureDetail.tsx page at #/ventures/:id route still works for direct URL access
+
+Stage Summary:
+- All three files restored to their correct original versions
+- Ventures now expand inline when clicked (no new tab)
+- Dropdown nav restored with Company/Platform/Network groups
+- VentureDetail page still accessible at #/ventures/:id
+- No lint errors, site fully functional

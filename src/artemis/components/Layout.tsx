@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Search, ArrowRight, Menu, X, ArrowUp } from "lucide-react";
+import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "../router";
 import { SearchModal } from "./SearchModal";
@@ -72,16 +72,32 @@ function Nav() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const navLinks = [
-    { name: "about", path: "/about" },
-    { name: "how we work", path: "/approach" },
-    { name: "infrastructure", path: "/platform" },
-    { name: "routes", path: "/routes" },
-    { name: "ventures", path: "/ventures" },
-    { name: "capital", path: "/capital" },
-    { name: "community", path: "/community" },
-    { name: "insights", path: "/insights" },
-    { name: "careers", path: "/careers" },
+  const navGroups = [
+    {
+      label: "Company",
+      links: [
+        { name: "about", path: "/about" },
+        { name: "how we work", path: "/approach" },
+        { name: "manifesto", path: "/manifesto" },
+      ],
+    },
+    {
+      label: "Platform",
+      links: [
+        { name: "infrastructure", path: "/platform" },
+        { name: "routes", path: "/routes" },
+        { name: "ventures", path: "/ventures" },
+      ],
+    },
+    {
+      label: "Network",
+      links: [
+        { name: "capital", path: "/capital" },
+        { name: "community", path: "/community" },
+        { name: "insights", path: "/insights" },
+        { name: "careers", path: "/careers" },
+      ],
+    },
   ];
 
   const mobileNavGroups = [
@@ -123,12 +139,38 @@ function Nav() {
             <span className="text-sm font-bold tracking-tight uppercase whitespace-nowrap hidden sm:inline text-[#111111]">xCelero Labs</span>
           </Link>
 
-          {/* Desktop nav links */}
-          <div className="hidden lg:flex space-x-8 items-center">
-            {navLinks.map((item) => (
-              <Link key={item.name} to={item.path} className="text-[11px] lowercase tracking-[0.1em] font-medium text-[#111111]/60 hover:text-[#FF4D00] transition-colors relative">
-                {item.name}
-              </Link>
+          {/* Desktop nav links with dropdowns */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navGroups.map((group) => (
+              <div key={group.label} className="relative group/dropdown">
+                <button
+                  className="flex items-center gap-1 px-3 py-2 text-[11px] lowercase tracking-[0.1em] font-medium text-[#111111]/60 hover:text-[#FF4D00] transition-colors"
+                >
+                  {group.label}
+                  <ChevronDown className="w-3 h-3 transition-transform duration-200 group-hover/dropdown:rotate-180" />
+                </button>
+                {/* Dropdown panel */}
+                <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover/dropdown:opacity-100 group-hover/dropdown:visible transition-all duration-200 -translate-y-1 group-hover/dropdown:translate-y-0">
+                  <div className="bg-white border border-[#111111]/10 shadow-lg min-w-[200px] py-2">
+                    {group.links.map((item) => {
+                      const isActive = path === item.path;
+                      return (
+                        <Link
+                          key={item.name}
+                          to={item.path}
+                          className={`block px-5 py-2.5 text-[12px] tracking-[0.05em] font-medium transition-colors ${
+                            isActive
+                              ? "text-[#FF4D00] bg-[#FF4D00]/5"
+                              : "text-[#111111]/60 hover:text-[#FF4D00] hover:bg-[#FF4D00]/5"
+                          }`}
+                        >
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
