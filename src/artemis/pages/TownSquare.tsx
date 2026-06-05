@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "@/artemis/router";
 import {
   MessageSquare,
   Share2,
@@ -15,14 +17,18 @@ import {
   Compass,
   ArrowUp,
   ArrowDown,
-  Award,
   Bell,
   PlusCircle,
   X,
   ArrowLeft,
   Heart,
-  Code,
   Menu,
+  LogOut,
+  ArrowRight,
+  Check,
+  User,
+  MapPin,
+  Mail,
 } from "lucide-react";
 
 /* ── Types ── */
@@ -49,6 +55,27 @@ interface ForumPost {
   imageUrl?: string;
   comments: ForumComment[];
 }
+
+interface TownSquareUser {
+  name: string;
+  email: string;
+  bio: string;
+  role: string;
+  location: string;
+  communities: string[];
+  avatarColor: string;
+}
+
+/* ── Role Colors ── */
+const ROLE_COLORS: Record<string, string> = {
+  Founder: "#FF4D00",
+  Operator: "#111111",
+  Investor: "#059669",
+  Mentor: "#7c3aed",
+  Other: "#6b7280",
+};
+
+const ROLES = ["Founder", "Operator", "Investor", "Mentor", "Other"];
 
 /* ── xCelero Communities ── */
 const COMMUNITIES = [
@@ -299,9 +326,283 @@ function CommentNode({
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   TOWN SQUARE PAGE
+   ONBOARDING FLOW
    ══════════════════════════════════════════════════════════════════════════ */
-export function TownSquare() {
+function OnboardingFlow({ onComplete }: { onComplete: (user: TownSquareUser) => void }) {
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
+  const [role, setRole] = useState("");
+  const [location, setLocation] = useState("");
+  const [selectedCommunities, setSelectedCommunities] = useState<string[]>([]);
+
+  const goNext = () => { setDirection(1); setStep((s) => s + 1); };
+  const goBack = () => { setDirection(-1); setStep((s) => s - 1); };
+
+  const toggleCommunity = (name: string) => {
+    setSelectedCommunities((prev) =>
+      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+    );
+  };
+
+  const handleComplete = () => {
+    const avatarColor = ROLE_COLORS[role] || "#6b7280";
+    const user: TownSquareUser = {
+      name: displayName,
+      email,
+      bio,
+      role,
+      location,
+      communities: selectedCommunities,
+      avatarColor,
+    };
+    localStorage.setItem("xcelero_townsquare_user", JSON.stringify(user));
+    onComplete(user);
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white text-[#111111] font-sans">
+      {/* Header bar */}
+      <header className="h-[56px] bg-white border-b border-[#111111]/10 px-4 md:px-8 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 bg-[#FF4D00] flex items-center justify-center">
+            <MessageSquare className="w-4 h-4 text-white" />
+          </div>
+          <span className="text-lg font-display font-medium tracking-tight text-[#111111]">
+            Town<span className="text-[#111111]/30 font-normal"> Square</span>
+          </span>
+        </div>
+        {/* Step indicator */}
+        <div className="flex items-center gap-2">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                i === step ? "w-8 bg-[#FF4D00]" : i < step ? "w-4 bg-[#FF4D00]/40" : "w-4 bg-[#111111]/10"
+              }`}
+            />
+          ))}
+        </div>
+        <div className="w-[100px]" />
+      </header>
+
+      {/* Step content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-[520px]">
+            {step === 0 && (
+              <div className="flex flex-col items-center text-center">
+                <div className="w-20 h-20 bg-[#FF4D00] flex items-center justify-center mb-8">
+                  <MessageSquare className="w-10 h-10 text-white" />
+                </div>
+                <h1 className="text-3xl md:text-4xl font-display font-medium tracking-tight text-[#111111] mb-4">
+                  Welcome to Town Square
+                </h1>
+                <p className="text-[15px] text-[#111111]/50 leading-relaxed max-w-[400px] mb-10">
+                  The XCitizen forum. Real-time discussions on deals, infrastructure, regulations,
+                  hiring, and hard-won lessons from the Route.
+                </p>
+                <button
+                  onClick={goNext}
+                  className="flex items-center gap-2 px-8 py-3 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00]/90 transition-colors"
+                >
+                  Get Started
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {step === 1 && (
+              <div className="flex flex-col">
+                <h2 className="text-2xl font-display font-medium tracking-tight text-[#111111] mb-2">
+                  Your Details
+                </h2>
+                <p className="text-[14px] text-[#111111]/40 mb-8">
+                  Tell the community who you are.
+                </p>
+
+                <div className="space-y-5">
+                  {/* Display Name */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-[11px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/40 mb-2">
+                      <User className="w-3.5 h-3.5" />
+                      Display Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your name"
+                      className="w-full bg-white border border-[#111111]/10 focus:border-[#FF4D00]/30 focus:ring-1 focus:ring-[#FF4D00]/20 rounded px-4 py-3 text-[14px] text-[#111111] placeholder-[#111111]/30 outline-none transition"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-[11px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/40 mb-2">
+                      <Mail className="w-3.5 h-3.5" />
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="w-full bg-white border border-[#111111]/10 focus:border-[#FF4D00]/30 focus:ring-1 focus:ring-[#FF4D00]/20 rounded px-4 py-3 text-[14px] text-[#111111] placeholder-[#111111]/30 outline-none transition"
+                    />
+                  </div>
+
+                  {/* Role */}
+                  <div>
+                    <label className="text-[11px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/40 mb-3 block">
+                      Role *
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {ROLES.map((r) => (
+                        <button
+                          key={r}
+                          onClick={() => setRole(r)}
+                          className={`flex items-center gap-2 px-4 py-2.5 border text-[12px] font-bold uppercase tracking-[0.05em] transition-all ${
+                            role === r
+                              ? "border-[#FF4D00] bg-[#FF4D00]/5 text-[#FF4D00]"
+                              : "border-[#111111]/10 text-[#111111]/40 hover:border-[#111111]/20 hover:text-[#111111]/60"
+                          }`}
+                        >
+                          {role === r && <Check className="w-3.5 h-3.5" />}
+                          {r}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bio */}
+                  <div>
+                    <label className="text-[11px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/40 mb-2 block">
+                      Bio (optional)
+                    </label>
+                    <textarea
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="A short bio about yourself"
+                      rows={3}
+                      className="w-full bg-white border border-[#111111]/10 focus:border-[#FF4D00]/30 focus:ring-1 focus:ring-[#FF4D00]/20 rounded px-4 py-3 text-[14px] text-[#111111] placeholder-[#111111]/30 outline-none transition resize-y"
+                    />
+                  </div>
+
+                  {/* Location */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-[11px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/40 mb-2">
+                      <MapPin className="w-3.5 h-3.5" />
+                      Location (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="Lagos, Nairobi, Accra..."
+                      className="w-full bg-white border border-[#111111]/10 focus:border-[#FF4D00]/30 focus:ring-1 focus:ring-[#FF4D00]/20 rounded px-4 py-3 text-[14px] text-[#111111] placeholder-[#111111]/30 outline-none transition"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between mt-8">
+                  <button
+                    onClick={goBack}
+                    className="px-5 py-2 text-sm font-bold text-[#111111]/50 hover:bg-[#111111]/5 rounded transition"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={goNext}
+                    disabled={!displayName.trim() || !email.trim() || !role}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-[0.1em] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FF4D00]/90 transition-colors"
+                  >
+                    Continue
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="flex flex-col">
+                <h2 className="text-2xl font-display font-medium tracking-tight text-[#111111] mb-2">
+                  Choose Your Communities
+                </h2>
+                <p className="text-[14px] text-[#111111]/40 mb-8">
+                  Select at least one community to join. You can always change these later.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {COMMUNITIES.map((c) => {
+                    const isSelected = selectedCommunities.includes(c.name);
+                    return (
+                      <button
+                        key={c.name}
+                        onClick={() => toggleCommunity(c.name)}
+                        className={`flex items-center gap-3 p-4 border text-left transition-all ${
+                          isSelected
+                            ? "border-[#FF4D00] bg-[#FF4D00]/5"
+                            : "border-[#111111]/10 hover:border-[#111111]/20"
+                        }`}
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${c.color} relative`}
+                        >
+                          <span className="text-[10px] font-bold text-white uppercase">
+                            {c.name[0]}
+                          </span>
+                          {isSelected && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#FF4D00] rounded-full flex items-center justify-center">
+                              <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span
+                            className={`text-[13px] font-medium block truncate ${
+                              isSelected ? "text-[#111111]" : "text-[#111111]/60"
+                            }`}
+                          >
+                            {c.name}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between mt-8">
+                  <button
+                    onClick={goBack}
+                    className="px-5 py-2 text-sm font-bold text-[#111111]/50 hover:bg-[#111111]/5 rounded transition"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleComplete}
+                    disabled={selectedCommunities.length === 0}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-[0.1em] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FF4D00]/90 transition-colors"
+                  >
+                    Enter Town Square
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FORUM CONTENT (separated to avoid hooks-after-return issues)
+   ══════════════════════════════════════════════════════════════════════════ */
+function ForumContent({ userName, userAvatarColor }: { userName: string; userAvatarColor: string }) {
+  const { navigate } = useRouter();
+
   const [posts, setPosts] = useState<ForumPost[]>(() => {
     if (typeof window === "undefined") return PRESET_POSTS;
     const saved = localStorage.getItem("xcelero_townsquare_posts");
@@ -319,9 +620,6 @@ export function TownSquare() {
   const [newContent, setNewContent] = useState("");
   const [isComposing, setIsComposing] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  const userName = "You";
-  const userAvatarColor = "#FF4D00";
 
   const handleSave = (newPosts: ForumPost[]) => {
     localStorage.setItem("xcelero_townsquare_posts", JSON.stringify(newPosts));
@@ -435,6 +733,13 @@ export function TownSquare() {
       {/* ── TOP HEADER ── */}
       <header className="h-[56px] bg-white border-b border-[#111111]/10 px-4 md:px-8 flex items-center justify-between shrink-0 sticky top-0 z-50">
         <div className="flex items-center gap-4 min-w-0">
+          <button
+            onClick={() => navigate("/")}
+            className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:text-[#FF4D00] transition-colors flex items-center gap-1.5"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Exit</span>
+          </button>
           <button
             className="xl:hidden p-2 hover:bg-[#111111]/5 rounded text-[#111111]/60"
             onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -1047,5 +1352,40 @@ export function TownSquare() {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TOWN SQUARE PAGE (entry point — handles onboarding gate)
+   ══════════════════════════════════════════════════════════════════════════ */
+export function TownSquare() {
+  const [currentUser, setCurrentUser] = useState<TownSquareUser | null>(() => {
+    if (typeof window === "undefined") return null;
+    const saved = localStorage.getItem("xcelero_townsquare_user");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const handleOnboardingComplete = (user: TownSquareUser) => {
+    setCurrentUser(user);
+  };
+
+  // Show onboarding if no user
+  if (!currentUser) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
+
+  // Show the forum
+  return (
+    <ForumContent
+      userName={currentUser.name}
+      userAvatarColor={currentUser.avatarColor}
+    />
   );
 }

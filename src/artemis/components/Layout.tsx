@@ -9,9 +9,30 @@ import { SearchModal } from "./SearchModal";
 export function Layout({ children }: { children: React.ReactNode }) {
   const { path } = useRouter();
 
+  // Town Square is a full-screen immersive experience — no nav, footer, or sticky bars
+  const isImmersive = path === "/townsquare";
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [path]);
+
+  if (isImmersive) {
+    return (
+      <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#FF4D00]/20 selection:text-[#111111]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={path}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#111111] font-sans flex flex-col selection:bg-[#FF4D00]/20 selection:text-[#111111]">

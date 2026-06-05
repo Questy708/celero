@@ -1608,7 +1608,7 @@ function TownSquareSection() {
                 Enter Town Square
               </Link>
               <span className="text-[12px] text-[#111111]/30 font-medium">
-                XCitizen Passport required
+                Free account required · takes 60 seconds
               </span>
             </div>
           </motion.div>
