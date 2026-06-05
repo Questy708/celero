@@ -23,6 +23,8 @@ export interface ProgramDetail {
   trackRecord?: { label: string; value: string }[];
   testimonial?: { quote: string; author: string; role: string; image: string };
   ideas?: { partner: string; title: string; desc: string; image?: string; partnerImage?: string }[];
+  applicationCycles?: { cycle: string; opens: string; closes: string; cohortStart: string; status: 'open' | 'upcoming' | 'closed' }[];
+  whatYouGet?: { title: string; desc: string; icon?: string }[];
 }
 
 export const programsData: ProgramDetail[] = [
@@ -124,6 +126,18 @@ export const programsData: ProgramDetail[] = [
     companies: [
       { name: "Nebula", desc: "the decentralized protocol for planetary-scale logistics.", focus: "Logistics Protocol", field: "Mobility", funding: "$2M Pre-Seed", teamSize: "10-25", categories: "Logistics / Protocol", location: "Lagos" },
       { name: "TerraHash", desc: "the blockchain layer for managing independent land registries.", focus: "Land Registry", field: "Built Env", funding: "$3M Seed", teamSize: "15-30", categories: "Blockchain / GovTech", location: "Accra" }
+    ],
+    applicationCycles: [
+      { cycle: "Cohort 3 — 2025", opens: "Mar 1, 2025", closes: "May 15, 2025", cohortStart: "Jul 2025", status: "open" },
+      { cycle: "Cohort 4 — 2026", opens: "Mar 1, 2026", closes: "May 15, 2026", cohortStart: "Jul 2026", status: "upcoming" },
+    ],
+    whatYouGet: [
+      { title: "Needs-Based Stipend", desc: "$500–$1,200/month operational stipend. No salary, no benefits — mission-deployed compensation tied to outcomes, not time served.", icon: "Zap" },
+      { title: "XEmbassy Workspace", desc: "Access to 190 strike zones across Africa and the Global South. Physical infrastructure for building and deploying.", icon: "Globe" },
+      { title: "Anchor Partner Network", desc: "Pre-negotiated LOIs with institutional partners ready to pilot your solution from Day 1.", icon: "Users" },
+      { title: "Performance Equity", desc: "Equity grants with 36-month vesting for top performers. The top 3% transition to permanent payroll.", icon: "Target" },
+      { title: "League Commons Access", desc: "Shared IP, infrastructure, and intelligence across the entire Hansa network — every breakthrough benefits every Pod.", icon: "Shield" },
+      { title: "Post-Deployment Support", desc: "Spun-out ventures receive continued access to the Playbook, network, and institutional backing.", icon: "Activity" },
     ],
     icon: Globe,
     color: "bg-[#111111]",
@@ -227,6 +241,19 @@ export const programsData: ProgramDetail[] = [
       { name: "EkoHeat", desc: "the next-gen geothermal system for sustainable urban heating.", focus: "Geothermal", field: "Energy", funding: "$5M Series A", teamSize: "30-60", categories: "Energy / Infra", location: "Cairo" },
       { name: "AgriDrone", desc: "the automated drone solution for precision nutrient application.", focus: "AgriTech", field: "Food & Ag", funding: "$2M Seed", teamSize: "20-45", categories: "AgTech / Drones", location: "Nairobi" }
     ],
+    applicationCycles: [
+      { cycle: "Batch 7 — Spring 2025", opens: "Jan 15, 2025", closes: "Mar 31, 2025", cohortStart: "May 2025", status: "open" },
+      { cycle: "Batch 8 — Fall 2025", opens: "Jul 1, 2025", closes: "Sep 15, 2025", cohortStart: "Oct 2025", status: "upcoming" },
+      { cycle: "Batch 9 — Spring 2026", opens: "Jan 15, 2026", closes: "Mar 31, 2026", cohortStart: "May 2026", status: "upcoming" },
+    ],
+    whatYouGet: [
+      { title: "$120K for 3% Equity", desc: "Fixed equity deal at $5M valuation cap. No dilution anxiety, no renegotiation — clean, founder-friendly terms from Day 1.", icon: "Zap" },
+      { title: "$500K Uncapped SAFE", desc: "Follow-on capital available without friction. The uncapped SAFE ensures you can keep building when the program ends.", icon: "Target" },
+      { title: "Dedicated Partner Support", desc: "3:1 mentor ratio with minimum 10 hours/month per company. Partners prepare for every session like defending a thesis.", icon: "Users" },
+      { title: "19-City Global Immersion", desc: "Each city stress-tests a different business assumption — regulatory risk, customer behavior, supply chain resilience.", icon: "Globe" },
+      { title: "Demo Day Access", desc: "Present to thousands of pre-briefed VC firms, angel investors, and strategic partners. Competitive tension accelerates due diligence.", icon: "Activity" },
+      { title: "Alumni Economic Carry", desc: "Profit from $10,000 of 'money at work' in the fund's carry. You become an economic stakeholder in every future cohort's success.", icon: "Shield" },
+    ],
     icon: Zap,
     color: "bg-[#FFD700]",
     image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80",
@@ -316,6 +343,18 @@ export const programsData: ProgramDetail[] = [
     },
     companies: [
       { name: "CivicID", desc: "the biometric framework for secure digital identity in emerging markets.", focus: "Identity", field: "Data & Int", funding: "$3M Seed", teamSize: "15-40", categories: "GovTech / Identity", location: "Cape Town" }
+    ],
+    applicationCycles: [
+      { cycle: "Studio Cycle 5 — 2025", opens: "Feb 1, 2025", closes: "Apr 30, 2025", cohortStart: "Jun 2025", status: "open" },
+      { cycle: "Studio Cycle 6 — 2026", opens: "Feb 1, 2026", closes: "Apr 30, 2026", cohortStart: "Jun 2026", status: "upcoming" },
+    ],
+    whatYouGet: [
+      { title: "Technology Blueprint", desc: "Comprehensive analysis of the technical landscape, competitive dynamics, and feasibility thresholds before a single line of code is written.", icon: "Workflow" },
+      { title: "Fortune 500 First Customers", desc: "Commercial partnerships with real procurement budgets, pilot programs, and distribution channels. Your first customers are secured before incorporation.", icon: "Users" },
+      { title: "Shared IP Portfolio", desc: "Access to the Studio's patents, trade secrets, and proprietary datasets. An unfair advantage over independent startups starting from zero.", icon: "Shield" },
+      { title: "Full Operational Stack", desc: "Legal, finance, HR, and governance infrastructure provided so your team can focus exclusively on building and selling.", icon: "Globe" },
+      { title: "Rapid ProtoCo Validation", desc: "Lightweight experiments designed to validate or invalidate core assumptions fast. Kill decisions keep velocity high.", icon: "Zap" },
+      { title: "Spinout to Independence", desc: "Graduated NewCos receive their own cap table, governance, and strategic direction with Studio transitioning to shareholder.", icon: "Target" },
     ],
     icon: Target,
     color: "bg-[#00C3C3]",
@@ -407,6 +446,18 @@ export const programsData: ProgramDetail[] = [
     },
     companies: [
       { name: "AquaReach", desc: "low-cost water purification for rural East Africa.", focus: "Water Purification", field: "Water Systems", funding: "$500k Seed", teamSize: "5-10", categories: "Water / Infra", location: "Kampala" }
+    ],
+    applicationCycles: [
+      { cycle: "Cohort 3 — Spring 2025", opens: "Apr 1, 2025", closes: "Jun 15, 2025", cohortStart: "Aug 2025", status: "open" },
+      { cycle: "Cohort 4 — Fall 2025", opens: "Sep 1, 2025", closes: "Nov 15, 2025", cohortStart: "Jan 2026", status: "upcoming" },
+    ],
+    whatYouGet: [
+      { title: "Queen's University Curriculum", desc: "Curated lectures by acclaimed faculty. The MIT Disciplined Entrepreneurship 24-step framework delivered through bite-sized video content.", icon: "Globe" },
+      { title: "Three-Stage Progression", desc: "Explore, Ignite, and Launch — each stage unlocks new resources. Advancement based on demonstrated commitment, not arbitrary timelines.", icon: "Zap" },
+      { title: "Self-Paced Flexibility", desc: "Designed for both full-time students and working professionals. Bite-sized lectures that adapt to your schedule without compromising rigor.", icon: "Activity" },
+      { title: "Hands-On Boot Camps", desc: "Immersive experiences in diverse locations, stress-testing your venture in real-world environments and different market dynamics.", icon: "Target" },
+      { title: "Seed Funding Access", desc: "Launch stage fellows unlock seed funding to take their venture from prototype to real-world impact in emerging markets.", icon: "Users" },
+      { title: "Biweekly Office Hours", desc: "Targeted working sessions with mentors and program leaders designed to unblock your specific challenges and accelerate progress.", icon: "Workflow" },
     ],
     icon: Search,
     color: "bg-[#6366F1]",

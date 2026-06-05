@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/artemis/router";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Plus, Minus, Users, Zap, Shield, Workflow, Activity, Globe, Target, Search as SearchIcon } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Plus, Minus, Users, Zap, Shield, Workflow, Activity, Globe, Target, Search as SearchIcon, Calendar, Clock, ChevronRight, MapPin, ArrowRight } from "lucide-react";
 import { Link } from "@/artemis/router";
 import { programsData } from "@/artemis/data/programs";
 import { venturesData } from "@/artemis/data/ventures";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Shield, Zap, Users, Activity, Workflow, Globe, Target, Search: SearchIcon,
+  Shield, Zap, Users, Activity, Workflow, Globe, Target, Search: SearchIcon, Calendar, Clock,
 };
 
 /* ── Auto-play carousel images per program ── */
@@ -47,6 +47,11 @@ const programVentureIds: Record<string, string[]> = {
   "inception-studios": ["civitas", "aegis", "atomica", "verdant"],
   "quest-fellowship": ["allele", "ampere", "phylaxis", "azimuth"],
 };
+
+/* ── Journey step colors ── */
+const stepColors = [
+  "bg-[#FF4D00]", "bg-[#E5432F]", "bg-[#9333EA]", "bg-[#2563EB]", "bg-[#059669]",
+];
 
 export function ProgramDetail() {
   const { params, navigate } = useRouter();
@@ -92,10 +97,14 @@ export function ProgramDetail() {
     );
   }
 
+  const hasAppCycles = program.applicationCycles && program.applicationCycles.length > 0;
+  const hasWhatYouGet = program.whatYouGet && program.whatYouGet.length > 0;
+  const hasProcess = program.process && program.process.length > 0;
+
   return (
     <div className="bg-white text-[#1B1C1E] min-h-screen selection:bg-[#FF9CDF] selection:text-white pb-0 overflow-x-hidden">
       
-      {/* ── HERO SECTION, Title + description left, button right (matches Hexa blueprint) ── */}
+      {/* ── HERO SECTION ── */}
       <section className="pt-32 pb-16 px-6 lg:px-12 w-full max-w-[1400px] mx-auto">
         <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="flex-1">
@@ -137,13 +146,16 @@ export function ProgramDetail() {
         </div>
       </section>
 
+      {/* ── ANCHOR NAV ── */}
       <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-12 flex flex-wrap justify-center items-center gap-4 mb-24 z-40 bg-white">
           <a href="#our-track-record" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">Our track record</a>
-          <a href="#how-we-help" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">How we help you</a>
-          <a href="#startup-ideas" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">Startup ideas</a>
+          <a href="#application-cycles" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">Apply</a>
+          <a href="#what-you-get" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">What you get</a>
+          <a href="#program-journey" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">The journey</a>
           <a href="#faq" className="px-6 py-3 rounded-full bg-[#FAFAFA] text-[#1B1C1E] text-sm font-medium hover:bg-[#F4F4F5] transition-colors border border-transparent hover:border-[#E5E7EB]">FAQ</a>
       </div>
 
+      {/* ── OUR TRACK RECORD ── */}
       <section id="our-track-record" className="py-24 lg:py-32 px-6 lg:px-12 max-w-[1400px] mx-auto">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20 lg:mb-32">
           <div className="flex items-center mb-6">
@@ -167,62 +179,253 @@ export function ProgramDetail() {
         </div>
       </section>
 
-      <section id="how-we-help" className="py-24 lg:py-32 px-6 lg:px-12 max-w-[1400px] mx-auto relative">
-         <div className="grid lg:grid-cols-12 gap-16 lg:gap-24 items-start">
-            <div className="lg:col-span-5 lg:sticky lg:top-32 self-start">
-               <div className="space-y-10">
-                  <div className="flex items-center mb-6">
-                    <span className="text-[#FF4D00] text-[10px] mr-2">&#9679;</span>
-                    <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#1B1C1E]/60">How we help you</span>
+      {/* ── APPLICATION CYCLES ── */}
+      {hasAppCycles && (
+        <section id="application-cycles" className="py-24 lg:py-32 px-6 lg:px-12 bg-[#1B1C1E] text-white relative overflow-hidden">
+          {/* Background texture */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-[#FF4D00] blur-[200px]" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-[#FF9CDF] blur-[150px]" />
+          </div>
+          
+          <div className="max-w-[1400px] mx-auto relative z-10">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Calendar className="w-4 h-4 text-[#FF4D00]" />
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.4em] text-white/50">Application Cycles</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium uppercase tracking-tighter leading-[0.95]">
+                  WHEN TO <br/>APPLY
+                </h2>
+              </div>
+              <div>
+                {program.applicationCycles!.some(c => c.status === 'open') && (
+                  <button className="inline-flex items-center justify-center gap-2 bg-[#FF4D00] text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#E54300] transition-colors">
+                    Apply Now <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {program.applicationCycles!.map((cycle, i) => (
+                <div 
+                  key={i} 
+                  className={`relative border rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02] ${
+                    cycle.status === 'open' 
+                      ? 'border-[#FF4D00]/40 bg-[#FF4D00]/5 hover:border-[#FF4D00]/60' 
+                      : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+                  }`}
+                >
+                  {/* Status badge */}
+                  <div className="flex items-center justify-between mb-8">
+                    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+                      cycle.status === 'open' 
+                        ? 'bg-[#FF4D00]/20 text-[#FF4D00]' 
+                        : cycle.status === 'upcoming'
+                        ? 'bg-white/10 text-white/60'
+                        : 'bg-white/5 text-white/30'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        cycle.status === 'open' ? 'bg-[#FF4D00] animate-pulse' : 'bg-white/30'
+                      }`} />
+                      {cycle.status === 'open' ? 'Applications Open' : cycle.status === 'upcoming' ? 'Upcoming' : 'Closed'}
+                    </span>
                   </div>
-                  <p className="text-3xl lg:text-[40px] font-medium leading-[1.3] text-[#1B1C1E] tracking-tight">
-                    {program.howWeHelpIntro || "We build the company together and provide you with everything you need to 10x your chances. In 12 months you will..."}
-                  </p>
-               </div>
-            </div>
-            
-            <div className="lg:col-span-7">
-               <div className="space-y-4">
-                  {(program.process || []).map((step, idx) => (
-                    <div 
-                      key={idx} 
-                      onClick={() => setActiveSteps(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx])}
-                      className={`p-8 bg-[#F9F9F9] group cursor-pointer border transition-colors ${activeSteps.includes(idx) ? 'border-[#E5E7EB]' : 'border-transparent hover:border-[#E5E7EB]'}`}
-                    >
-                       <div className="flex justify-between items-center gap-4">
-                          <h3 className="text-xl md:text-2xl font-medium text-[#1B1C1E]">
-                             {String(idx + 1).padStart(2, '0')}. {step.title}
-                          </h3>
-                          <div className="w-8 h-8 flex items-center justify-center transition-colors flex-shrink-0">
-                             {activeSteps.includes(idx) ? <Minus className="w-5 h-5 text-[#1B1C1E]" /> : <Plus className="w-5 h-5 text-[#1B1C1E]" />}
-                          </div>
-                       </div>
-                       <AnimatePresence>
-                         {activeSteps.includes(idx) && (
-                           <motion.div
-                             initial={{ opacity: 0, height: 0 }}
-                             animate={{ opacity: 1, height: "auto" }}
-                             exit={{ opacity: 0, height: 0 }}
-                             transition={{ duration: 0.3 }}
-                             className="overflow-hidden"
-                           >
-                             <div className="text-[#1B1C1E] text-[15px] leading-relaxed mt-6 space-y-6 max-w-2xl">
-                               <p>{step.desc}</p>
-                               {step.extended && <p className="text-[#1B1C1E]/60">{step.extended}</p>}
-                             </div>
-                           </motion.div>
-                         )}
-                       </AnimatePresence>
+
+                  <h3 className="text-xl font-medium mb-6 text-white">{cycle.cycle}</h3>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Clock className="w-4 h-4 text-white/60" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-0.5">Opens</p>
+                        <p className="text-sm font-medium text-white/80">{cycle.opens}</p>
+                      </div>
                     </div>
-                  ))}
-               </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Clock className="w-4 h-4 text-white/60" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-0.5">Closes</p>
+                        <p className="text-sm font-medium text-white/80">{cycle.closes}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-4 h-4 text-white/60" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-0.5">Cohort Begins</p>
+                        <p className="text-sm font-medium text-white/80">{cycle.cohortStart}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Decorative corner */}
+                  {cycle.status === 'open' && (
+                    <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden rounded-tr-2xl">
+                      <div className="absolute top-0 right-0 w-32 h-32 -translate-y-1/2 translate-x-1/2 rotate-45 bg-[#FF4D00]/10" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-         </div>
-      </section>
+
+            {/* Countdown / urgency bar */}
+            {program.applicationCycles!.some(c => c.status === 'open') && (
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-[#FF4D00] animate-pulse" />
+                  <p className="text-sm text-white/70">
+                    Applications are currently open for <span className="text-white font-medium">{program.applicationCycles!.find(c => c.status === 'open')?.cycle}</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-white/50">
+                  <span>Closes</span>
+                  <span className="text-white font-medium">{program.applicationCycles!.find(c => c.status === 'open')?.closes}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── WHAT YOU GET (replaces "How we help you") ── */}
+      {hasWhatYouGet && (
+        <section id="what-you-get" className="py-24 lg:py-32 px-6 lg:px-12 max-w-[1400px] mx-auto">
+          <div className="mb-16 md:mb-20">
+            <div className="flex items-center mb-6">
+              <span className="text-[#FF4D00] text-[10px] mr-2">&#9679;</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#1B1C1E]/60">What you get</span>
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-display font-medium mb-4">
+              {program.howWeHelpIntro || `Everything you need to build with ${program.title}`}
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {program.whatYouGet!.map((item, i) => {
+              const IconComponent = iconMap[item.icon || 'Shield'] || Shield;
+              return (
+                <div 
+                  key={i} 
+                  className="group relative bg-[#FAFAFA] border border-[#E5E7EB] rounded-2xl p-8 hover:border-[#FF4D00]/30 hover:bg-white transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-[#FF4D00]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#FF4D00]/20 transition-colors">
+                      <IconComponent className="w-5 h-5 text-[#FF4D00]" />
+                    </div>
+                    <span className="font-mono text-[10px] font-bold text-[#1B1C1E]/30 mt-2">{String(i + 1).padStart(2, '0')}</span>
+                  </div>
+                  <h3 className="text-lg font-medium text-[#1B1C1E] mb-3">{item.title}</h3>
+                  <p className="text-[15px] text-[#1B1C1E]/60 leading-relaxed">{item.desc}</p>
+                  
+                  {/* Hover arrow */}
+                  <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ChevronRight className="w-5 h-5 text-[#FF4D00]" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── PROGRAM JOURNEY (visual timeline for process data) ── */}
+      {hasProcess && (
+        <section id="program-journey" className="py-24 lg:py-32 px-6 lg:px-12 bg-[#F9F9F9]">
+          <div className="max-w-[1400px] mx-auto">
+            <div className="mb-16 md:mb-20">
+              <div className="flex items-center mb-6">
+                <span className="text-[#FF4D00] text-[10px] mr-2">&#9679;</span>
+                <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#1B1C1E]/60">The Program Journey</span>
+              </div>
+              <h2 className="text-4xl md:text-[64px] lg:text-[80px] font-display font-medium leading-[0.9] text-[#1B1C1E] uppercase tracking-tighter mb-4">
+                YOUR PATH
+              </h2>
+              <p className="text-lg text-[#1B1C1E]/60 max-w-lg font-medium leading-relaxed">
+                From entry to exit, every phase of {program.title} is engineered for one outcome: operational ventures that survive and scale.
+              </p>
+            </div>
+
+            {/* Visual Timeline */}
+            <div className="relative">
+              {/* Vertical connecting line */}
+              <div className="hidden lg:block absolute left-[60px] top-0 bottom-0 w-px bg-gradient-to-b from-[#FF4D00] via-[#9333EA] to-[#059669]" />
+
+              <div className="space-y-6">
+                {program.process!.map((step, idx) => (
+                  <div 
+                    key={idx}
+                    onClick={() => setActiveSteps(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx])}
+                    className="relative group cursor-pointer"
+                  >
+                    <div className="flex gap-6 lg:gap-10 items-start">
+                      {/* Step indicator */}
+                      <div className="hidden lg:flex flex-col items-center flex-shrink-0">
+                        <div className={`w-[120px] h-[120px] rounded-2xl ${stepColors[idx % stepColors.length]} flex items-center justify-center shadow-lg relative z-10 group-hover:scale-105 transition-transform`}>
+                          <span className="text-white font-display text-4xl font-medium">{String(idx + 1).padStart(2, '0')}</span>
+                        </div>
+                      </div>
+
+                      {/* Content card */}
+                      <div className={`flex-1 bg-white border rounded-2xl overflow-hidden transition-all duration-300 ${
+                        activeSteps.includes(idx) 
+                          ? 'border-[#1B1C1E]/10 shadow-lg' 
+                          : 'border-[#E5E7EB] hover:border-[#1B1C1E]/10 hover:shadow-md'
+                      }`}>
+                        <div className="p-8 lg:p-10">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="lg:hidden flex items-center gap-3 mb-3">
+                                <div className={`w-8 h-8 rounded-lg ${stepColors[idx % stepColors.length]} flex items-center justify-center`}>
+                                  <span className="text-white font-display text-sm font-medium">{idx + 1}</span>
+                                </div>
+                              </div>
+                              <h3 className="text-xl md:text-2xl font-medium text-[#1B1C1E] mb-2">{step.title}</h3>
+                              <p className="text-[#1B1C1E]/60 text-[15px] leading-relaxed">{step.desc}</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-[#F4F4F5] flex items-center justify-center flex-shrink-0 transition-colors hover:bg-[#E5E7EB]">
+                              {activeSteps.includes(idx) ? <Minus className="w-5 h-5 text-[#1B1C1E]" /> : <Plus className="w-5 h-5 text-[#1B1C1E]" />}
+                            </div>
+                          </div>
+                          
+                          <AnimatePresence>
+                            {activeSteps.includes(idx) && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="mt-6 pt-6 border-t border-[#1B1C1E]/5">
+                                  <p className="text-[#1B1C1E]/70 text-[15px] leading-relaxed">{step.extended || step.desc}</p>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── An Unfair Starting Line, 6 features + auto-play photo collage ── */}
       {(program.features && program.features.length > 0) && (
-        <section id="what-you-get" className="py-24 lg:py-32 px-6 lg:px-12 bg-[#F9F9F9]">
+        <section id="what-you-get" className="py-24 lg:py-32 px-6 lg:px-12 bg-white">
            <div className="max-w-[1400px] mx-auto">
               <div className="mb-16 md:mb-20">
                 <div className="flex items-center mb-6">
