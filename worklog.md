@@ -125,3 +125,24 @@ Stage Summary:
 - Dropdown nav restored with Company/Platform/Network groups
 - VentureDetail page still accessible at #/ventures/:id
 - No lint errors, site fully functional
+
+---
+Task ID: 8
+Agent: Main Agent
+Task: Make ventures navigate to VentureDetail page instead of inline expansion
+
+Work Log:
+- Analyzed the current Ventures page flow: clicking a venture expanded inline (VentureExpanded component)
+- Analyzed the ProgramDetail page flow: clicking companies under programs navigates to /ventures/:id (VentureDetail page)
+- User wanted consistent behavior: all ventures should navigate to dedicated VentureDetail page
+- Changed VentureCard from <button> with onClick (inline expansion) to <Link to={`/ventures/${venture.id}`}> (page navigation)
+- Removed VentureExpanded component and related code (originStories, getVentureMetrics, selectedVentureId state, AnimatePresence expansion)
+- Cleaned up unused imports (Scale, Venture type)
+- Verified with Agent Browser: clicking venture cards navigates to /ventures/{id} detail page with full content
+- Quest Fellowship program data was already updated from previous session (DDQIC, 3 stages, Disciplined Entrepreneurship)
+
+Stage Summary:
+- Ventures now navigate to dedicated VentureDetail pages when clicked, same as companies under programs
+- Removed inline expansion behavior entirely
+- All venture detail pages working: hero, problem, solution, origins (facts/observation/proof/thesis), sidebar metrics, CTAs
+- Clean lint, no errors
