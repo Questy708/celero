@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
+  ArrowUp,
   Calendar,
   MapPin,
   Users,
@@ -20,6 +21,7 @@ import {
   Heart,
   Shield,
   Check,
+  MessageSquare,
   X,
 } from "lucide-react";
 import { Link } from "@/artemis/router";
@@ -359,6 +361,7 @@ export function Community() {
       <CommunityRhythmSection />
       <PastHighlightsSection />
       <PassportSection />
+      <TownSquareSection />
       <CTASection />
     </div>
   );
@@ -1518,6 +1521,165 @@ function PassportSection() {
                   Flat rate
                 </div>
               </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TOWN SQUARE, Forum sign-up section
+   ══════════════════════════════════════════════════════════════════════════ */
+function TownSquareSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const previewDiscussions = [
+    {
+      community: "Energy & Infrastructure",
+      title: "Mini-grid economics in Northern Nigeria: unit economics from Cohort 7",
+      author: "Yusuf Hassan",
+      upvotes: 142,
+      color: "bg-[#FF4D00]",
+    },
+    {
+      community: "Digital Finance",
+      title: "Cross-border payments infrastructure: what we learned building across 3 corridors",
+      author: "Fatima Al-Rashid",
+      upvotes: 204,
+      color: "bg-amber-600",
+    },
+    {
+      community: "Capital & Deals",
+      title: "SPV deployment update: Q1 2026 portfolio construction",
+      author: "Amara Diallo",
+      upvotes: 312,
+      color: "bg-rose-600",
+    },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-b border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+          {/* Left — Copy + CTA */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] mb-6 block">
+              Town Square
+            </span>
+            <h2 className="text-[32px] md:text-[48px] lg:text-[56px] font-display font-medium tracking-tight leading-[1.05] mb-6">
+              Where the network{" "}
+              <em className="italic font-serif text-[#FF4D00]">talks</em>.
+            </h2>
+            <p className="text-[17px] md:text-[19px] text-[#111111]/50 font-medium leading-relaxed mb-6">
+              The XCitizen forum. Real-time discussions on deals, infrastructure,
+              regulations, hiring, and hard-won lessons from the Route. No noise.
+              No cold pitches. Just builders sharing what they know.
+            </p>
+
+            <div className="flex flex-wrap gap-3 mb-8">
+              {["Energy & Infrastructure", "Life Sciences", "Digital Finance", "Route Operations", "Capital & Deals", "Founders Corner"].map(
+                (tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1.5 text-[10px] font-mono font-bold tracking-[0.1em] uppercase border border-[#111111]/10 text-[#111111]/40"
+                  >
+                    {tag}
+                  </span>
+                )
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-4 items-center">
+              <Link
+                to="/townsquare"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#FF4D00]/90 transition-colors"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Enter Town Square
+              </Link>
+              <span className="text-[12px] text-[#111111]/30 font-medium">
+                XCitizen Passport required
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Right — Preview cards */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            className="space-y-3"
+          >
+            {/* Mock forum header */}
+            <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-[#111111]/10">
+              <div className="w-8 h-8 bg-[#FF4D00] flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <div className="text-[14px] font-display font-medium tracking-tight">
+                  Town Square
+                </div>
+                <div className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#FF4D00]">
+                  XCitizen Forum
+                </div>
+              </div>
+              <div className="ml-auto flex items-center gap-2 text-[10px] text-[#111111]/25 font-mono font-bold">
+                <span>1,200+ members</span>
+                <span>•</span>
+                <span>6 communities</span>
+              </div>
+            </div>
+
+            {previewDiscussions.map((discussion, i) => (
+              <motion.div
+                key={discussion.title}
+                initial={{ opacity: 0, y: 15 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: "easeOut" }}
+                className="group border border-[#111111]/10 p-4 hover:border-[#FF4D00]/20 hover:bg-[#FAFAFA] transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-2 text-[11px] text-[#111111]/35 mb-2">
+                  <div
+                    className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${discussion.color}`}
+                  >
+                    <span className="text-[7px] font-bold text-white uppercase">
+                      {discussion.community[0]}
+                    </span>
+                  </div>
+                  <span className="font-bold text-[#111111]/50">{discussion.community}</span>
+                  <span>•</span>
+                  <span>{discussion.author}</span>
+                </div>
+                <h4 className="text-[14px] md:text-[15px] font-display font-medium tracking-tight text-[#111111]/80 leading-snug group-hover:text-[#FF4D00] transition-colors">
+                  {discussion.title}
+                </h4>
+                <div className="flex items-center gap-3 mt-2.5 text-[10px] text-[#111111]/25 font-mono font-bold">
+                  <span className="flex items-center gap-1">
+                    <ArrowUp className="w-3 h-3 text-[#FF4D00]" />
+                    {discussion.upvotes}
+                  </span>
+                  <span>6 comments</span>
+                  <span className="ml-auto flex items-center gap-1 group-hover:text-[#FF4D00] transition-colors">
+                    View discussion
+                    <ArrowRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+
+            {/* Bottom fade hint */}
+            <div className="relative h-8 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />
             </div>
           </motion.div>
         </div>
