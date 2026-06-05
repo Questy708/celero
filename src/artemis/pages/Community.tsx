@@ -18,6 +18,8 @@ import {
   Handshake,
   Lightbulb,
   Heart,
+  Shield,
+  Check,
   X,
 } from "lucide-react";
 import { Link } from "@/artemis/router";
@@ -331,6 +333,16 @@ const pastHighlights = [
   },
 ];
 
+/* ── xCitizen Passport Benefits ── */
+const passportBenefits = [
+  "Access to all 190 hubs across 39 countries",
+  "Curated deal flow & peer circle invitations",
+  "XCitizen-only events: summits, demo days, masterclasses",
+  "Direct introductions to founders, operators & investors",
+  "Route directory: talent, vendors, co-founders",
+  "Voting rights at the annual xCitizen Assembly",
+];
+
 /* ══════════════════════════════════════════════════════════════════════════
    COMMUNITY PAGE
    ══════════════════════════════════════════════════════════════════════════ */
@@ -346,6 +358,7 @@ export function Community() {
       <CommunityPillarsSection />
       <CommunityRhythmSection />
       <PastHighlightsSection />
+      <PassportSection />
       <CTASection />
     </div>
   );
@@ -1316,6 +1329,198 @@ function CTASection() {
             </Link>
           </div>
         </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   xCITIZEN PASSPORT, Membership pass section
+   ══════════════════════════════════════════════════════════════════════════ */
+function PassportSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-[#FAFAFA] border-b border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-3xl mx-auto text-center mb-12 md:mb-16"
+        >
+          <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] mb-6 block">
+            Membership
+          </span>
+          <h2 className="text-[32px] md:text-[48px] lg:text-[56px] font-display font-medium tracking-tight leading-[1.05] mb-6">
+            Get your{" "}
+            <em className="italic font-serif text-[#FF4D00]">xCitizen Passport</em>
+          </h2>
+          <p className="text-[17px] md:text-[19px] text-[#111111]/50 font-medium leading-relaxed">
+            Your single pass to the entire Route. One-time activation, then a
+            low annual subscription that keeps the network open for everyone.
+          </p>
+        </motion.div>
+
+        {/* Passport card + Benefits layout */}
+        <div className="grid lg:grid-cols-5 gap-8 md:gap-12 items-start">
+          {/* Passport visual card — takes 2 cols */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+            className="lg:col-span-2"
+          >
+            <div className="relative bg-[#111111] text-white overflow-hidden border border-[#111111]">
+              {/* Grain texture overlay */}
+              <div className="absolute inset-0 grain opacity-[0.04] pointer-events-none" />
+
+              {/* Top accent bar */}
+              <div className="h-1.5 bg-[#FF4D00]" />
+
+              <div className="p-6 md:p-8">
+                {/* Passport header */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 md:w-12 md:h-12 border border-[#FF4D00]/40 flex items-center justify-center">
+                    <Shield className="w-5 h-5 md:w-6 md:h-6 text-[#FF4D00]" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
+                      xCelero
+                    </div>
+                    <div className="text-[15px] md:text-[17px] font-display font-medium tracking-tight leading-tight">
+                      xCitizen Passport
+                    </div>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="h-px bg-white/10 mb-6" />
+
+                {/* Pricing */}
+                <div className="space-y-4 mb-8">
+                  {/* One-time activation */}
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <div className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-white/40">
+                        One-Time Activation
+                      </div>
+                      <div className="text-[36px] md:text-[44px] font-display font-medium tracking-[-0.03em] leading-none mt-1">
+                        $25
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-[0.1em] uppercase text-white/25 border border-white/10 px-2 py-1">
+                      Lifetime
+                    </span>
+                  </div>
+
+                  {/* Annual subscription */}
+                  <div className="flex items-baseline justify-between pt-4 border-t border-white/10">
+                    <div>
+                      <div className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-white/40">
+                        Annual Subscription
+                      </div>
+                      <div className="text-[36px] md:text-[44px] font-display font-medium tracking-[-0.03em] leading-none mt-1">
+                        $9<span className="text-[16px] md:text-[20px] text-white/40 font-medium">/yr</span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-[0.1em] uppercase text-[#FF4D00] border border-[#FF4D00]/30 px-2 py-1">
+                      Low Barrier
+                    </span>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <Link
+                  to="/join"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#FF4D00]/90 transition-colors"
+                >
+                  Get Your Passport
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+
+                {/* Fine print */}
+                <p className="text-[10px] text-white/25 font-medium mt-4 text-center leading-relaxed">
+                  Pricing kept intentionally low so the Route stays open to every serious builder, regardless of background.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Benefits list — takes 3 cols */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
+            className="lg:col-span-3"
+          >
+            <div className="mb-8">
+              <h3 className="text-[22px] md:text-[28px] font-display font-medium tracking-tight leading-tight mb-3">
+                What your passport <em className="italic font-serif text-[#FF4D00]">unlocks</em>.
+              </h3>
+              <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-relaxed">
+                Every xCitizen Passport holder gets full access to the network&apos;s
+                infrastructure, events, and people. No tiers. No gatekeeping
+                beyond the initial activation.
+              </p>
+            </div>
+
+            {/* Benefits grid */}
+            <div className="grid sm:grid-cols-2 gap-0 border border-[#111111]/10">
+              {passportBenefits.map((benefit, i) => (
+                <motion.div
+                  key={benefit}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.3 + i * 0.08, ease: "easeOut" }}
+                  className={`flex items-start gap-3 p-4 md:p-5 ${
+                    i < passportBenefits.length - 2 ? "border-b border-[#111111]/10" : ""
+                  } ${i % 2 === 0 ? "border-r border-[#111111]/10" : ""}`}
+                >
+                  <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center mt-0.5">
+                    <Check className="w-4 h-4 text-[#FF4D00]" strokeWidth={2.5} />
+                  </div>
+                  <span className="text-[13px] md:text-[14px] text-[#111111]/70 font-medium leading-snug">
+                    {benefit}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Additional info row */}
+            <div className="mt-6 grid grid-cols-3 gap-4">
+              <div className="text-center p-4 border border-[#111111]/10">
+                <div className="text-[24px] md:text-[28px] font-display font-medium tracking-[-0.02em] text-[#111111]">
+                  1,200+
+                </div>
+                <div className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/35 mt-1">
+                  Current holders
+                </div>
+              </div>
+              <div className="text-center p-4 border border-[#111111]/10">
+                <div className="text-[24px] md:text-[28px] font-display font-medium tracking-[-0.02em] text-[#111111]">
+                  39+
+                </div>
+                <div className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/35 mt-1">
+                  Countries
+                </div>
+              </div>
+              <div className="text-center p-4 border border-[#111111]/10">
+                <div className="text-[24px] md:text-[28px] font-display font-medium tracking-[-0.02em] text-[#111111]">
+                  1
+                </div>
+                <div className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/35 mt-1">
+                  Flat rate
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
