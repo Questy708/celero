@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { Link } from "@/artemis/router";
 import { ArrowRight } from "lucide-react";
 import { programsData } from "@/artemis/data/programs";
@@ -129,20 +129,16 @@ function HeroSection() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   PROGRAM SHOWCASE, INTERACTIVE TABBED INDEX LAYOUT
+   PROGRAM SHOWCASE, ALL-EXPANDED ROWS
    ══════════════════════════════════════════════════════════════════════════ */
 function ProgramShowcase() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const [activeIdx, setActiveIdx] = useState(0);
-  const active = programsData[activeIdx];
-  const ActiveIcon = active.icon;
-  const details = active.details;
 
   return (
     <section
       ref={ref}
-      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-[#FAFAFA]"
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20"
     >
       <div className="w-full max-w-[1400px] mx-auto">
         {/* Section label */}
@@ -157,133 +153,97 @@ function ProgramShowcase() {
           </span>
         </motion.div>
 
-        {/* Main grid: index tabs left, content right */}
-        <div className="grid lg:grid-cols-12 gap-0 border border-[#111111]/10 bg-white">
-          {/* ── Left: Tab index ── */}
-          <div className="lg:col-span-4 xl:col-span-3 border-b lg:border-b-0 lg:border-r border-[#111111]/10">
-            {programsData.map((program, idx) => {
-              const Icon = program.icon;
-              const isActive = idx === activeIdx;
-              return (
-                <motion.button
-                  key={program.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  onClick={() => setActiveIdx(idx)}
-                  className={`w-full text-left px-6 py-5 md:py-6 flex items-center gap-4 transition-all duration-300 border-b border-[#111111]/5 last:border-b-0 lg:border-b lg:last:border-b-0 ${
-                    isActive
-                      ? "bg-[#111111] text-white"
-                      : "bg-transparent text-[#111111] hover:bg-[#111111]/5"
-                  }`}
-                >
-                  {/* Step number */}
-                  <span
-                    className={`text-[11px] font-mono font-bold tracking-widest shrink-0 ${
-                      isActive ? "text-[#FF4D00]" : "text-[#111111]/25"
-                    }`}
-                  >
+        {/* All programs, always expanded */}
+        <div className="flex flex-col">
+          {programsData.map((program, idx) => {
+            const Icon = program.icon;
+            const details = program.details;
+
+            return (
+              <motion.div
+                key={program.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="border-t border-[#111111]/10 last:border-b"
+              >
+                {/* ── Row header ── */}
+                <div className="py-6 md:py-8 flex items-center gap-4 md:gap-6">
+                  {/* Number */}
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#FF4D00]/40 shrink-0 w-6">
                     0{idx + 1}
                   </span>
 
                   {/* Icon */}
-                  <div
-                    className={`w-8 h-8 flex items-center justify-center shrink-0 transition-colors duration-300 ${
-                      isActive
-                        ? `${program.color} text-white`
-                        : "bg-[#111111]/5 text-[#111111]/40"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
+                  <div className={`w-9 h-9 ${program.color} flex items-center justify-center shrink-0 text-white`}>
+                    <Icon className="w-4 h-4" />
                   </div>
 
                   {/* Title */}
-                  <span
-                    className={`text-[13px] md:text-[14px] font-display font-medium tracking-[-0.01em] leading-snug transition-colors duration-300 ${
-                      isActive ? "text-white" : "text-[#111111]/70"
-                    }`}
-                  >
+                  <h3 className="text-[18px] md:text-[22px] lg:text-[28px] font-display font-medium tracking-[-0.02em] leading-tight text-[#111111] flex-1">
                     {program.title}
+                  </h3>
+
+                  {/* Tagline (desktop) */}
+                  <span className="hidden lg:block text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 max-w-[220px] truncate">
+                    {program.tagline}
                   </span>
-                </motion.button>
-              );
-            })}
-          </div>
+                </div>
 
-          {/* ── Right: Active program detail ── */}
-          <div className="lg:col-span-8 xl:col-span-9 relative overflow-hidden min-h-[420px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="p-6 md:p-8 lg:p-10 flex flex-col justify-between h-full"
-              >
-                {/* Top: Image + overlay */}
-                <div className="relative w-full aspect-[21/9] mb-8 overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${active.image})` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/70 via-[#111111]/30 to-transparent" />
-
-                  {/* Number overlay */}
-                  <div className="absolute top-4 left-4 md:top-6 md:left-6">
-                    <span className="text-white/15 text-[72px] md:text-[96px] font-display font-medium leading-none">
-                      0{activeIdx + 1}
-                    </span>
+                {/* ── Always-visible expanded content ── */}
+                <div className="pb-8 md:pb-10 pl-10 md:pl-[3.5rem]">
+                  {/* Image */}
+                  <div className="relative w-full aspect-[21/8] mb-6 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{ backgroundImage: `url(${program.image})` }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/50 to-transparent" />
+                    <div className="absolute bottom-4 left-5 md:bottom-6 md:left-6">
+                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-white/50">
+                        {program.tagline}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Bottom overlay content */}
-                  <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-8 h-8 ${active.color} flex items-center justify-center text-white shrink-0`}>
-                        <ActiveIcon className="w-3.5 h-3.5" />
+                  {/* Content grid */}
+                  <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+                    {/* Description */}
+                    <div className="lg:col-span-7">
+                      <p className="text-[14px] md:text-[15px] text-[#111111]/55 font-medium leading-[1.7] mb-6">
+                        {program.desc}
+                      </p>
+                      <Link
+                        to={`/programs/${program.id}`}
+                        className="group inline-flex items-center gap-2 text-[#FF4D00] hover:text-[#111111] transition-colors duration-300"
+                      >
+                        <span className="text-[11px] font-mono font-bold tracking-widest uppercase">
+                          Explore Program
+                        </span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </Link>
+                    </div>
+
+                    {/* Details */}
+                    <div className="lg:col-span-5">
+                      <div className="grid grid-cols-2 gap-4">
+                        {details.map((detail, i) => (
+                          <div key={i}>
+                            <div className="text-[18px] md:text-[22px] font-display font-medium tracking-tight text-[#111111]">
+                              {detail.value}
+                            </div>
+                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">
+                              {detail.label}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-white/60">
-                        {active.tagline}
-                      </span>
                     </div>
-                    <h3 className="text-[24px] md:text-[32px] lg:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.05] text-white">
-                      {active.title}
-                    </h3>
                   </div>
                 </div>
-
-                {/* Description */}
-                <p className="text-[14px] md:text-[15px] text-[#111111]/55 font-medium leading-[1.7] mb-8 max-w-2xl">
-                  {active.desc}
-                </p>
-
-                {/* Details row */}
-                <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8">
-                  {details.map((detail, i) => (
-                    <div key={i} className="flex items-baseline gap-2">
-                      <span className="text-[14px] md:text-[15px] font-display font-medium tracking-tight text-[#111111]">
-                        {detail.value}
-                      </span>
-                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">
-                        {detail.label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA */}
-                <Link
-                  to={`/programs/${active.id}`}
-                  className="group inline-flex items-center gap-2 text-[#FF4D00] hover:text-[#111111] transition-colors duration-300 self-start"
-                >
-                  <span className="text-[11px] font-mono font-bold tracking-widest uppercase">
-                    Explore Program
-                  </span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
               </motion.div>
-            </AnimatePresence>
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>

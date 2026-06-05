@@ -127,7 +127,7 @@ export const programsData: ProgramDetail[] = [
     ],
     icon: Globe,
     color: "bg-[#111111]",
-    image: "/programs/xhansa-hero.png",
+    image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80",
     link: "/programs/the-routes"
   },
   {
@@ -229,7 +229,7 @@ export const programsData: ProgramDetail[] = [
     ],
     icon: Zap,
     color: "bg-[#FFD700]",
-    image: "/programs/xcelero-hero.png",
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80",
     link: "/programs/xcelero-accelerator"
   },
   {
@@ -319,103 +319,98 @@ export const programsData: ProgramDetail[] = [
     ],
     icon: Target,
     color: "bg-[#00C3C3]",
-    image: "/programs/inception-hero.png",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80",
     link: "/programs/inception-studios"
   },
   {
     id: "quest-fellowship",
     title: "Quest Fellowship",
-    tagline: "Frontier Science Bridge (feat. Queen's University).",
-    desc: "A specialized partnership bridge between elite academic research and the xCelero engine. We help translate lab-stage breakthroughs into civilizational prototypes.",
-    longDesc: "Quest Fellowship is our dedicated pathway for academic excellence, run in partnership with Queen's University and other Ivy-tier global institutions. We identify researchers and engineers whose work has civilizational implications and provide the operational armor, heavy deployment infrastructure, and commercialization expertise needed to survive the 'Valley of Death' between lab and market.",
+    tagline: "From Ideas to Impact, Powered by Queen's University.",
+    desc: "A semester-long initiative developed by AirDrop Labs in collaboration with the Dunin-Deshpande Queen's Innovation Centre (DDQIC) at Queen's University — equipping young minds with the tools to transform ideas, technologies, or passions into impactful ventures.",
+    longDesc: "More than just a conventional entrepreneurship program, Quest Fellowship is a global movement tailored for unconventional thinkers and ecosystem amplifiers from around the world. It is designed for those who aspire to address challenges on both global and local scales through innovation-driven entrepreneurship, fostering a sense of purpose and impact (#Ikigai) while integrating into the worldwide workforce. Quest transcends traditional boundaries, offering a comprehensive blend of education, mentorship, and support — curated lectures by acclaimed faculty members from Queen's University and hands-on boot camps held in diverse locations, providing an immersive learning experience like no other. The program focuses on emerging markets because therein lies the greatest potential for impact: tackling real-world problems, generating employment opportunities, and driving sustainable growth through innovative solutions that uplift communities and leave a lasting legacy.",
     details: [
-      { label: "Partner", value: "Queen's University" },
-      { label: "Domain", value: "Deep Research" },
-      { label: "Access", value: "Lab-to-Launch" },
-      { label: "Tenure", value: "12-18 Months" }
+      { label: "Partner", value: "DDQIC / Queen's" },
+      { label: "Format", value: "Semester-Long" },
+      { label: "Focus", value: "Emerging Markets" },
+      { label: "Curriculum", value: "Disciplined Entrepreneurship" }
     ],
     stats: [
-      { label: "Active Fellows", value: "120+" },
-      { label: "Lab Patents", value: "45 Translating" },
-      { label: "University Partners", value: "Elite Tier" },
-      { label: "Grant Pool", value: "$4.5M Allocated" }
+      { label: "Program Stages", value: "3: Explore, Ignite, Launch" },
+      { label: "Faculty", value: "Queen's University" },
+      { label: "Methodology", value: "MIT 24-Step Framework" },
+      { label: "Format", value: "Self-Paced + Live" }
     ],
     process: [
       {
-        title: "Discovery Harvest",
-        desc: "Reviewing research to identify 'Heavy' breakthroughs with mission alignment. We scan publications, patent filings, and lab outputs across partner universities to surface work that has civilizational implications, not incremental improvements.",
-        extended: "We identify researchers whose work has civilizational implications. The Discovery Harvest is not a passive literature review, our team embeds with university technology transfer offices, attends closed-door faculty presentations, and maintains relationships with department chairs across 30+ institutions. We are looking for the work that hasn't been published yet."
+        title: "Explore",
+        desc: "The first stage of the Quest Fellowship. Fellows begin their entrepreneurial journey by completing assignments, attending lectures, engaging in quizzes, and actively participating in biweekly office hours. This stage is about discovery — identifying the problem you want to solve and the market you want to serve.",
+        extended: "The Explore stage is designed to help you find your Ikigai — the intersection of what you love, what the world needs, what you're good at, and what you can be rewarded for. Through bite-sized video lectures curated by Queen's University faculty and hands-on assignments drawn from the Disciplined Entrepreneurship framework, you'll validate your initial idea, understand your target market, and begin building the foundation for a viable venture."
       },
       {
-        title: "Technical Drafting",
-        desc: "Marrying operators with researchers to draft commercialization blueprints. We pair each Fellow with a seasoned operator who translates scientific potential into market reality.",
-        extended: "We provide the infrastructure needed to translate science into physical prototypes. Technical Drafting produces a detailed commercialization blueprint: market sizing, regulatory pathway, IP strategy, capital requirements, and a 24-month milestone plan. The researcher provides the science; the operator provides the architecture. Together, they produce a document that investors can evaluate and the League can deploy against."
+        title: "Ignite",
+        desc: "Advancement to the Ignite stage requires demonstrated commitment and progress. Fellows who show dedication on their entrepreneurial journey unlock new opportunities: tailored mentorship, deeper market access, and resources to refine their venture.",
+        extended: "The Ignite stage is where ideas catch fire. Fellows who have demonstrated commitment through consistent assignment completion, lecture attendance, and active office hour participation gain access to personalized mentorship from experienced entrepreneurs and industry experts. This stage focuses on customer discovery, value proposition refinement, and building a Minimum Viable Product (MVP). Hands-on boot camps in diverse locations provide immersive, cross-cultural learning experiences."
       },
       {
-        title: "Sandbox Deployment",
-        desc: "Relocating researchers to specific XEmbassies for rapid prototyping with access to heavy hardware labs, wet labs, and clean rooms: the infrastructure that academia cannot provide.",
-        extended: "Access to heavy hardware labs helps survive the 'Valley of Death'. Fellows are physically relocated to XEmbassies equipped with domain-specific infrastructure: wet labs for biotech, clean rooms for semiconductors, machine shops for hardware. This is where the blueprint meets physical reality, and where most academic ventures fail without the League's support."
-      },
-      {
-        title: "ProtoCo Genesis",
-        desc: "Formal creation of a venture entity around the breakthrough. The researcher often serves as Chief Scientist, while the operator assumes the CEO role.",
-        extended: "The researcher often serves as Chief Scientist in the new entity. ProtoCo Genesis is the formal incorporation of the venture, cap table, governance, IP transfer agreements, and initial funding from the League's grant pool. The Fellow transitions from academic to founder, supported by the full weight of the Hanseatic infrastructure."
+        title: "Launch",
+        desc: "The final stage unlocks the full power of the Quest ecosystem: seed funding to scale, tailored mentorship from seasoned operators, and market access to take your venture from prototype to real-world impact.",
+        extended: "The Launch stage is where ventures become real. Fellows who have successfully navigated Explore and Ignite gain access to seed funding, strategic mentorship from operators who have built and scaled companies, and direct market access to emerging economies where their solutions can have the greatest impact. This stage is about execution: landing pilot customers, generating revenue, and building the operational foundation for sustainable growth."
       }
     ],
-    howWeHelpIntro: "We bridge the gap between peer-reviewed science and commercial viability, pairing each Fellow with a seasoned operator, relocating you to XEmbassy labs with heavy infrastructure, and backing your breakthrough with $4.5M in grant capital. In 12-18 months you will...",
+    howWeHelpIntro: "We provide a comprehensive blend of education, mentorship, and support — curated lectures by Queen's University faculty, hands-on boot camps in diverse locations, and a self-paced curriculum built on MIT's Disciplined Entrepreneurship framework. Through three progressive stages you will...",
     features: [
-      { title: "Frontier Science Bridge", desc: "Translation layer for breakthroughs requiring heavy deployment infrastructure. We bridge the gap between peer-reviewed science and commercial viability: the most dangerous gap in innovation, where 97% of breakthroughs die.", icon: "Globe" },
-      { title: "Institutional Synergy", desc: "Academic rigor paired with the high-velocity execution of the Hansa engine. University partnerships provide the science; the League provides the operational armor. Neither can achieve civilizational outcomes alone.", icon: "Workflow" },
-      { title: "IP Protection Armor", desc: "Expert legal protection to ensure breakthroughs benefit the inventors and the League. Our IP team includes former patent examiners and technology transfer specialists who structure filings for maximum commercial leverage while preserving academic publication rights.", icon: "Shield" },
-      { title: "Director Access", desc: "Direct line to League Directors to resolve technical bottlenecks in real-time. Fellows are not routed through support tickets, they have a direct communication channel to senior leadership who can authorize resources, approve equipment purchases, and clear regulatory obstacles within 24 hours.", icon: "Target" },
-      { title: "Heavy Lab Infrastructure", desc: "XEmbassies equipped with domain-specific infrastructure: wet labs for biotech, clean rooms for semiconductors, machine shops for hardware. This is where the blueprint meets physical reality: the infrastructure that academia cannot provide and most startups cannot afford.", icon: "Activity" },
-      { title: "Operator Pairing", desc: "Each Fellow is paired with a seasoned operator who translates scientific potential into market reality. The researcher provides the science; the operator provides the architecture. Together, they produce a commercialization blueprint that investors can evaluate and the League can deploy against.", icon: "Users" }
+      { title: "Queen's University Curriculum", desc: "Curated lectures by acclaimed faculty members from one of Canada's premier research universities. The curriculum draws from Disciplined Entrepreneurship: 24 Steps to a Successful Startup by Bill Aulet, developed at the Martin Trust Center for MIT Entrepreneurship — a systematic, proven approach to venture creation.", icon: "Globe" },
+      { title: "Three-Stage Progression", desc: "The program structure revolves around three distinct stages — Explore, Ignite, and Launch — each unlocking new opportunities and resources. Advancement hinges on your commitment and dedication, demonstrated through assignments, lecture attendance, quizzes, and active participation in biweekly office hours.", icon: "Zap" },
+      { title: "Self-Paced Learning", desc: "Quest is a self-paced program offering a wealth of training materials including bite-sized video lectures. Whether you're a full-time student or a working professional, the program adapts to your schedule while maintaining rigorous standards for advancement.", icon: "Activity" },
+      { title: "Hands-On Boot Camps", desc: "Immersive boot camps held in diverse locations around the world, providing experiential learning that goes beyond the classroom. These boot camps are designed to stress-test your venture in real-world environments and expose you to different market dynamics.", icon: "Target" },
+      { title: "Seed Funding & Market Access", desc: "Each stage unlocks new resources — from seed funding to tailored mentorship and direct market access to emerging economies. Quest focuses on emerging markets because therein lies the greatest potential for impact: real-world problems, employment generation, and sustainable growth.", icon: "Users" },
+      { title: "Biweekly Office Hours", desc: "Regular one-on-one and group sessions with mentors and program leaders. These aren't generic check-ins — they're targeted working sessions designed to unblock your specific challenges and accelerate your venture's progress.", icon: "Workflow" }
     ],
     unfairAdvantageTitle: "The Quest Unfair Advantage",
     unfairAdvantageImages: {
-      left: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
-      right: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80"
+      left: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80",
+      right: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80"
     },
     isForYouIf: [
-      "You are a researcher or engineer whose work has civilizational implications.",
-      "You want to turn scientific papers into physical prototypes.",
-      "You require 'Heavy' deployment infrastructure like wet labs or clean rooms.",
-      "You want to survive the 'Valley of Death' between lab and market.",
-      "You are ready to transition from academic to founder with operational support.",
-      "You have a breakthrough that needs commercialization, not just publication."
+      "You are an unconventional thinker who wants to address challenges on a global or local scale.",
+      "You are an ecosystem amplifier looking to drive innovation-driven entrepreneurship.",
+      "You want to find your Ikigai — purpose, impact, and sustainable livelihood.",
+      "You are committed to building ventures that create employment and drive sustainable growth in emerging markets.",
+      "You value a structured, systematic approach to entrepreneurship backed by MIT's Disciplined Entrepreneurship framework.",
+      "You want access to Queen's University faculty, mentorship, and global boot camp experiences."
     ],
     faqs: [
-      { q: "How long is the fellowship?", a: "The Quest Fellowship typically lasts 12-18 months, depending on the complexity of the technology and the commercialization timeline. Extensions are granted based on milestone achievement, not time served." },
-      { q: "What support do we provide?", a: "We provide operational armor and access to the full XHansa physical network, including XEmbassies with wet labs, clean rooms, machine shops, and testing facilities. Additionally, Fellows receive a dedicated operator partner, IP legal support, direct Director access, and initial grant funding from the $4.5M pool." },
-      { q: "What is the focus area?", a: "We identify breakthroughs in deep research across all nine civilizational fields: Water Systems, Energy Systems, Food & Agriculture, Health & Mobility, Built Environment, Data & Intelligence, Logistics & Trade, Governance & Identity, and Education & Human Capital. We are field-agnostic but impact-specific: the work must have civilizational implications." },
-      { q: "Do I have to leave my university position?", a: "No. The Fellowship is designed to accommodate active researchers. During Sandbox Deployment, you will spend significant time at an XEmbassy, but we work with your institution to arrange sabbaticals, joint appointments, or consulting arrangements. The goal is translation, not extraction." },
-      { q: "What happens to my IP?", a: "IP generated during the Fellowship is governed by a structured agreement: the researcher retains academic publication rights, the League receives commercial licensing rights, and the resulting ProtoCo receives an exclusive license for commercial application. This tripartite structure has been vetted by 30+ university technology transfer offices." }
+      { q: "What is the Quest Fellowship?", a: "Quest Fellowship is a semester-long initiative developed by AirDrop Labs in collaboration with the Dunin-Deshpande Queen's Innovation Centre (DDQIC) at Queen's University. It equips young minds with the tools to transform ideas, technologies, or passions into impactful ventures that contribute to shaping the future." },
+      { q: "How does the three-stage structure work?", a: "The program revolves around three stages: Explore, Ignite, and Launch. Advancement through stages hinges on your commitment and dedication — completing assignments, attending lectures, engaging in quizzes, and actively participating in biweekly office hours. Each stage unlocks new opportunities and resources, from mentorship to seed funding and market access." },
+      { q: "What curriculum does Quest use?", a: "The curriculum draws inspiration from the systematic approach outlined in Disciplined Entrepreneurship: 24 Steps to a Successful Startup by Bill Aulet, developed at the Martin Trust Center for MIT Entrepreneurship. This is delivered through bite-sized video lectures curated by Queen's University faculty." },
+      { q: "Why does Quest focus on emerging markets?", a: "Because therein lies the greatest potential for impact. Quest is dedicated to tackling real-world problems, generating employment opportunities, and driving sustainable growth through innovative solutions that uplift communities and leave a lasting legacy." },
+      { q: "Is the program full-time?", a: "No. Quest is a self-paced program offering a wealth of training materials including bite-sized video lectures. It's designed to accommodate both full-time students and working professionals, while maintaining rigorous standards for advancement through the three stages." }
     ],
     trackRecord: [
-      { label: "Active Fellows", value: "120+" },
-      { label: "Lab Patents", value: "45" },
-      { label: "Grant Pool", value: "$4.5M" },
-      { label: "Partners", value: "Elite" }
+      { label: "Program Stages", value: "3" },
+      { label: "University Partner", value: "Queen's" },
+      { label: "Methodology", value: "MIT 24-Step" },
+      { label: "Active Cohort", value: "Cohort 2" }
     ],
     ideas: [
-      { partner: "Chief Scientist", title: "NanoFilter", desc: "Carbon-nanotube based filtration systems for industrial wastewater recycling. 99.9% contaminant removal at 10x lower energy cost.", partnerImage: "https://i.pravatar.cc/100?img=17" },
-      { partner: "Research Lead", title: "BioSustain", desc: "Engineered microbes for accelerated plastic degradation in oceanic environments. Field-tested across 3 marine zones.", partnerImage: "https://i.pravatar.cc/100?img=18" },
-      { partner: "Lab Director", title: "QuantumSense", desc: "Room-temperature quantum sensors for mineral exploration. Replaces seismic surveys with atomic-scale precision.", partnerImage: "https://i.pravatar.cc/100?img=25" },
-      { partner: "Fellow Lead", title: "HelioStore", desc: "Molten-salt thermal battery for 48-hour solar energy storage at $0.02/kWh. Enables baseload solar for off-grid industrial applications.", partnerImage: "https://i.pravatar.cc/100?img=26" },
-      { partner: "IP Strategist", title: "GenomeVault", desc: "Independent genomic data infrastructure for African populations. Privacy-preserving federated learning for drug discovery without data export.", partnerImage: "https://i.pravatar.cc/100?img=30" }
+      { partner: "Program Director", title: "AquaReach", desc: "Low-cost water purification systems for rural communities in East Africa. Solar-powered, modular, and deployable within 48 hours. [Water Systems]", partnerImage: "https://i.pravatar.cc/100?img=17" },
+      { partner: "Fellow Lead", title: "SkillBridge", desc: "Digital apprenticeship platform connecting informal economy workers to certified training and formal employment pathways across West Africa. [Education & Human Capital]", partnerImage: "https://i.pravatar.cc/100?img=18" },
+      { partner: "Venture Mentor", title: "CropWise", desc: "AI-powered crop advisory for smallholder farmers using satellite imagery and local weather data. Increases yields by 30% in pilot regions. [Food & Agriculture]", partnerImage: "https://i.pravatar.cc/100?img=25" },
+      { partner: "Queen's Faculty", title: "MedConnect", desc: "Telemedicine platform for underserved communities with offline-capable diagnostics and AI-assisted triage. Active in 5 countries. [Health & Mobility]", partnerImage: "https://i.pravatar.cc/100?img=26" },
+      { partner: "DDQIC Lead", title: "GreenGrid", desc: "Decentralized renewable energy marketplace enabling peer-to-peer solar trading in urban informal settlements. [Energy Systems]", partnerImage: "https://i.pravatar.cc/100?img=30" }
     ],
     testimonial: {
-      quote: "Quest Fellowship provides the crucible for technical translation. We turn the lab's potential into physical reality.",
-      author: "Fellow Graduate",
-      role: "Chief Scientist @ BioGen",
+      quote: "Quest Fellowship isn't just about building companies — it's about finding your Ikigai and creating lasting impact in the communities that need it most.",
+      author: "Quest Fellow",
+      role: "Cohort 1 Graduate",
       image: "https://i.pravatar.cc/100?img=4"
     },
     companies: [
-      { name: "BioGen", desc: "the microbial tech for sustainable bio-fertilizer production.", focus: "Biotech", field: "Food & Ag", funding: "$4M Series A", teamSize: "10-20", categories: "BioTech / Ag", location: "Kingston" }
+      { name: "AquaReach", desc: "low-cost water purification for rural East Africa.", focus: "Water Purification", field: "Water Systems", funding: "$500k Seed", teamSize: "5-10", categories: "Water / Infra", location: "Kampala" }
     ],
     icon: Search,
     color: "bg-[#6366F1]",
-    image: "/programs/quest-hero.png",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
     link: "/programs/quest-fellowship"
   }
 ];
