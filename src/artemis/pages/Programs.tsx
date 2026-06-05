@@ -129,7 +129,7 @@ function HeroSection() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   PROGRAM SHOWCASE, BENTO GRID LAYOUT
+   PROGRAM SHOWCASE, EDITORIAL STACKED LAYOUT
    ══════════════════════════════════════════════════════════════════════════ */
 function ProgramShowcase() {
   const ref = useRef<HTMLDivElement>(null);
@@ -153,15 +153,14 @@ function ProgramShowcase() {
           </span>
         </motion.div>
 
-        {/* Bento grid */}
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+        {/* Stacked editorial cards */}
+        <div className="flex flex-col gap-6 md:gap-8">
           {programsData.map((program, idx) => (
-            <BentoCard
+            <EditorialCard
               key={program.id}
               program={program}
               index={idx}
               isInView={isInView}
-              isFeatured={idx === 0}
             />
           ))}
         </div>
@@ -170,101 +169,101 @@ function ProgramShowcase() {
   );
 }
 
-/* ── Bento Card, full background image with dark overlay ── */
-function BentoCard({
+/* ── Editorial Card, alternating image/content layout ── */
+function EditorialCard({
   program,
   index,
   isInView,
-  isFeatured,
 }: {
   program: (typeof programsData)[number];
   index: number;
   isInView: boolean;
-  isFeatured: boolean;
 }) {
   const Icon = program.icon;
-  const stats = program.stats?.slice(0, 3) ?? program.details.slice(0, 3);
+  const details = program.details.slice(0, 4);
+  const isEven = index % 2 === 0;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{
-        duration: 0.6,
+        duration: 0.7,
         delay: index * 0.15,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className={`${isFeatured ? "md:col-span-2" : ""}`}
     >
       <Link
         to={`/programs/${program.id}`}
-        className="group relative block w-full overflow-hidden rounded-lg"
+        className="group block w-full bg-white border border-[#111111]/10 hover:border-[#FF4D00]/30 transition-colors duration-300"
       >
-        {/* Card container with aspect ratio */}
-        <div
-          className={`relative w-full ${
-            isFeatured ? "aspect-[16/9]" : "aspect-[4/3]"
-          }`}
-        >
-          {/* Background image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-            style={{ backgroundImage: `url(${program.image})` }}
-          />
-
-          {/* Dark gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 transition-opacity duration-500 group-hover:opacity-80" />
-
-          {/* Content */}
-          <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-8">
-            {/* Top: Icon in colored circle */}
-            <div className="flex items-start justify-between">
+        <div className="grid lg:grid-cols-12 gap-0">
+          {/* Image side */}
+          <div className={`relative lg:col-span-5 overflow-hidden ${isEven ? "lg:order-1" : "lg:order-2"}`}>
+            <div className="relative aspect-[16/10] lg:aspect-auto lg:h-full min-h-[280px]">
               <div
-                className={`w-12 h-12 md:w-14 md:h-14 rounded-full ${program.color} flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform duration-300`}
-              >
-                <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                style={{ backgroundImage: `url(${program.image})` }}
+              />
+              <div className={`absolute inset-0 ${isEven ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-black/30 to-transparent`} />
+
+              {/* Step number overlay */}
+              <div className="absolute top-4 left-4 lg:top-6 lg:left-6">
+                <span className="text-white/20 text-[64px] md:text-[80px] font-display font-medium leading-none">
+                  0{index + 1}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Content side */}
+          <div className={`lg:col-span-7 p-6 md:p-8 lg:p-10 flex flex-col justify-between ${isEven ? "lg:order-2" : "lg:order-1"}`}>
+            <div>
+              {/* Icon + label row */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 ${program.color} flex items-center justify-center text-white shrink-0`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
+                  {program.details[0]?.value}
+                </span>
               </div>
 
-              {/* Step number */}
-              <span className="text-white/20 text-[10px] font-mono font-bold tracking-widest">
-                0{index + 1}
-              </span>
-            </div>
-
-            {/* Bottom: Title, tagline, stats, explore */}
-            <div>
               {/* Title */}
-              <h3
-                className={`font-display font-medium tracking-[-0.02em] leading-[1.1] text-white mb-2 ${
-                  isFeatured
-                    ? "text-[28px] md:text-[40px] lg:text-[48px]"
-                    : "text-[22px] md:text-[32px]"
-                }`}
-              >
+              <h3 className="text-[24px] md:text-[32px] lg:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.1] text-[#111111] mb-3 group-hover:text-[#FF4D00] transition-colors duration-300">
                 {program.title}
               </h3>
 
               {/* Tagline */}
-              <p className="text-white/50 text-[13px] md:text-[15px] font-medium mb-5 max-w-md">
+              <p className="text-[13px] md:text-[15px] text-[#111111]/50 font-medium mb-4 max-w-lg">
                 {program.tagline}
               </p>
 
-              {/* Stats pills */}
-              <div className="flex flex-wrap gap-2 mb-5">
-                {stats.map((stat, i) => (
-                  <span
-                    key={i}
-                    className="bg-white/10 backdrop-blur-sm px-3 py-1 text-[10px] font-mono tracking-widest uppercase text-white/70"
-                  >
-                    {stat.value}
-                  </span>
+              {/* Description */}
+              <p className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.7] mb-6 line-clamp-3">
+                {program.desc}
+              </p>
+            </div>
+
+            {/* Details grid + CTA */}
+            <div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                {details.map((detail, i) => (
+                  <div key={i} className="border border-[#111111]/5 p-3 group-hover:border-[#FF4D00]/20 transition-colors">
+                    <div className="text-[14px] md:text-[15px] font-display font-medium tracking-tight text-[#111111] group-hover:text-[#FF4D00] transition-colors">
+                      {detail.value}
+                    </div>
+                    <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">
+                      {detail.label}
+                    </span>
+                  </div>
                 ))}
               </div>
 
-              {/* Explore link */}
-              <div className="flex items-center gap-2 text-white/60 group-hover:text-white transition-colors duration-300">
+              {/* Explore CTA */}
+              <div className="flex items-center gap-2 text-[#111111]/40 group-hover:text-[#FF4D00] transition-colors duration-300">
                 <span className="text-[11px] font-mono font-bold tracking-widest uppercase">
-                  Explore
+                  Explore Program
                 </span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </div>
