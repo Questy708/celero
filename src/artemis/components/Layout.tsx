@@ -93,6 +93,7 @@ function Nav() {
       label: "Network",
       links: [
         { name: "capital", path: "/capital" },
+        { name: "programs", path: "/programs" },
         { name: "community", path: "/community" },
         { name: "insights", path: "/insights" },
         { name: "careers", path: "/careers" },
@@ -121,6 +122,7 @@ function Nav() {
       label: "Capital & Network",
       links: [
         { name: "capital", path: "/capital" },
+        { name: "programs", path: "/programs" },
         { name: "community", path: "/community" },
         { name: "careers", path: "/careers" },
         { name: "insights", path: "/insights" },
