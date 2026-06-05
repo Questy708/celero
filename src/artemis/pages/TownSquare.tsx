@@ -600,8 +600,10 @@ function OnboardingFlow({ onComplete }: { onComplete: (user: TownSquareUser) => 
 /* ══════════════════════════════════════════════════════════════════════════
    FORUM CONTENT (separated to avoid hooks-after-return issues)
    ══════════════════════════════════════════════════════════════════════════ */
-function ForumContent({ userName, userAvatarColor }: { userName: string; userAvatarColor: string }) {
+function ForumContent({ user }: { user: TownSquareUser }) {
   const { navigate } = useRouter();
+  const userName = user.name;
+  const userAvatarColor = user.avatarColor;
 
   const [posts, setPosts] = useState<ForumPost[]>(() => {
     if (typeof window === "undefined") return PRESET_POSTS;
@@ -620,6 +622,15 @@ function ForumContent({ userName, userAvatarColor }: { userName: string; userAva
   const [newContent, setNewContent] = useState("");
   const [isComposing, setIsComposing] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    if (!showProfile) return;
+    const handleClickOutside = () => setShowProfile(false);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [showProfile]);
 
   const handleSave = (newPosts: ForumPost[]) => {
     localStorage.setItem("xcelero_townsquare_posts", JSON.stringify(newPosts));
@@ -729,9 +740,9 @@ function ForumContent({ userName, userAvatarColor }: { userName: string; userAva
   const selectedPost = selectedPostId ? posts.find((p) => p.id === selectedPostId) : null;
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-[#111111] font-sans text-sm">
+    <div className="flex flex-col h-screen bg-white text-[#111111] font-sans text-sm">
       {/* ── TOP HEADER ── */}
-      <header className="h-[56px] bg-white border-b border-[#111111]/10 px-4 md:px-8 flex items-center justify-between shrink-0 sticky top-0 z-50">
+      <header className="h-[56px] bg-white border-b border-[#111111]/10 px-4 md:px-8 flex items-center justify-between shrink-0 z-50">
         <div className="flex items-center gap-4 min-w-0">
           <button
             onClick={() => navigate("/")}
@@ -783,11 +794,113 @@ function ForumContent({ userName, userAvatarColor }: { userName: string; userAva
           <button className="p-2 hover:bg-[#111111]/5 rounded text-[#111111]/40">
             <Bell className="w-5 h-5" />
           </button>
-          <div
-            className="w-8 h-8 flex items-center justify-center font-bold text-white text-xs ml-1"
-            style={{ backgroundColor: userAvatarColor }}
-          >
-            {userName[0]}
+          <div className="relative">
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowProfile(!showProfile); }}
+              className="w-8 h-8 flex items-center justify-center font-bold text-white text-xs ml-1 hover:ring-2 hover:ring-[#FF4D00]/30 transition-all"
+              style={{ backgroundColor: userAvatarColor }}
+            >
+              {userName[0]}
+            </button>
+
+            {/* Profile dropdown */}
+            <AnimatePresence>
+              {showProfile && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="absolute right-0 top-[44px] w-[280px] bg-white border border-[#111111]/10 shadow-lg z-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Profile header */}
+                  <div className="p-4 border-b border-[#111111]/10">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 flex items-center justify-center font-bold text-white text-sm"
+                        style={{ backgroundColor: userAvatarColor }}
+                      >
+                        {userName[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[14px] font-display font-medium text-[#111111] truncate">
+                          {userName}
+                        </div>
+                        <div className="text-[11px] text-[#111111]/40 font-medium truncate">
+                          {user.email}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Profile details */}
+                  <div className="p-4 space-y-3">
+                    {user.role && (
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-[9px] font-mono font-bold tracking-[0.1em] uppercase px-2 py-0.5"
+                          style={{
+                            backgroundColor: ROLE_COLORS[user.role] || "#6b7280",
+                            color: user.role === 'Investor' ? '#fff' : '#fff',
+                          }}
+                        >
+                          {user.role}
+                        </span>
+                      </div>
+                    )}
+
+                    {user.location && (
+                      <div className="flex items-center gap-2 text-[12px] text-[#111111]/50">
+                        <MapPin className="w-3.5 h-3.5 shrink-0" />
+                        <span>{user.location}</span>
+                      </div>
+                    )}
+
+                    {user.bio && (
+                      <p className="text-[12px] text-[#111111]/50 leading-relaxed">
+                        {user.bio}
+                      </p>
+                    )}
+
+                    {user.communities.length > 0 && (
+                      <div>
+                        <div className="text-[9px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/30 mb-1.5">
+                          Communities
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {user.communities.map((c) => {
+                            const comm = COMMUNITIES.find((x) => x.name === c);
+                            return (
+                              <span
+                                key={c}
+                                className="text-[9px] font-mono font-bold tracking-[0.05em] uppercase px-2 py-0.5 bg-[#111111]/5 text-[#111111]/50"
+                              >
+                                {c}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="border-t border-[#111111]/10">
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("xcelero_townsquare_user");
+                        window.location.reload();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:bg-[#111111]/5 hover:text-[#FF4D00] transition-colors"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      Sign Out
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </header>
@@ -797,7 +910,7 @@ function ForumContent({ userName, userAvatarColor }: { userName: string; userAva
         {/* LEFT SIDEBAR */}
         {(!selectedPostId || typeof window !== "undefined") && (
           <aside
-            className={`w-[260px] shrink-0 border-r border-[#111111]/10 overflow-y-auto hidden xl:block p-4 h-[calc(100vh-56px)] sticky top-[56px] ${
+            className={`w-[260px] shrink-0 border-r border-[#111111]/10 overflow-y-auto hidden xl:block p-4 h-[calc(100vh-56px)] ${
               mobileSidebarOpen ? "!block absolute z-40 bg-white h-[calc(100vh-56px)] shadow-lg" : ""
             }`}
           >
@@ -1108,7 +1221,7 @@ function ForumContent({ userName, userAvatarColor }: { userName: string; userAva
                 /* ── FEED VIEW ── */
                 <>
                   {/* Compact Create Post */}
-                  <div className="bg-white border border-[#111111]/10 p-3 flex gap-3 items-center sticky top-[56px] z-40">
+                  <div className="bg-white border border-[#111111]/10 p-3 flex gap-3 items-center sticky top-0 z-40">
                     <div
                       className="w-9 h-9 flex items-center justify-center font-bold text-white text-sm shrink-0"
                       style={{ backgroundColor: userAvatarColor }}
@@ -1290,8 +1403,8 @@ function ForumContent({ userName, userAvatarColor }: { userName: string; userAva
             </main>
 
             {/* RIGHT SIDEBAR — Trending */}
-            <aside className="w-[300px] shrink-0 hidden lg:block">
-              <div className="border border-[#111111]/10 overflow-hidden sticky top-[72px]">
+            <aside className="w-[300px] shrink-0 hidden lg:block self-stretch">
+              <div className="border border-[#111111]/10 overflow-hidden sticky top-0">
                 <div className="p-4 border-b border-[#111111]/10 bg-[#111111] text-white">
                   <h2 className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
                     Town Square
@@ -1384,8 +1497,7 @@ export function TownSquare() {
   // Show the forum
   return (
     <ForumContent
-      userName={currentUser.name}
-      userAvatarColor={currentUser.avatarColor}
+      user={currentUser}
     />
   );
 }
