@@ -366,6 +366,7 @@ export function Capital() {
       <Hero onSubscribe={() => setShowSubscribe(true)} />
       <CapitalBridge />
       <InvestmentVehicles />
+      <CapitalMedia />
       <InvestmentTiers />
       <FAQSection />
       <SubscribeModal
@@ -879,6 +880,46 @@ function InvestmentVehicles() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   CAPITAL MEDIA — Full-width image/video panel following alignment rules
+   ══════════════════════════════════════════════════════════════════════════ */
+function CapitalMedia() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section
+      ref={ref}
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10"
+    >
+      <div className="w-full max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative overflow-hidden bg-[#F5F5F5] shadow-lg"
+        >
+          <img
+            src="/capital-media.png"
+            alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
+            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
+          />
+          {/* Overlay label */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#111111]/60 to-transparent p-6 md:p-8">
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/60 block mb-2">
+              xCelero Capital
+            </span>
+            <p className="text-[16px] md:text-[20px] font-display font-medium text-white leading-[1.3]">
+              Building infrastructure where it&apos;s needed{" "}
+              <em className="font-serif italic text-[#FF4D00]">most</em>
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    INVESTMENT TIERS, Multi-step wizard flow
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -890,7 +931,7 @@ const tierVehicleMap: Record<string, typeof investmentVehicles[number] | undefin
   anchor: investmentVehicles.find((v) => v.id === "anchor-mandate"),
 };
 
-type WizardStep = 1 | 2 | 3 | 4 | 5;
+type WizardStep = 1 | 2 | 3 | 4 | 5 | 6;
 
 const stepLabels = [
   { step: 1 as WizardStep, label: "Choose Tier", shortLabel: "Tier" },
@@ -898,6 +939,7 @@ const stepLabels = [
   { step: 3 as WizardStep, label: "Benefits", shortLabel: "Benefits" },
   { step: 4 as WizardStep, label: "Get Started", shortLabel: "Start" },
   { step: 5 as WizardStep, label: "Fund", shortLabel: "Fund" },
+  { step: 6 as WizardStep, label: "Confirmed", shortLabel: "Done" },
 ];
 
 /* ── Payment Methods ── */
@@ -952,15 +994,27 @@ function InvestmentTiers() {
 
   const selectedTier = investmentTiers.find((t) => t.id === selectedTierId)!;
   const selectedVehicle = tierVehicleMap[selectedTierId];
+  const [selectedPaymentId, setSelectedPaymentId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const confirmationRef = useRef<string>(`XCL-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
 
   const [direction, setDirection] = useState<1 | -1>(1);
+
+  const handleConfirmPayment = () => {
+    if (!selectedPaymentId) return;
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      goNext(); // go to step 6
+    }, 2200);
+  };
 
   const goToStep = (step: WizardStep) => {
     setDirection(step > currentStep ? 1 : -1);
     setCurrentStep(step);
   };
   const goNext = () => {
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       setDirection(1);
       setCurrentStep((currentStep + 1) as WizardStep);
     }
@@ -994,8 +1048,8 @@ function InvestmentTiers() {
             <em className="font-serif italic text-[#FF4D00]">journey</em>
           </h2>
           <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4">
-            Five steps from curiosity to commitment. Choose your tier, understand
-            your vehicle, see what you unlock, learn the process, and fund.
+            Six steps from curiosity to commitment. Choose your tier, understand
+            your vehicle, see what you unlock, learn the process, fund, and confirm.
           </p>
         </motion.div>
 
@@ -1577,136 +1631,174 @@ function InvestmentTiers() {
                   <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6] max-w-2xl">
                     Choose how you move capital into your{" "}
                     <span className="text-[#FF4D00] font-semibold">{selectedTier.name}</span>{" "}
-                    allocation. All methods are encrypted and PCI-compliant. Select the option that matches your geography and timeline.
+                    allocation. Select a payment method, then confirm.
                   </p>
                 </div>
 
-                {/* Payment method cards */}
+                {/* Payment method cards — selectable */}
                 <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                  {paymentMethods.map((method, i) => (
-                    <motion.div
-                      key={method.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: i * 0.08 }}
-                      className="border border-[#111111]/10 bg-white hover:border-[#FF4D00]/30 transition-all group cursor-pointer"
-                    >
-                      {/* Header */}
-                      <div className="p-5 md:p-6">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <span className="text-[24px] leading-none">{method.icon}</span>
-                            <h4 className="text-[16px] md:text-[18px] font-display font-medium tracking-tight">
-                              {method.name}
-                            </h4>
+                  {paymentMethods.map((method, i) => {
+                    const isSelected = selectedPaymentId === method.id;
+                    return (
+                      <motion.button
+                        key={method.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: i * 0.08 }}
+                        onClick={() => setSelectedPaymentId(method.id)}
+                        className={`text-left border bg-white transition-all group ${
+                          isSelected
+                            ? "border-[#FF4D00] ring-1 ring-[#FF4D00]/20 shadow-md"
+                            : "border-[#111111]/10 hover:border-[#FF4D00]/30"
+                        }`}
+                      >
+                        <div className="p-5 md:p-6">
+                          {/* Selection indicator */}
+                          {isSelected && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="flex items-center gap-2 mb-3 text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]"
+                            >
+                              <Check className="w-3 h-3" strokeWidth={2.5} />
+                              Selected
+                            </motion.div>
+                          )}
+
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[24px] leading-none">{method.icon}</span>
+                              <h4 className="text-[16px] md:text-[18px] font-display font-medium tracking-tight">
+                                {method.name}
+                              </h4>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                                {method.speed}
+                              </span>
+                              <span className={`text-[10px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 ${
+                                method.fee === "None"
+                                  ? "text-[#FF4D00] bg-[#FF4D00]/10"
+                                  : "text-[#111111]/40 bg-[#111111]/5"
+                              }`}>
+                                {method.fee === "None" ? "No fee" : method.fee + " fee"}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
-                              {method.speed}
+
+                          <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6] mb-4">
+                            {method.description}
+                          </p>
+
+                          <ul className="space-y-1.5 mb-4">
+                            {method.details.map((detail, di) => (
+                              <li key={di} className="flex items-start gap-2">
+                                <Check className={`w-3 h-3 shrink-0 mt-0.5 ${isSelected ? "text-[#FF4D00]" : "text-[#111111]/15"}`} strokeWidth={2} />
+                                <span className="text-[11px] md:text-[12px] text-[#111111]/45 font-medium leading-[1.5]">
+                                  {detail}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          <div className="border-t border-[#111111]/5 pt-3">
+                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                              Best for
                             </span>
-                            <span className={`text-[10px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 ${
-                              method.fee === "None"
-                                ? "text-[#FF4D00] bg-[#FF4D00]/10"
-                                : "text-[#111111]/40 bg-[#111111]/5"
-                            }`}>
-                              {method.fee === "None" ? "No fee" : method.fee + " fee"}
-                            </span>
+                            <p className="text-[11px] text-[#111111]/35 font-medium leading-[1.5]">
+                              {method.bestFor}
+                            </p>
                           </div>
                         </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
 
-                        <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6] mb-4">
-                          {method.description}
-                        </p>
+                {/* Confirm Payment CTA — only visible when method selected */}
+                <AnimatePresence>
+                  {selectedPaymentId && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      className="border border-[#FF4D00] bg-white"
+                    >
+                      <div className="p-6 md:p-8">
+                        <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-center">
+                          {/* Left: Summary */}
+                          <div className="md:col-span-7">
+                            <h4 className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-4">
+                              Confirm your payment
+                            </h4>
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                                <selectedTier.icon className="w-4 h-4 text-white" strokeWidth={1.5} />
+                              </div>
+                              <div>
+                                <span className="text-[16px] font-display font-medium">{selectedTier.name} Tier</span>
+                                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 ml-2">
+                                  via {selectedVehicle.shortName}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                              <div>
+                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Entry</span>
+                                <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
+                              </div>
+                              <div>
+                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Method</span>
+                                <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.name}</span>
+                              </div>
+                              <div>
+                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Fee</span>
+                                <span className="text-[13px] font-medium">{selectedVehicle.details[2]?.value}</span>
+                              </div>
+                              <div>
+                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Speed</span>
+                                <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.speed}</span>
+                              </div>
+                            </div>
+                          </div>
 
-                        {/* Details */}
-                        <ul className="space-y-1.5 mb-4">
-                          {method.details.map((detail, di) => (
-                            <li key={di} className="flex items-start gap-2">
-                              <Check className="w-3 h-3 text-[#FF4D00] shrink-0 mt-0.5" strokeWidth={2} />
-                              <span className="text-[11px] md:text-[12px] text-[#111111]/45 font-medium leading-[1.5]">
-                                {detail}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-
-                        {/* Best for */}
-                        <div className="border-t border-[#111111]/5 pt-3">
-                          <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
-                            Best for
-                          </span>
-                          <p className="text-[11px] text-[#111111]/35 font-medium leading-[1.5]">
-                            {method.bestFor}
-                          </p>
+                          {/* Right: CTA */}
+                          <div className="md:col-span-5">
+                            <button
+                              onClick={handleConfirmPayment}
+                              disabled={isProcessing}
+                              className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[13px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors disabled:opacity-70 disabled:cursor-wait"
+                            >
+                              {isProcessing ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  Processing…
+                                </>
+                              ) : (
+                                <>
+                                  Confirm & pay
+                                  <ArrowRight className="w-4 h-4" />
+                                </>
+                              )}
+                            </button>
+                            <p className="text-[10px] text-[#111111]/30 font-medium text-center mt-3 leading-[1.5]">
+                              Secure, encrypted transaction. No capital is committed until you confirm.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
-                  ))}
-                </div>
+                  )}
+                </AnimatePresence>
 
-                {/* Investment summary + CTA */}
-                <div className="border border-[#FF4D00] bg-white">
-                  <div className="p-6 md:p-8">
-                    <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-center">
-                      {/* Left: Summary */}
-                      <div className="md:col-span-7">
-                        <h4 className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-4">
-                          Ready to commit
-                        </h4>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center">
-                            <selectedTier.icon className="w-4 h-4 text-white" strokeWidth={1.5} />
-                          </div>
-                          <div>
-                            <span className="text-[16px] font-display font-medium">{selectedTier.name} Tier</span>
-                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 ml-2">
-                              via {selectedVehicle.shortName}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          <div>
-                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Entry</span>
-                            <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Structure</span>
-                            <span className="text-[13px] font-medium">{selectedVehicle.details[0]?.value}</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Fee</span>
-                            <span className="text-[13px] font-medium">{selectedVehicle.details[2]?.value}</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Hold</span>
-                            <span className="text-[13px] font-medium">{selectedTier.holdPeriod}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: CTA */}
-                      <div className="md:col-span-5">
-                        <Link
-                          to="#invest-tiers"
-                          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                            e.preventDefault();
-                            document
-                              .getElementById("invest-tiers")
-                              ?.scrollIntoView({ behavior: "smooth" });
-                          }}
-                          className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[13px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors"
-                        >
-                          Begin your investment
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
-                        <p className="text-[10px] text-[#111111]/30 font-medium text-center mt-3 leading-[1.5]">
-                          You&apos;ll be redirected to our secure portal to complete KYC and fund transfer.
-                          No capital is committed until you confirm.
-                        </p>
-                      </div>
-                    </div>
+                {!selectedPaymentId && (
+                  <div className="border border-dashed border-[#111111]/15 bg-[#111111]/[0.02] p-8 text-center">
+                    <p className="text-[13px] text-[#111111]/30 font-medium">
+                      Select a payment method above to continue
+                    </p>
                   </div>
-                </div>
+                )}
 
                 {/* Navigation */}
                 <div className="mt-10 flex items-center justify-between border-t border-[#111111]/5 pt-6">
@@ -1718,11 +1810,127 @@ function InvestmentTiers() {
                     Back
                   </button>
                   <button
-                    onClick={() => { goToStep(1 as WizardStep); setSelectedTierId("scout"); }}
+                    onClick={() => { goToStep(1 as WizardStep); setSelectedTierId("scout"); setSelectedPaymentId(null); }}
                     className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 hover:text-[#FF4D00] transition-colors"
                   >
                     ← Start over
                   </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 6: Payment Confirmed — Success screen */}
+            {currentStep === 6 && selectedVehicle && (
+              <motion.div
+                key="step-6"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="text-center py-12 md:py-16">
+                  {/* Success icon */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                    className="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#FF4D00] mb-8"
+                  >
+                    <Check className="w-10 h-10 md:w-12 md:h-12 text-white" strokeWidth={2.5} />
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    <h3 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em] mb-4">
+                      Investment{" "}
+                      <em className="font-serif italic text-[#FF4D00]">confirmed</em>
+                    </h3>
+                    <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-lg mx-auto mb-10">
+                      Your {selectedTier.name} tier investment via {selectedVehicle?.shortName} has been submitted. You&apos;ll receive a confirmation email with your allocation details and next steps within 24 hours.
+                    </p>
+                  </motion.div>
+
+                  {/* Confirmation details */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="inline-block text-left border border-[#111111]/10 bg-white p-6 md:p-8 mb-10"
+                  >
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
+                      Confirmation Details
+                    </span>
+                    <div className="space-y-3 min-w-[280px] md:min-w-[360px]">
+                      <div className="flex justify-between">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Tier</span>
+                        <span className="text-[13px] font-medium">{selectedTier.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Vehicle</span>
+                        <span className="text-[13px] font-medium">{selectedVehicle?.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Amount</span>
+                        <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Method</span>
+                        <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.name ?? "—"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Reference</span>
+                        <span className="text-[13px] font-mono font-medium text-[#FF4D00]">{confirmationRef.current}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Status</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#FF4D00] bg-[#FF4D00]/10 px-2 py-0.5">Confirmed</span>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Next steps */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
+                    className="max-w-md mx-auto"
+                  >
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-4">
+                      What happens next
+                    </span>
+                    <div className="text-left space-y-3 mb-8">
+                      {[
+                        "KYC verification — complete identity verification within 48 hours",
+                        "Fund transfer — capital is moved per your selected payment method",
+                        "Allocation confirmed — receive your portfolio allocation and dashboard access",
+                        "First report — quarterly NAV and portfolio update within 90 days",
+                      ].map((step, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-[#FF4D00]/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-[10px] font-mono font-bold text-[#FF4D00]">{String(i + 1)}</span>
+                          </div>
+                          <p className="text-[12px] md:text-[13px] text-[#111111]/50 font-medium leading-[1.5]">
+                            {step}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setCurrentStep(1);
+                        setSelectedTierId("scout");
+                        setSelectedPaymentId(null);
+                      }}
+                      className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#111111] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00] transition-colors"
+                    >
+                      Start a new investment
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </motion.div>
                 </div>
               </motion.div>
             )}
