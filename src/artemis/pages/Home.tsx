@@ -278,6 +278,22 @@ function Hero() {
             </Link>
           </div>
         </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          className="flex flex-col items-center mt-10 md:mt-14"
+        >
+          <span className="text-[9px] font-mono font-bold tracking-[0.3em] uppercase text-[#111111]/25 mb-3">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown className="w-5 h-5 text-[#FF4D00]/50" strokeWidth={1.5} />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
@@ -1236,14 +1252,18 @@ function LocationAccordion({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
-      className="border-t border-[#111111]/10"
+      className="border-t border-[#111111]/10 border-l-[3px] border-l-[#FF4D00] pl-4 md:pl-6 hover:bg-[#FF4D00]/[0.02] transition-colors"
     >
       <button
         suppressHydrationWarning
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between py-5 md:py-6 text-left group"
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <span className="relative flex h-3 w-3 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF4D00]/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#FF4D00]" />
+          </span>
           <MapPin className="w-4 h-4 text-[#FF4D00]/60 group-hover:text-[#FF4D00] transition-colors" />
           <span className="text-[18px] md:text-[22px] font-display font-medium tracking-tight">
             {region.name}
@@ -1266,7 +1286,7 @@ function LocationAccordion({
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="overflow-hidden"
       >
-        <p className="pb-5 md:pb-6 pl-8 text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.6]">
+        <p className="pb-5 md:pb-6 pl-10 text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.6]">
           {region.description}
         </p>
       </motion.div>
@@ -1289,9 +1309,11 @@ function NewsletterSection() {
   return (
     <section
       ref={ref}
-      className="border-t border-[#111111]/10"
+      className="border-t border-[#111111]/10 relative overflow-hidden"
     >
-      <div className="py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-white">
+      {/* Subtle dot-grid background pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(#FF4D00 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+      <div className="py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-white relative z-10">
         <div className="w-full max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Left: Heading */}
           <motion.div
@@ -1402,11 +1424,14 @@ function NewsletterSection() {
                 <button
                   suppressHydrationWarning
                   type="submit"
-                  className="inline-flex items-center gap-3 px-10 py-4 bg-[#111111] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-[#FF4D00] transition-colors duration-300"
+                  className="inline-flex items-center gap-3 px-10 py-4 bg-[#FF4D00] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-[#FF4D00]/90 transition-colors duration-300 shadow-lg shadow-[#FF4D00]/20"
                 >
-                  Submit
+                  Subscribe Now
                   <ArrowRight className="w-4 h-4" />
                 </button>
+                <p className="text-[10px] text-[#111111]/25 leading-[1.5] mt-3 max-w-sm">
+                  We never share your email with third parties. You can unsubscribe at any time. Read our Privacy Policy for details.
+                </p>
               </form>
             )}
           </motion.div>

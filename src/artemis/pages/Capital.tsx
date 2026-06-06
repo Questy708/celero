@@ -899,8 +899,8 @@ function CapitalMedia() {
           className="relative overflow-hidden bg-[#F5F5F5] shadow-lg"
         >
           <img
-            src="/capital-media.png"
-            alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
+            src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80"
+            alt="Infrastructure development across Africa — investment, technology, and connectivity hubs"
             className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
           />
           {/* Overlay label */}

@@ -543,6 +543,14 @@ function FeaturedMembersSection() {
           ))}
         </motion.div>
 
+        {/* Shimmer animation keyframe */}
+        <style>{`
+          @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+        `}</style>
+
         {/* Type cards grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
           {filteredTypes.map((type, i) => {
@@ -562,6 +570,12 @@ function FeaturedMembersSection() {
                     backgroundImage: "radial-gradient(circle, #111 1px, transparent 1px)",
                     backgroundSize: "16px 16px",
                   }} />
+                  {/* Shimmer overlay on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                    background: "linear-gradient(105deg, transparent 40%, rgba(255,77,0,0.06) 45%, rgba(255,77,0,0.12) 50%, rgba(255,77,0,0.06) 55%, transparent 60%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 2.5s ease-in-out infinite",
+                  }} />
                   {/* Large Users silhouette */}
                   <div className="relative flex flex-col items-center">
                     <Users className="w-12 h-12 text-[#111111]/12 group-hover:text-[#111111]/20 transition-colors duration-500" />
@@ -570,9 +584,15 @@ function FeaturedMembersSection() {
                       <TypeIcon className="w-4 h-4" />
                     </div>
                   </div>
-                  {/* Count label */}
-                  <div className="mt-3 text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/25">
-                    {type.count}
+                  {/* Count label with pulsing dot */}
+                  <div className="mt-3 flex items-center gap-1.5">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF4D00] opacity-60" />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FF4D00]/70" />
+                    </span>
+                    <span className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/30">
+                      {type.count}
+                    </span>
                   </div>
                 </div>
 
@@ -586,9 +606,10 @@ function FeaturedMembersSection() {
                     </span>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-[13px] md:text-[14px] text-[#111111]/55 leading-[1.65] font-medium">
-                    {type.description}
+                  {/* Description with hover arrow */}
+                  <p className="text-[13px] md:text-[14px] text-[#111111]/55 leading-[1.65] font-medium flex items-start gap-1">
+                    <span className="flex-1">{type.description}</span>
+                    <ChevronRight className="w-4 h-4 text-[#FF4D00] opacity-0 group-hover:opacity-60 translate-x-0 group-hover:translate-x-0.5 transition-all duration-300 flex-shrink-0 mt-0.5" />
                   </p>
 
                   {/* Bottom accent line */}
@@ -1106,9 +1127,34 @@ function CommunityRhythmSection() {
       {/* Rhythm cards (dark bg) */}
       <section ref={cardsRef}>
         <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
+          {/* Visual timeline progression indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isCardsInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            className="hidden lg:flex items-center gap-3 mb-8 px-2"
+          >
+            {rhythmItems.map((item, i) => (
+              <div key={item.cadence} className="flex items-center gap-3 flex-1">
+                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                  i === 0 ? "bg-[#FF4D00]" : i === 1 ? "bg-[#FF4D00]/70" : i === 2 ? "bg-[#FF4D00]/50" : "bg-[#FF4D00]/30"
+                }`} />
+                {i < rhythmItems.length - 1 && (
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#FF4D00]/40 to-[#FF4D00]/15" />
+                )}
+              </div>
+            ))}
+          </motion.div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
             {rhythmItems.map((item, i) => {
               const Icon = item.icon;
+              const badgeStyles: Record<string, string> = {
+                Weekly: "bg-[#FF4D00] text-white",
+                Monthly: "bg-[#FF4D00]/15 text-[#FF4D00]",
+                Quarterly: "bg-white/10 text-white border border-white/20",
+                Annually: "bg-white text-[#111111]",
+              };
               return (
                 <motion.div
                   key={item.cadence}
@@ -1117,8 +1163,8 @@ function CommunityRhythmSection() {
                   transition={{ duration: 0.5, delay: i * 0.12, ease: "easeOut" }}
                   className="border border-white/10 p-6 md:p-8 relative group hover:border-[#FF4D00]/30 transition-colors duration-300"
                 >
-                  {/* Cadence label */}
-                  <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] block mb-4">
+                  {/* Cadence badge */}
+                  <span className={`inline-block text-[10px] font-mono font-bold tracking-[0.15em] uppercase px-2.5 py-1 mb-4 ${badgeStyles[item.cadence] || "bg-[#FF4D00] text-white"}`}>
                     {item.cadence}
                   </span>
 
@@ -1136,6 +1182,13 @@ function CommunityRhythmSection() {
                   <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6">
                     <Icon className="w-10 h-10 md:w-12 md:h-12 text-white/10" strokeWidth={1} />
                   </div>
+
+                  {/* Timeline connector dot (mobile/tablet vertical) */}
+                  {i < rhythmItems.length - 1 && (
+                    <div className="lg:hidden absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 flex items-center justify-center">
+                      <div className="w-1 h-5 bg-gradient-to-b from-[#FF4D00]/30 to-transparent" />
+                    </div>
+                  )}
                 </motion.div>
               );
             })}
@@ -1258,8 +1311,17 @@ function CTASection() {
 
   return (
     <section ref={ref}>
-      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-20 md:py-32 rounded-sm">
-      <div className="max-w-4xl mx-auto text-center">
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-20 md:py-32 rounded-sm relative overflow-hidden">
+        {/* Subtle dot-grid pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
+          backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }} />
+        {/* Decorative accent lines */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#FF4D00]/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#FF4D00]/20 to-transparent" />
+
+      <div className="max-w-4xl mx-auto text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -1271,7 +1333,7 @@ function CTASection() {
           </span>
 
           <h2 className="text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] font-display font-medium tracking-[-0.02em] leading-[1.05] mb-8 md:mb-10">
-            Become an XCitizen
+            Become an <span className="text-[#FF4D00]">XCitizen</span>
           </h2>
 
           <p className="text-base sm:text-lg md:text-xl leading-[1.6] text-white/50 font-medium max-w-2xl mb-10 sm:mb-14">
@@ -1280,17 +1342,17 @@ function CTASection() {
             invest through xCelero Capital, or join a hub near you.
           </p>
 
-          <div className="flex flex-wrap gap-4 items-center justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
             <Link
               to="/join"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#FF4D00]/90 transition-colors"
+              className="inline-flex items-center gap-3 px-10 py-5 bg-[#FF4D00] text-white text-[13px] font-bold uppercase tracking-[0.14em] hover:bg-[#FF4D00]/90 transition-all shadow-[0_0_40px_rgba(255,77,0,0.25)] hover:shadow-[0_0_60px_rgba(255,77,0,0.4)]"
             >
               Apply Now
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               to="/capital"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-white hover:text-[#111111] transition-all"
+              className="inline-flex items-center gap-2 px-10 py-5 border border-white/20 text-white text-[13px] font-bold uppercase tracking-[0.14em] hover:bg-white hover:text-[#111111] transition-all"
             >
               Invest
             </Link>

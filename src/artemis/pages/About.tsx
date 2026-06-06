@@ -344,6 +344,16 @@ function WhatIsXceleroSection() {
 function FlowingContent() {
   return (
     <section className="pt-16 md:pt-24 pb-16 md:pb-24 px-5 sm:px-6 md:px-12 lg:px-20">
+      {/* Keyframe animation for current-day glow pulse */}
+      <style>{`
+        @keyframes glow-pulse {
+          0%, 100% { box-shadow: 0 0 6px 2px rgba(255,77,0,0.35); }
+          50% { box-shadow: 0 0 14px 5px rgba(255,77,0,0.55); }
+        }
+        .timeline-glow-dot {
+          animation: glow-pulse 2.4s ease-in-out infinite;
+        }
+      `}</style>
       <div className="w-full max-w-3xl mx-auto relative">
         {/* The continuous vertical thread */}
         <div className="absolute left-[11px] md:left-[15px] top-0 bottom-0 w-px bg-[#111111]/8" />
@@ -371,6 +381,8 @@ function TimelineEntry({
   const isInView = useInView(ref, { once: true, margin: "-40px" });
   const Icon = era.icon;
 
+  const isEven = index % 2 === 0;
+
   return (
     <motion.div
       ref={ref}
@@ -382,16 +394,24 @@ function TimelineEntry({
       {/* Dot on the thread */}
       <div className="absolute left-0 md:left-0 top-1.5 flex items-center justify-center w-[23px] md:w-[31px]">
         <div
-          className={`w-2 h-2 rounded-full z-10 ${
+          className={`rounded-full z-10 ${
             era.isCurrentDay
-              ? "bg-[#FF4D00] shadow-[0_0_8px_rgba(255,77,0,0.4)]"
-              : "bg-[#111111]/20"
+              ? "w-3.5 h-3.5 bg-[#FF4D00] timeline-glow-dot"
+              : "w-2 h-2 bg-[#111111]/20"
           }`}
         />
       </div>
 
       {/* Content */}
-      <div>
+      <div
+        className={`rounded-sm px-4 py-4 -mx-4 transition-colors duration-300 ${
+          era.isCurrentDay
+            ? "bg-[#FF4D00]/[0.04]"
+            : isEven
+              ? "bg-[#111111]/[0.015]"
+              : "bg-transparent"
+        }`}
+      >
         {/* Era + icon row */}
         <div className="flex items-center gap-2.5 mb-2">
           <div
@@ -769,10 +789,21 @@ function ManifestoCardsSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: i * 0.12, ease: "easeOut" }}
-              className="border border-[#111111]/8 p-6 md:p-8 bg-[#FAFAFA] group hover:border-[#FF4D00]/20 transition-colors"
+              className="relative border border-[#111111]/8 border-l-2 border-l-transparent p-6 md:p-8 bg-[#FAFAFA] group hover:border-[#FF4D00]/20 hover:border-l-[#FF4D00] transition-colors overflow-hidden"
             >
+              {/* Top accent line on hover */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#FF4D00] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+
+              {/* Background watermark number */}
+              <span
+                className="absolute -top-4 -right-2 text-[100px] md:text-[120px] font-display font-bold leading-none text-[#111111]/[0.03] select-none pointer-events-none"
+                aria-hidden="true"
+              >
+                {point.number}
+              </span>
+
               {/* Number + label */}
-              <div className="flex items-center gap-2 mb-5">
+              <div className="flex items-center gap-2 mb-5 relative z-10">
                 <span className="text-[11px] font-mono font-bold tracking-[0.15em] text-[#FF4D00]">
                   {point.number}
                 </span>
@@ -782,12 +813,12 @@ function ManifestoCardsSection() {
               </div>
 
               {/* Heading */}
-              <h3 className="text-[20px] md:text-[24px] font-display font-medium tracking-tight leading-[1.2] mb-4">
+              <h3 className="text-[20px] md:text-[24px] font-display font-medium tracking-tight leading-[1.2] mb-4 relative z-10">
                 {point.heading}
               </h3>
 
               {/* Text */}
-              <p className="text-[13px] md:text-[14px] text-[#111111]/45 leading-[1.7] font-medium">
+              <p className="text-[13px] md:text-[14px] text-[#111111]/45 leading-[1.7] font-medium relative z-10">
                 {point.text}
               </p>
             </motion.div>

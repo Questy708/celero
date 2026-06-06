@@ -1278,6 +1278,30 @@ function DealCard({
 function JourneySection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [activePhase, setActivePhase] = useState<number | null>(null);
+
+  /* Journey phases for the timeline visualization */
+  const journeyPhases = annualSchedule.map((s, i) => ({
+    ...s,
+    phase: i + 1,
+    totalPhases: annualSchedule.length,
+    description: [
+      "Orientation and immersion. Founders arrive at hub cities, conduct market walks, and map the local commercial landscape.",
+      "Deep diligence. Structured sprints on the signature route deal, regulatory mapping, and counterparty discovery.",
+      "Peak operations. Deal rooms, pilot launches, and cross-hub collaboration at maximum velocity.",
+      "Integration and harvest. Signed deals, codified playbooks, and the covenant ceremony marking lifelong membership.",
+      "Cross-leg connect. Hubs share deal flow, talent, and capital across arcs. The flywheel accelerates.",
+      "Synthesis. Annual assembly, portfolio review, and thesis ratification for the next cycle.",
+    ][i] || "Operations and deal flow on the Route.",
+    highlights: [
+      ["Market mapping", "Hub onboarding", "Local partnerships"],
+      ["Due diligence sprints", "Regulatory review", "Counterparty meetings"],
+      ["Deal execution", "Pilot deployment", "Capital deployment"],
+      ["Route Deal signing", "Playbook codification", "Covenant ceremony"],
+      ["Cross-arc deal flow", "Talent exchange", "Capital syndication"],
+      ["State of the Route", "Thesis ratification", "Alumni gathering"],
+    ][i] || [],
+  }));
 
   return (
     <section
@@ -1285,10 +1309,12 @@ function JourneySection() {
       className="py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10"
     >
       <div className="w-full max-w-7xl mx-auto">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mb-16 md:mb-24"
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] mb-6 block">
             The Journey
@@ -1298,83 +1324,253 @@ function JourneySection() {
             <br />
             <span className="text-[#111111]/40">Architecture</span>
           </h2>
-          <p className="text-lg md:text-xl text-[#111111]/50 font-medium leading-relaxed max-w-2xl mb-16">
+          <p className="text-lg md:text-xl text-[#111111]/50 font-medium leading-relaxed max-w-2xl">
             The Routes run on climate, not calendar. Each leg is timed to
             seasonal windows that maximize mobility and minimize friction.
           </p>
         </motion.div>
 
-        {/* Schedule Table */}
+        {/* ── Timeline Visualization ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="mb-20"
+          className="mb-20 md:mb-28"
         >
-          {/* Desktop table */}
-          <div className="hidden md:block border border-[#111111]/10">
-            <div className="grid grid-cols-12 gap-0 bg-[#111111] text-white px-6 py-3">
-              <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.15em] uppercase">
-                Period
-              </div>
-              <div className="col-span-4 text-[10px] font-mono font-bold tracking-[0.15em] uppercase">
-                Leg
-              </div>
-              <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.15em] uppercase">
-                Hubs
-              </div>
-              <div className="col-span-4 text-[10px] font-mono font-bold tracking-[0.15em] uppercase">
-                Climate Note
-              </div>
+          {/* Desktop: Horizontal timeline with expandable nodes */}
+          <div className="hidden lg:block">
+            {/* Connecting horizontal line */}
+            <div className="relative flex items-stretch gap-0">
+              {/* The continuous thread */}
+              <div className="absolute top-[40px] left-0 right-0 h-[2px] bg-[#111111]/8 z-0" />
+
+              {journeyPhases.map((phase, i) => {
+                const isActive = activePhase === i;
+                const leg = routeLegs.find((l) => l.id === phase.legId);
+                const legColor = leg?.color || "#FF4D00";
+
+                return (
+                  <div
+                    key={phase.legId}
+                    className="flex-1 relative z-10"
+                    onMouseEnter={() => setActivePhase(i)}
+                    onMouseLeave={() => setActivePhase(null)}
+                  >
+                    {/* Timeline node */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: "easeOut" }}
+                      className="flex flex-col items-center cursor-pointer"
+                      onClick={() => setActivePhase(isActive ? null : i)}
+                    >
+                      {/* Node circle */}
+                      <div
+                        className={`relative w-5 h-5 rounded-full border-2 transition-all duration-300 z-10 ${
+                          isActive
+                            ? "scale-150 border-transparent shadow-lg"
+                            : "bg-white border-[#111111]/20 hover:border-[#FF4D00]/50 hover:scale-110"
+                        }`}
+                        style={isActive ? { backgroundColor: legColor, borderColor: legColor } : {}}
+                      >
+                        {/* Pulse ring on active */}
+                        {isActive && (
+                          <div
+                            className="absolute inset-[-6px] rounded-full animate-ping opacity-20"
+                            style={{ backgroundColor: legColor }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Phase number below dot */}
+                      <span className={`text-[10px] font-mono font-bold tracking-[0.15em] uppercase mt-3 transition-colors duration-300 ${
+                        isActive ? "text-[#FF4D00]" : "text-[#111111]/25"
+                      }`}>
+                        Phase {phase.phase}
+                      </span>
+
+                      {/* Period label */}
+                      <span className={`text-[11px] font-mono font-bold mt-1 transition-colors duration-300 ${
+                        isActive ? "text-[#111111]" : "text-[#111111]/40"
+                      }`}>
+                        {phase.period}
+                      </span>
+
+                      {/* Leg name */}
+                      <span className={`text-[13px] font-display font-medium mt-1 text-center transition-colors duration-300 ${
+                        isActive ? "text-[#111111]" : "text-[#111111]/55"
+                      }`}>
+                        {phase.leg.split(" ").slice(0, 2).join(" ")}
+                      </span>
+
+                      {/* Hub count */}
+                      <span className="text-[10px] font-mono text-[#111111]/30 mt-0.5">
+                        {phase.hubs}
+                      </span>
+                    </motion.div>
+
+                    {/* Expandable detail card below */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, height: 0 }}
+                          animate={{ opacity: 1, y: 0, height: "auto" }}
+                          exit={{ opacity: 0, y: -10, height: 0 }}
+                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                          className="mt-4 border border-[#111111]/10 bg-white p-5 shadow-md overflow-hidden"
+                        >
+                          {/* Leg color bar */}
+                          <div className="h-1 w-8 mb-4" style={{ backgroundColor: legColor }} />
+
+                          {/* Phase title + climate */}
+                          <h4 className="text-[16px] font-display font-medium tracking-tight mb-2">
+                            {phase.leg}
+                          </h4>
+                          <div className="flex items-center gap-2 text-[12px] text-[#111111]/50 mb-4">
+                            <Sun className="w-3 h-3 text-[#FF4D00] shrink-0" />
+                            {phase.climateNote}
+                          </div>
+
+                          {/* Description */}
+                          <p className="text-[13px] text-[#111111]/55 font-medium leading-[1.6] mb-4">
+                            {phase.description}
+                          </p>
+
+                          {/* Highlights */}
+                          <div className="flex flex-wrap gap-2">
+                            {phase.highlights.map((h) => (
+                              <span
+                                key={h}
+                                className="text-[10px] font-mono font-bold tracking-[0.1em] uppercase bg-[#111111]/[0.04] px-2.5 py-1 text-[#111111]/45"
+                              >
+                                {h}
+                              </span>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
             </div>
-            {annualSchedule.map((s, i) => (
-              <div
-                key={s.legId}
-                className={`grid grid-cols-12 gap-0 px-6 py-4 border-t border-[#111111]/10 ${
-                  i % 2 === 1 ? "bg-[#FAFAFA]" : "bg-white"
-                }`}
-              >
-                <div className="col-span-2 text-sm font-mono font-bold text-[#111111]/50">
-                  {s.period}
-                </div>
-                <div className="col-span-4 text-base font-display font-medium">
-                  {s.leg}
-                </div>
-                <div className="col-span-2 text-sm font-mono text-[#111111]/50">
-                  {s.hubs}
-                </div>
-                <div className="col-span-4 text-sm text-[#111111]/50 flex items-center gap-2">
-                  <Sun className="w-3.5 h-3.5 text-[#FF4D00] shrink-0" />
-                  {s.climateNote}
-                </div>
+
+            {/* Progress indicator bar */}
+            <div className="mt-8 flex items-center gap-3 text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/25">
+              <span>Q1</span>
+              <div className="flex-1 h-px bg-[#111111]/10 relative">
+                {journeyPhases.map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#111111]/20"
+                    style={{ left: `${((i + 0.5) / journeyPhases.length) * 100}%` }}
+                  />
+                ))}
               </div>
-            ))}
+              <span>Q4</span>
+            </div>
           </div>
 
-          {/* Mobile cards */}
-          <div className="md:hidden space-y-3">
-            {annualSchedule.map((s) => (
-              <div
-                key={s.legId}
-                className="border border-[#111111]/10 p-4"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#FF4D00]">
-                    {s.period}
-                  </span>
-                  <span className="text-[10px] font-mono text-[#111111]/40">
-                    {s.hubs}
-                  </span>
-                </div>
-                <div className="font-display font-medium text-lg mb-2">
-                  {s.leg}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-[#111111]/50">
-                  <Sun className="w-3.5 h-3.5 text-[#FF4D00] shrink-0" />
-                  {s.climateNote}
-                </div>
-              </div>
-            ))}
+          {/* Tablet/Mobile: Vertical timeline with expandable nodes */}
+          <div className="lg:hidden">
+            <div className="relative">
+              {/* Continuous vertical thread */}
+              <div className="absolute left-[15px] top-0 bottom-0 w-[2px] bg-[#111111]/8 z-0" />
+
+              {journeyPhases.map((phase, i) => {
+                const isActive = activePhase === i;
+                const leg = routeLegs.find((l) => l.id === phase.legId);
+                const legColor = leg?.color || "#FF4D00";
+
+                return (
+                  <motion.div
+                    key={phase.legId}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.2 + i * 0.08, ease: "easeOut" }}
+                    className="relative pl-12 pb-8 last:pb-0"
+                  >
+                    {/* Timeline dot */}
+                    <button
+                      onClick={() => setActivePhase(isActive ? null : i)}
+                      className={`absolute left-[7px] top-1 w-[18px] h-[18px] rounded-full border-2 transition-all duration-300 z-10 ${
+                        isActive
+                          ? "border-transparent scale-125"
+                          : "bg-white border-[#111111]/20 hover:border-[#FF4D00]/50"
+                      }`}
+                      style={isActive ? { backgroundColor: legColor, borderColor: legColor } : {}}
+                    />
+
+                    {/* Content */}
+                    <div
+                      className={`cursor-pointer transition-all duration-300 ${
+                        isActive ? "" : "hover:opacity-80"
+                      }`}
+                      onClick={() => setActivePhase(isActive ? null : i)}
+                    >
+                      {/* Phase + Period */}
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#FF4D00]">
+                          Phase {phase.phase}
+                        </span>
+                        <span className="text-[11px] font-mono font-bold text-[#111111]/40">
+                          {phase.period}
+                        </span>
+                      </div>
+
+                      {/* Leg name + hubs */}
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className={`text-[16px] font-display font-medium tracking-tight transition-colors duration-300 ${
+                          isActive ? "text-[#FF4D00]" : "text-[#111111]"
+                        }`}>
+                          {phase.leg}
+                        </h4>
+                        <span className="text-[10px] font-mono text-[#111111]/25">{phase.hubs}</span>
+                      </div>
+
+                      {/* Climate note (always visible) */}
+                      <div className="flex items-center gap-2 text-[12px] text-[#111111]/45 mb-2">
+                        <Sun className="w-3 h-3 text-[#FF4D00] shrink-0" />
+                        {phase.climateNote}
+                      </div>
+                    </div>
+
+                    {/* Expandable detail */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border border-[#111111]/10 bg-white p-4 mt-1">
+                            {/* Leg color bar */}
+                            <div className="h-1 w-8 mb-3" style={{ backgroundColor: legColor }} />
+
+                            <p className="text-[13px] text-[#111111]/55 font-medium leading-[1.6] mb-3">
+                              {phase.description}
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                              {phase.highlights.map((h) => (
+                                <span
+                                  key={h}
+                                  className="text-[10px] font-mono font-bold tracking-[0.1em] uppercase bg-[#111111]/[0.04] px-2.5 py-1 text-[#111111]/45"
+                                >
+                                  {h}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
 
@@ -1391,7 +1587,9 @@ function JourneySection() {
                 Daily Rhythm Per Hub
               </span>
             </div>
-            <div className="space-y-4">
+            {/* Daily rhythm timeline */}
+            <div className="relative">
+              <div className="absolute left-[11px] top-2 bottom-2 w-px bg-[#FF4D00]/12" />
               {[
                 {
                   time: "06:00",
@@ -1417,14 +1615,22 @@ function JourneySection() {
                   time: "19:00",
                   desc: "Ritual closing, reflection, documentation, and intention setting",
                 },
-              ].map((r) => (
-                <div key={r.time} className="flex items-start gap-4">
-                  <span className="text-[11px] font-mono font-bold text-[#FF4D00] shrink-0 w-12 pt-0.5">
-                    {r.time}
-                  </span>
-                  <span className="text-sm text-[#111111]/60 font-medium leading-[1.6]">
-                    {r.desc}
-                  </span>
+              ].map((r, i) => (
+                <div key={r.time} className="flex items-start gap-4 relative pb-5 last:pb-0">
+                  {/* Timeline dot */}
+                  <div className="shrink-0 w-[23px] flex items-center justify-center pt-0.5">
+                    <div className={`w-2 h-2 rounded-full z-10 ${
+                      i === 0 ? "bg-[#FF4D00] shadow-[0_0_6px_rgba(255,77,0,0.3)]" : "bg-[#FF4D00]/30"
+                    }`} />
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-[11px] font-mono font-bold text-[#FF4D00] shrink-0 pt-0.5">
+                      {r.time}
+                    </span>
+                    <span className="text-sm text-[#111111]/60 font-medium leading-[1.6]">
+                      {r.desc}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1443,19 +1649,24 @@ function JourneySection() {
             </div>
             <div className="space-y-4">
               {[
-                "A signed Route Deal, a commercial agreement with at least one counterparty across the leg",
-                "A Playbook, codified operating procedures for every friction point encountered",
-                "A Network, direct relationships with operators, regulators, and capital sources across the leg",
-                "A Worldview, firsthand understanding of how 80% of global trade actually moves",
-                "A Covenant, membership in the Routes alumni network, with lifelong access to every hub",
+                { icon: "📝", title: "A Signed Route Deal", desc: "Commercial agreement with at least one counterparty across the leg" },
+                { icon: "📘", title: "A Playbook", desc: "Codified operating procedures for every friction point encountered" },
+                { icon: "🤝", title: "A Network", desc: "Direct relationships with operators, regulators, and capital sources across the leg" },
+                { icon: "🌍", title: "A Worldview", desc: "Firsthand understanding of how 80% of global trade actually moves" },
+                { icon: "🗝️", title: "A Covenant", desc: "Lifelong membership in the Routes alumni network, with access to every hub" },
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="text-[#FF4D00] font-mono text-sm mt-0.5">
-                    →
+                <div key={i} className="flex items-start gap-3 group">
+                  <span className="text-sm mt-0.5 shrink-0 group-hover:scale-110 transition-transform">
+                    {item.icon}
                   </span>
-                  <span className="text-sm text-[#111111]/60 font-medium leading-[1.6]">
-                    {item}
-                  </span>
+                  <div>
+                    <span className="text-sm text-[#111111] font-semibold leading-[1.4] block">
+                      {item.title}
+                    </span>
+                    <span className="text-[13px] text-[#111111]/50 font-medium leading-[1.5]">
+                      {item.desc}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

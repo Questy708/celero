@@ -616,3 +616,134 @@ Stage Summary:
 - Each payment method has unique, appropriate form fields with input formatting and validation
 - CapitalMedia section now follows left-alignment rule (8-col image + 4-col caption)
 - Clean lint, browser-verified, no errors
+
+---
+Task ID: 3-c
+Agent: Community Enhancement Agent
+Task: Enhance Community.tsx with 3 visual improvements (FeaturedMembersSection, CommunityRhythmSection, CTASection)
+
+Work Log:
+- Read worklog.md and Community.tsx to understand current state
+- Analyzed existing components: FeaturedMembersSection (4 member type cards with silhouettes), CommunityRhythmSection (4 cadence cards on dark bg), CTASection (dark bg with Apply/Invest buttons)
+
+Enhancement 1: FeaturedMembersSection
+- Added CSS @keyframes shimmer animation (style tag in JSX) for a subtle animated gradient sweep across the silhouette area on hover
+- Shimmer overlay: linear-gradient(105deg) with rgba(255,77,0) accents at 6-12% opacity, animating from right to left over 2.5s
+- Replaced plain "Coming soon" text with pulsing dot indicator: animate-ping circle (bg-[#FF4D00]) + static dot + text
+- Added ChevronRight arrow icon next to description that fades in on hover (opacity-0 → group-hover:opacity-60, translate-x animation)
+
+Enhancement 2: CommunityRhythmSection
+- Added visual timeline progression indicator above the cards grid (desktop only, hidden lg:flex)
+  - 4 decreasing-opacity dots (bg-[#FF4D00] → /70 → /50 → /30) connected by gradient lines
+  - Represents the Weekly → Monthly → Quarterly → Annually cadence progression
+- Replaced plain cadence text labels with colored badges using a badgeStyles mapping:
+  - Weekly: bg-[#FF4D00] text-white (filled orange)
+  - Monthly: bg-[#FF4D00]/15 text-[#FF4D00] (light orange)
+  - Quarterly: bg-white/10 text-white border border-white/20 (outlined)
+  - Annually: bg-white text-[#111111] (inverted/standout — the annual assembly is special)
+- Added vertical timeline connectors between cards on mobile/tablet (lg:hidden, gradient-to-b from orange to transparent)
+
+Enhancement 3: CTASection
+- Added subtle dot-grid pattern overlay (radial-gradient white dots, 24px grid, opacity 0.04) for texture
+- Added decorative accent lines at top and bottom edges (gradient from transparent via orange to transparent)
+- Made "XCitizen" in heading orange (#FF4D00) for emphasis
+- Enhanced Apply Now button: larger padding (px-10 py-5), bigger text (13px), wider tracking (0.14em), added orange glow shadow (shadow-[0_0_40px_rgba(255,77,0,0.25)]), hover glow intensifies to 60px
+- Enhanced Invest button: matching px-10 py-5 sizing and 13px/0.14em tracking
+- Changed button layout from flex-wrap to flex-col sm:flex-row for better mobile stacking
+- Added relative z-10 to content div so it sits above the pattern overlay
+- Added overflow-hidden to outer container
+
+- Ran `bun run lint`: passes cleanly with no errors
+- Dev server compiles successfully
+
+Stage Summary:
+- FeaturedMembersSection: shimmer animation on hover, pulsing dot indicator, hover arrow on description
+- CommunityRhythmSection: horizontal timeline progression, colored cadence badges, mobile vertical connectors
+- CTASection: dot-grid texture, accent lines, orange glow button, emphasized heading
+- Clean lint, no compilation errors
+
+---
+Task ID: 3-a
+Agent: Home Enhancement Agent
+Task: Enhance LocationsSection, NewsletterSection, and Hero section on Home page
+
+Work Log:
+- Read worklog.md and Home.tsx to understand current state
+- Identified all three target components: LocationAccordion (within LocationsSection), NewsletterSection, Hero
+
+1. LocationsSection enhancement (LocationAccordion):
+   - Added 3px left border accent in #FF4D00 to each region card (border-l-[3px] border-l-[#FF4D00])
+   - Added padding to accommodate left border (pl-4 md:pl-6)
+   - Added small colored dot/badge next to each region name: relative flex container with an orange dot (#FF4D00) that has a ping animation on hover (animate-ping) for visual feedback
+   - Adjusted description text indentation from pl-8 to pl-10 to align with dot+MapPin layout
+   - Added subtle hover background (hover:bg-[#FF4D00]/[0.02]) for interactivity
+
+2. NewsletterSection enhancement:
+   - Added subtle dot-grid background pattern using radial-gradient CSS (radial-gradient(#FF4D00 1px, transparent 1px) at 24px intervals, opacity-[0.03])
+   - Made section relative with overflow-hidden for background layer
+   - Added z-10 to content wrapper to sit above pattern
+   - Changed CTA button from bg-[#111111] to bg-[#FF4D00] with shadow-lg shadow-[#FF4D00]/20 for prominent accent
+   - Changed button text from "Submit" to "Subscribe Now"
+   - Added privacy note below submit button: "We never share your email with third parties. You can unsubscribe at any time. Read our Privacy Policy for details."
+
+3. Hero section scroll indicator:
+   - Added animated scroll indicator at bottom of hero section below CTA buttons
+   - "Scroll" label in small font-mono uppercase with low opacity
+   - Animated ChevronDown icon (#FF4D00/50) with bounce animation (y: [0, 6, 0], 1.8s repeat)
+   - Fade-in animation with 1.5s delay for subtle appearance after hero loads
+
+- Lint passes cleanly with no errors
+- Dev server compiles successfully
+
+Stage Summary:
+- LocationsSection: Orange dot badges + left border accent on region cards with hover effects
+- NewsletterSection: Dot-grid background pattern, #FF4D00 prominent CTA button, privacy note below button
+- Hero: Animated scroll indicator with bouncing chevron
+- Clean lint, no compilation errors
+
+---
+Task ID: 3-b
+Agent: About Page Enhancement Agent
+Task: Enhance FlowingContent timeline and ManifestoCardsSection in About.tsx
+
+Work Log:
+- Read worklog.md and About.tsx to understand current state
+- Identified two target sections for enhancement: FlowingContent (timeline) and ManifestoCardsSection
+
+Part A: FlowingContent / Timeline enhancement
+- Added CSS keyframe animation `glow-pulse` via inline `<style>` tag in FlowingContent component
+  - Animates box-shadow between `0 0 6px 2px rgba(255,77,0,0.35)` and `0 0 14px 5px rgba(255,77,0,0.55)` over 2.4s infinite loop
+- Made current-day entry dots more prominent:
+  - Increased dot size from `w-2 h-2` to `w-3.5 h-3.5` for isCurrentDay entries
+  - Added `timeline-glow-dot` class to trigger the CSS glow-pulse animation
+  - Replaced static `shadow-[0_0_8px_rgba(255,77,0,0.4)]` with animated glow
+- Added subtle background highlight on current-day entries:
+  - Applied `bg-[#FF4D00]/[0.04]` background with `rounded-sm px-4 py-4 -mx-4` for padding/rounding
+  - Content div now wraps in a styled container with `transition-colors duration-300`
+- Added alternating subtle background shading for readability:
+  - Even-index entries get `bg-[#111111]/[0.015]` (very faint gray)
+  - Odd-index entries get `bg-transparent`
+  - Current-day entries override both with their orange tint
+
+Part B: ManifestoCardsSection enhancement
+- Added top border accent line on hover (color #FF4D00):
+  - Added absolute-positioned `h-[2px] bg-[#FF4D00]` div at top of card
+  - Uses `scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left` for left-to-right reveal animation
+- Made the number ("01", "02", "03") larger and more prominent as a background watermark:
+  - Added absolute-positioned `<span>` with `text-[100px] md:text-[120px] font-display font-bold text-[#111111]/[0.03]`
+  - Positioned at `-top-4 -right-2` so it appears as a subtle watermark in the upper-right
+  - Marked with `aria-hidden="true"`, `select-none`, `pointer-events-none` for accessibility and interaction safety
+- Added a subtle left border that appears on hover:
+  - Added `border-l-2 border-l-transparent` to default state
+  - Added `hover:border-l-[#FF4D00]` to show on hover
+  - Card container now uses `overflow-hidden` to clip the top accent line cleanly
+- Added `relative z-10` to content elements (number+label, heading, text) so they render above the watermark number
+
+- Ran `bun run lint`: passes cleanly with no errors
+- Dev server compiles successfully (no errors in dev.log)
+
+Stage Summary:
+- Timeline current-day entries now have prominent glow-pulsing dots (larger size + animated box-shadow), subtle orange background highlight, and alternating row shading for readability
+- Manifesto cards enhanced with top accent line reveal on hover, large watermark number background, and left border appearing on hover
+- All enhancements use xCelero design language (#FF4D00 accent, font-display, smooth transitions)
+- Clean lint, no errors, site compiles correctly
