@@ -941,3 +941,25 @@ Stage Summary:
 - Login persists across page refreshes via localStorage
 - Logout button clears session and returns to login screen
 - Clean lint, browser-verified, no errors
+
+---
+Task ID: 16
+Agent: Main Agent
+Task: Add 10 hypothetical example entries for all data items (Subscribers, Investment Inquiries, Applications)
+
+Work Log:
+- Created prisma/seed.ts with 10 hypothetical entries per model
+- 10 Subscribers: African names/emails with varied sources (capital_page, newsletter_footer, community_page, approach_page) and consent values
+- 10 Investment Inquiries: Varied tiers (scout, syndicate, partner, anchor), amounts ($25K-$1M), statuses (pending, reviewing, contacted, invested, declined), accredited flags
+- 10 Applications: 6 founder-type + 4 partner-type with realistic company names, motivations, locations across Africa (Nigeria, Kenya, Ghana, South Africa, Ethiopia, Tanzania, Morocco, Senegal)
+- Added `db:seed` script to package.json
+- Ran seed script successfully: 10 subscribers, 10 inquiries, 11 applications (1 pre-existing), $3.4M total investment amount
+- Verified via Agent Browser: all tabs populate correctly with data, status badges color-coded, filters work, CSV export functional, stats cards show accurate counts
+
+Stage Summary:
+- 30+ hypothetical records now populate the admin dashboard
+- Data spans diverse African contexts: Nigeria, Ghana, Kenya, South Africa, Ethiopia, Tanzania, Morocco, Senegal, Mali
+- All statuses represented: pending, reviewing, contacted, invested, accepted, declined
+- All tiers represented: scout ($25K-$75K), syndicate ($100K-$250K), partner ($500K), anchor ($750K-$1M)
+- Both application types: founder (7) and partner (4)
+- Admin dashboard fully functional with realistic demo data
