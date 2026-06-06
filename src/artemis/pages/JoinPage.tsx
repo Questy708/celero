@@ -826,9 +826,9 @@ function ApplicationSection() {
   return (
     <section
       ref={ref}
-      className="bg-[#111111] text-white py-16 md:py-24 px-6 md:px-12 lg:px-20"
     >
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
+        <div className="w-full max-w-5xl mx-auto">
         {/* Section heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -898,6 +898,7 @@ function ApplicationSection() {
             </div>
           </form>
         </motion.div>
+      </div>
       </div>
     </section>
   );

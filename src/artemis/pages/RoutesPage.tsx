@@ -1520,8 +1520,8 @@ function InvitationSection() {
   return (
     <section
       ref={ref}
-      className="py-20 md:py-32 px-6 md:px-12 lg:px-20 bg-[#111111] text-white"
     >
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-20 md:py-32 rounded-sm">
       <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -1599,6 +1599,7 @@ function InvitationSection() {
             </div>
           </Link>
         </motion.div>
+      </div>
       </div>
     </section>
   );

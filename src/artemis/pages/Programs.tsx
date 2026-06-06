@@ -328,9 +328,8 @@ function CTASection() {
   return (
     <section
       ref={ref}
-      className="bg-[#111111] text-white py-16 md:py-24 px-6 md:px-12 lg:px-20"
     >
-      <div className="w-full max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="w-full max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         {/* Left: CTA heading + buttons */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

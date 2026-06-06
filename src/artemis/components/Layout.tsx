@@ -446,8 +446,8 @@ function ScrollToTopButton() {
    ══════════════════════════════════════════════════════════════════════════ */
 function Footer() {
   return (
-    <footer className="bg-[#000000] text-white pt-24 pb-12 px-6 md:px-12">
-      <div className="w-full max-w-[1400px] mx-auto">
+    <footer className="py-0">
+      <div className="w-full max-w-[1400px] mx-auto bg-[#000000] text-white px-6 md:px-12 lg:px-20 pt-24 pb-12 rounded-sm">
         {/* CTA cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-24">
           <Link to="/programs" className="group block">

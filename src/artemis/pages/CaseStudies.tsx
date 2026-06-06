@@ -85,12 +85,12 @@ function FeaturedCaseStudy() {
   const featured = caseStudiesData[0];
 
   return (
-    <section ref={ref} className="relative overflow-hidden">
+    <section ref={ref}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative bg-[#111111] text-white"
+        className="max-w-[1400px] mx-auto relative bg-[#111111] text-white rounded-sm overflow-hidden"
       >
         {/* Background image with overlay */}
         <div className="absolute inset-0">
@@ -103,7 +103,7 @@ function FeaturedCaseStudy() {
 
         {/* Content */}
         <div className="relative py-16 md:py-24 px-6 md:px-12 lg:px-20">
-          <div className="w-full max-w-[1400px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             {/* Left: Info */}
             <div className="lg:col-span-7">
               <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-6 block">
@@ -451,8 +451,8 @@ function CTASection() {
   return (
     <section
       ref={ref}
-      className="bg-[#111111] text-white py-16 md:py-24 px-6 md:px-12 lg:px-20"
     >
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
       <div className="w-full max-w-4xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -485,6 +485,7 @@ function CTASection() {
             </Link>
           </div>
         </motion.div>
+      </div>
       </div>
     </section>
   );

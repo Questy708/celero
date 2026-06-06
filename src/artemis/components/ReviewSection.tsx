@@ -46,9 +46,9 @@ export function ReviewSection({
   return (
     <section
       ref={ref}
-      className="bg-[#0A0A0A] text-white border-t border-[#111111]/10"
+      className="py-0"
     >
-      <div className="w-full max-w-[1400px] mx-auto">
+      <div className="w-full max-w-[1400px] mx-auto bg-[#0A0A0A] text-white rounded-sm overflow-hidden">
         {/* ── Header row ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -579,8 +579,9 @@ function CriticalDomainsSection() {
   return (
     <section
       ref={ref}
-      className="py-16 md:py-24 px-5 sm:px-6 md:px-12 lg:px-20 bg-[#111111] text-white"
+      className="py-16 md:py-24"
     >
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-5 sm:px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
       <div className="w-full max-w-[1200px] mx-auto">
         {/* Section header */}
         <motion.div
@@ -645,6 +646,7 @@ function CriticalDomainsSection() {
             <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
+      </div>
       </div>
     </section>
   );

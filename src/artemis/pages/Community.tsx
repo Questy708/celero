@@ -980,11 +980,8 @@ function CommunityPillarsSection() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section
-      ref={ref}
-      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-[#111111] text-white"
-    >
-      <div className="w-full max-w-[1400px] mx-auto">
+    <section ref={ref}>
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -1135,11 +1132,8 @@ function CommunityRhythmSection() {
       </section>
 
       {/* Rhythm cards (dark bg) */}
-      <section
-        ref={cardsRef}
-        className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-[#111111] text-white"
-      >
-        <div className="w-full max-w-[1400px] mx-auto">
+      <section ref={cardsRef}>
+        <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
             {rhythmItems.map((item, i) => {
               const Icon = item.icon;
@@ -1291,11 +1285,9 @@ function CTASection() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section
-      ref={ref}
-      className="bg-[#111111] text-white py-20 md:py-32 px-6 md:px-12 lg:px-20"
-    >
-      <div className="w-full max-w-4xl mx-auto text-center">
+    <section ref={ref}>
+      <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-20 md:py-32 rounded-sm">
+      <div className="max-w-4xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -1332,6 +1324,7 @@ function CTASection() {
             </Link>
           </div>
         </motion.div>
+      </div>
       </div>
     </section>
   );

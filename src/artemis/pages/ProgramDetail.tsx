@@ -181,14 +181,15 @@ export function ProgramDetail() {
 
       {/* ── APPLICATION CYCLES ── */}
       {hasAppCycles && (
-        <section id="application-cycles" className="py-24 lg:py-32 px-6 lg:px-12 bg-[#1B1C1E] text-white relative overflow-hidden">
-          {/* Background texture */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-[#FF4D00] blur-[200px]" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-[#FF9CDF] blur-[150px]" />
-          </div>
-          
-          <div className="max-w-[1400px] mx-auto relative z-10">
+        <section id="application-cycles" className="py-0">
+          <div className="max-w-[1400px] mx-auto bg-[#1B1C1E] text-white px-6 md:px-12 lg:px-20 py-24 lg:py-32 rounded-sm relative overflow-hidden">
+            {/* Background texture */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-[#FF4D00] blur-[200px]" />
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-[#FF9CDF] blur-[150px]" />
+            </div>
+
+            <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
               <div>
                 <div className="flex items-center gap-3 mb-6">
@@ -293,6 +294,7 @@ export function ProgramDetail() {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </section>
       )}
@@ -340,8 +342,8 @@ export function ProgramDetail() {
 
       {/* ── PROGRAM JOURNEY (visual timeline for process data) ── */}
       {hasProcess && (
-        <section id="program-journey" className="py-24 lg:py-32 px-6 lg:px-12 bg-[#F9F9F9]">
-          <div className="max-w-[1400px] mx-auto">
+        <section id="program-journey" className="py-0">
+          <div className="max-w-[1400px] mx-auto bg-[#F9F9F9] px-6 md:px-12 lg:px-20 py-24 lg:py-32 rounded-sm">
             <div className="mb-16 md:mb-20">
               <div className="flex items-center mb-6">
                 <span className="text-[#FF4D00] text-[10px] mr-2">&#9679;</span>
@@ -629,11 +631,12 @@ export function ProgramDetail() {
 
       {/* ── Is for you if ── */}
       {(program.isForYouIf && program.isForYouIf.length > 0) && (
-        <section className="relative py-32 lg:py-40 bg-[#1B1C1E] text-white px-6 lg:px-12 overflow-hidden">
-          <div className="absolute inset-0 opacity-40 mix-blend-overlay">
-             <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Background Texture" />
-          </div>
-          <div className="max-w-[1400px] mx-auto relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-24">
+        <section className="py-0">
+          <div className="max-w-[1400px] mx-auto bg-[#1B1C1E] text-white px-6 md:px-12 lg:px-20 py-32 lg:py-40 rounded-sm relative overflow-hidden">
+            <div className="absolute inset-0 opacity-40 mix-blend-overlay">
+              <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Background Texture" />
+            </div>
+            <div className="relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-24">
              <div>
                 <div className="flex items-center gap-3 mb-10">
                    <div className="tag-polygon text-white/50" />
@@ -661,6 +664,7 @@ export function ProgramDetail() {
                    </button>
                 </div>
              </div>
+            </div>
           </div>
         </section>
       )}
@@ -719,18 +723,20 @@ export function ProgramDetail() {
       )}
       
       {/* ── Build the exceptional today Footer Banner ── */}
-      <section className="relative h-[800px] w-full flex items-center justify-center overflow-hidden">
-         <div className="absolute inset-0 bg-[#1B1C1E]">
-            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" alt="Build" className="w-full h-full object-cover opacity-30 mix-blend-luminosity" />
-         </div>
-         <div className="relative z-10 text-center space-y-12">
-            <h2 className="text-5xl md:text-[80px] lg:text-[120px] font-display font-medium text-white uppercase leading-[0.9] tracking-tighter">
-              BUILD THE <br /> EXCEPTIONAL <br /> TODAY AND <br /> LAUNCH NOW
-            </h2>
-            <button className="button relative inline-flex items-center justify-center bg-white text-[#1B1C1E] px-12 py-5 text-sm font-bold uppercase tracking-widest transition-transform hover:scale-105 group overflow-hidden rounded-md">
-              <span className="relative z-10 transition-colors group-hover:text-white">Apply</span>
-              <div className="button-gradient !opacity-0 group-hover:!opacity-100 transition-opacity" />
-            </button>
+      <section>
+         <div className="max-w-[1400px] mx-auto relative h-[800px] flex items-center justify-center overflow-hidden rounded-sm">
+            <div className="absolute inset-0 bg-[#1B1C1E]">
+               <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" alt="Build" className="w-full h-full object-cover opacity-30 mix-blend-luminosity" />
+            </div>
+            <div className="relative z-10 text-center space-y-12">
+               <h2 className="text-5xl md:text-[80px] lg:text-[120px] font-display font-medium text-white uppercase leading-[0.9] tracking-tighter">
+                  BUILD THE <br /> EXCEPTIONAL <br /> TODAY AND <br /> LAUNCH NOW
+               </h2>
+               <button className="button relative inline-flex items-center justify-center bg-white text-[#1B1C1E] px-12 py-5 text-sm font-bold uppercase tracking-widest transition-transform hover:scale-105 group overflow-hidden rounded-md">
+                  <span className="relative z-10 transition-colors group-hover:text-white">Apply</span>
+                  <div className="button-gradient !opacity-0 group-hover:!opacity-100 transition-opacity" />
+               </button>
+            </div>
          </div>
       </section>
     </div>

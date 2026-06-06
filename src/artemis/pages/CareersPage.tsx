@@ -460,8 +460,8 @@ export function CareersPage() {
   return (
     <div className="bg-white text-[#111111]">
       {/* ── Masthead ─────────────────────────────────────────── */}
-      <section className="bg-[#111111] text-white">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-16 pb-12">
+      <section>
+        <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 pt-16 pb-12 rounded-sm">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -596,8 +596,8 @@ export function CareersPage() {
       </section>
 
       {/* ── Dark Culture Section: Stats + Perks ───────────────── */}
-      <section className="bg-[#111111] text-white">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+      <section>
+        <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 rounded-sm">
           {/* Stats Row */}
           <div className="py-12 md:py-16 border-b border-white/10">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -904,8 +904,8 @@ export function CareersPage() {
       </section>
 
       {/* ── CTA Section ──────────────────────────────────────── */}
-      <section className="bg-[#111111] text-white py-20">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 text-center">
+      <section>
+        <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 py-20 rounded-sm text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

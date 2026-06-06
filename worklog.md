@@ -146,3 +146,26 @@ Stage Summary:
 - Removed inline expansion behavior entirely
 - All venture detail pages working: hero, problem, solution, origins (facts/observation/proof/thesis), sidebar metrics, CTAs
 - Clean lint, no errors
+
+---
+Task ID: 9
+Agent: Main Agent
+Task: Fix full-bleed dark background sections to be contained within max-w-[1400px]
+
+Work Log:
+- Analyzed all sections with dark/colored backgrounds that span full viewport width
+- Applied the "contained" pattern: move bg color + padding from outer section to inner max-w-[1400px] div, add rounded-sm
+- Fixed Layout.tsx Footer (line 449): moved bg-[#000000], text-white, and padding to inner max-w container with rounded-sm
+- Fixed ReviewSection.tsx (line 49): moved bg-[#0A0A0A] and text-white to inner div, removed border-t from outer section, added rounded-sm overflow-hidden
+- Fixed ProgramDetail.tsx Application Cycles (line 184): moved bg-[#1B1C1E], text-white, and padding to inner max-w container, moved decorative blur circles inside container, added rounded-sm overflow-hidden
+- Fixed ProgramDetail.tsx Program Journey (line 343): moved bg-[#F9F9F9] and padding to inner max-w container with rounded-sm
+- Fixed ProgramDetail.tsx Ideal Candidates (line 632): moved bg-[#1B1C1E], text-white, and padding to inner max-w container, moved background overlay image inside container, added rounded-sm overflow-hidden
+- Fixed pre-existing lint error in Community.tsx CTASection (missing closing </div> tag from previous agent's work)
+- Checked Home.tsx NewsletterSection - no dark bg, does not need fixing
+- All lint checks pass, dev server compiles successfully
+
+Stage Summary:
+- All dark/colored background sections now contained within max-w-[1400px]
+- Footer, Field Notes, Application Cycles, Program Journey, and Ideal Candidates sections all updated
+- Decorative elements (blur circles, background images) moved inside contained divs
+- Clean lint, no errors, site compiles correctly

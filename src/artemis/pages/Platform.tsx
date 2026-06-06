@@ -140,9 +140,8 @@ function HeroSection() {
   return (
     <section
       ref={ref}
-      className="bg-[#111111] text-white py-16 md:py-24 px-6 md:px-12 lg:px-20"
     >
-      <div className="w-full max-w-[1400px] mx-auto">
+      <div className="w-full max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
