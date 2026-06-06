@@ -283,7 +283,7 @@ function ApproachBridge() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative flex items-end justify-center gap-0 mb-16 md:mb-24"
+          className="relative flex items-end justify-start gap-0 mb-16 md:mb-24"
         >
           {approachBridgeImages.map((img, i) => (
             <motion.div
@@ -293,10 +293,10 @@ function ApproachBridge() {
               transition={{ duration: 0.6, delay: 0.1 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
               className={`relative overflow-hidden bg-[#F5F5F5] shadow-lg ${
                 i === 0
-                  ? "w-[40%] md:w-[36%] aspect-[4/3] z-10 translate-x-6 md:translate-x-14"
+                  ? "w-[36%] md:w-[32%] aspect-[4/3] z-10"
                   : i === 1
-                  ? "w-[46%] md:w-[42%] aspect-[4/3] z-30 -mt-3"
-                  : "w-[40%] md:w-[36%] aspect-[4/3] z-10 -translate-x-6 md:-translate-x-14"
+                  ? "w-[44%] md:w-[40%] aspect-[4/3] z-30 -mt-3 -ml-[8%] md:-ml-[4%]"
+                  : "w-[36%] md:w-[32%] aspect-[4/3] z-10 -ml-[8%] md:-ml-[4%]"
               }`}
             >
               <img
