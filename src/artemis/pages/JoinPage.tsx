@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Link } from "@/artemis/router";
 import {
   ArrowRight,
@@ -11,6 +11,9 @@ import {
   Coins,
   Handshake,
   UserPlus,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 
 /* ── Data ── */
@@ -501,12 +504,16 @@ function CustomSelect({
   options,
   placeholder,
   required,
+  value,
+  onChange,
   ...props
 }: {
   options: string[];
   placeholder?: string;
   required?: boolean;
-} & React.SelectHTMLAttributes<HTMLSelectElement>) {
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+} & Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "value" | "onChange">) {
   return (
     <div className="relative">
       <select
@@ -514,7 +521,8 @@ function CustomSelect({
         required={required}
         className={selectClasses}
         suppressHydrationWarning
-        defaultValue=""
+        value={value || ""}
+        onChange={onChange}
       >
         {placeholder && (
           <option value="" disabled className="text-[#111111]">
@@ -532,8 +540,68 @@ function CustomSelect({
   );
 }
 
+/* ── Founder Form State & Type ── */
+interface FounderFields {
+  firstName: string;
+  lastName: string;
+  email: string;
+  linkedinUrl: string;
+  companyName: string;
+  companyWebsite: string;
+  location: string;
+  role: string;
+  pitchDeckUrl: string;
+  motivation: string;
+  referral: string;
+}
+
+const initialFounderFields: FounderFields = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  linkedinUrl: "",
+  companyName: "",
+  companyWebsite: "",
+  location: "",
+  role: "",
+  pitchDeckUrl: "",
+  motivation: "",
+  referral: "",
+};
+
+/* ── Partner Form State & Type ── */
+interface PartnerFields {
+  firstName: string;
+  lastName: string;
+  email: string;
+  orgName: string;
+  orgWebsite: string;
+  partnerRole: string;
+  interest: string;
+  referral: string;
+  description: string;
+}
+
+const initialPartnerFields: PartnerFields = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  orgName: "",
+  orgWebsite: "",
+  partnerRole: "",
+  interest: "",
+  referral: "",
+  description: "",
+};
+
 /* ── Founder Form ── */
-function FounderForm() {
+function FounderForm({
+  fields,
+  setField,
+}: {
+  fields: FounderFields;
+  setField: <K extends keyof FounderFields>(key: K, value: FounderFields[K]) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -562,6 +630,8 @@ function FounderForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.firstName}
+            onChange={(e) => setField("firstName", e.target.value)}
           />
         </div>
         <div>
@@ -574,6 +644,8 @@ function FounderForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.lastName}
+            onChange={(e) => setField("lastName", e.target.value)}
           />
         </div>
       </div>
@@ -588,6 +660,8 @@ function FounderForm() {
           className={inputClasses}
           placeholder="www.linkedin.com/in/"
           suppressHydrationWarning
+          value={fields.linkedinUrl}
+          onChange={(e) => setField("linkedinUrl", e.target.value)}
         />
       </div>
 
@@ -602,6 +676,8 @@ function FounderForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.companyName}
+            onChange={(e) => setField("companyName", e.target.value)}
           />
         </div>
         <div>
@@ -611,6 +687,8 @@ function FounderForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.companyWebsite}
+            onChange={(e) => setField("companyWebsite", e.target.value)}
           />
         </div>
       </div>
@@ -625,6 +703,8 @@ function FounderForm() {
           className={inputClasses}
           placeholder=""
           suppressHydrationWarning
+          value={fields.email}
+          onChange={(e) => setField("email", e.target.value)}
         />
       </div>
 
@@ -637,6 +717,8 @@ function FounderForm() {
             options={LOCATION_OPTIONS}
             placeholder="Select location"
             required
+            value={fields.location}
+            onChange={(e) => setField("location", e.target.value)}
           />
         </div>
         <div>
@@ -647,6 +729,8 @@ function FounderForm() {
             options={FOUNDER_ROLE_OPTIONS}
             placeholder="Select role"
             required
+            value={fields.role}
+            onChange={(e) => setField("role", e.target.value)}
           />
         </div>
       </div>
@@ -661,6 +745,8 @@ function FounderForm() {
           className={inputClasses}
           placeholder=""
           suppressHydrationWarning
+          value={fields.pitchDeckUrl}
+          onChange={(e) => setField("pitchDeckUrl", e.target.value)}
         />
       </div>
 
@@ -673,6 +759,8 @@ function FounderForm() {
           className={textareaClasses}
           placeholder=""
           suppressHydrationWarning
+          value={fields.motivation}
+          onChange={(e) => setField("motivation", e.target.value)}
         />
       </div>
 
@@ -684,6 +772,8 @@ function FounderForm() {
           options={REFERRAL_OPTIONS}
           placeholder="Select source"
           required
+          value={fields.referral}
+          onChange={(e) => setField("referral", e.target.value)}
         />
       </div>
     </motion.div>
@@ -691,7 +781,13 @@ function FounderForm() {
 }
 
 /* ── Partner Form ── */
-function PartnerForm() {
+function PartnerForm({
+  fields,
+  setField,
+}: {
+  fields: PartnerFields;
+  setField: <K extends keyof PartnerFields>(key: K, value: PartnerFields[K]) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -711,6 +807,8 @@ function PartnerForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.firstName}
+            onChange={(e) => setField("firstName", e.target.value)}
           />
         </div>
         <div>
@@ -723,6 +821,8 @@ function PartnerForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.lastName}
+            onChange={(e) => setField("lastName", e.target.value)}
           />
         </div>
       </div>
@@ -738,6 +838,8 @@ function PartnerForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.orgName}
+            onChange={(e) => setField("orgName", e.target.value)}
           />
         </div>
         <div>
@@ -747,6 +849,8 @@ function PartnerForm() {
             className={inputClasses}
             placeholder=""
             suppressHydrationWarning
+            value={fields.orgWebsite}
+            onChange={(e) => setField("orgWebsite", e.target.value)}
           />
         </div>
       </div>
@@ -761,6 +865,8 @@ function PartnerForm() {
           className={inputClasses}
           placeholder=""
           suppressHydrationWarning
+          value={fields.email}
+          onChange={(e) => setField("email", e.target.value)}
         />
       </div>
 
@@ -773,6 +879,8 @@ function PartnerForm() {
             options={PARTNER_ROLE_OPTIONS}
             placeholder="Select role"
             required
+            value={fields.partnerRole}
+            onChange={(e) => setField("partnerRole", e.target.value)}
           />
         </div>
         <div>
@@ -783,6 +891,8 @@ function PartnerForm() {
             options={INTEREST_OPTIONS}
             placeholder="Select interest"
             required
+            value={fields.interest}
+            onChange={(e) => setField("interest", e.target.value)}
           />
         </div>
       </div>
@@ -795,6 +905,8 @@ function PartnerForm() {
           options={REFERRAL_OPTIONS}
           placeholder="Select source"
           required
+          value={fields.referral}
+          onChange={(e) => setField("referral", e.target.value)}
         />
       </div>
 
@@ -807,6 +919,8 @@ function PartnerForm() {
           className={textareaClasses}
           placeholder=""
           suppressHydrationWarning
+          value={fields.description}
+          onChange={(e) => setField("description", e.target.value)}
         />
       </div>
     </motion.div>
@@ -819,86 +933,251 @@ function ApplicationSection() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [mode, setMode] = useState<FormMode>("founder");
 
-  const handleSubmit = (e: FormEvent) => {
+  // Founder form state
+  const [founderFields, setFounderFields] = useState<FounderFields>(initialFounderFields);
+  // Partner form state
+  const [partnerFields, setPartnerFields] = useState<PartnerFields>(initialPartnerFields);
+
+  // Submission states
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const setFounderField = <K extends keyof FounderFields>(key: K, value: FounderFields[K]) => {
+    setFounderFields((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const setPartnerField = <K extends keyof PartnerFields>(key: K, value: PartnerFields[K]) => {
+    setPartnerFields((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      let payload: Record<string, string | undefined>;
+
+      if (mode === "founder") {
+        payload = {
+          type: "founder",
+          firstName: founderFields.firstName,
+          lastName: founderFields.lastName,
+          email: founderFields.email,
+          linkedinUrl: founderFields.linkedinUrl,
+          companyName: founderFields.companyName,
+          companyWebsite: founderFields.companyWebsite || undefined,
+          location: founderFields.location,
+          role: founderFields.role,
+          pitchDeckUrl: founderFields.pitchDeckUrl,
+          motivation: founderFields.motivation,
+          referral: founderFields.referral || undefined,
+        };
+      } else {
+        payload = {
+          type: "partner",
+          firstName: partnerFields.firstName,
+          lastName: partnerFields.lastName,
+          email: partnerFields.email,
+          orgName: partnerFields.orgName,
+          orgWebsite: partnerFields.orgWebsite || undefined,
+          partnerRole: partnerFields.partnerRole,
+          interest: partnerFields.interest,
+          referral: partnerFields.referral || undefined,
+          description: partnerFields.description,
+        };
+      }
+
+      const res = await fetch("/api/applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(
+          data?.error || `Submission failed (${res.status})`
+        );
+      }
+
+      setSubmitSuccess(true);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <section
-      ref={ref}
-    >
+    <section ref={ref}>
       <div className="max-w-[1400px] mx-auto bg-[#111111] text-white px-6 md:px-12 lg:px-20 py-16 md:py-24 rounded-sm">
         <div className="w-full max-w-5xl mx-auto">
-        {/* Section heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-12 md:mb-16"
-        >
-          <h2 className="text-[36px] sm:text-[48px] md:text-[64px] lg:text-[80px] font-display font-medium tracking-[-0.03em] leading-[0.9] mb-10">
-            APPLY
-          </h2>
+          {/* Section heading */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-12 md:mb-16"
+          >
+            <h2 className="text-[36px] sm:text-[48px] md:text-[64px] lg:text-[80px] font-display font-medium tracking-[-0.03em] leading-[0.9] mb-10">
+              APPLY
+            </h2>
 
-          {/* I AM toggle */}
-          <div className="flex flex-wrap gap-3">
-            <button
-              suppressHydrationWarning
-              onClick={() => setMode("founder")}
-              className={`px-6 py-3 text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-300 ${
-                mode === "founder"
-                  ? "bg-[#FF4D00] text-white"
-                  : "bg-transparent text-white border border-white/20 hover:border-white/40"
-              }`}
-            >
-              A STARTUP FOUNDER Looking to join xCelero.
-            </button>
-            <button
-              suppressHydrationWarning
-              onClick={() => setMode("partner")}
-              className={`px-6 py-3 text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-300 ${
-                mode === "partner"
-                  ? "bg-[#FF4D00] text-white"
-                  : "bg-transparent text-white border border-white/20 hover:border-white/40"
-              }`}
-            >
-              Looking to partner or invest with xCelero.
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        >
-          <form onSubmit={handleSubmit} suppressHydrationWarning>
-            {mode === "founder" ? <FounderForm /> : <PartnerForm />}
-
-            {/* Privacy disclaimer */}
-            <p className="text-[12px] text-white/30 leading-[1.7] mt-10 max-w-3xl">
-              xCelero needs the contact information you provide to us to contact
-              you about our products and services. You may unsubscribe from these
-              communications at any time. For information on how to unsubscribe,
-              as well as our privacy practices and commitment to protecting your
-              privacy, check out our Privacy Policy.
-            </p>
-
-            {/* Submit button */}
-            <div className="mt-10">
+            {/* I AM toggle */}
+            <div className="flex flex-wrap gap-3">
               <button
-                type="submit"
                 suppressHydrationWarning
-                className="inline-flex items-center gap-3 px-10 py-5 bg-[#FF4D00] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-white hover:text-[#111111] transition-colors duration-300"
+                onClick={() => {
+                  setMode("founder");
+                  setSubmitError(null);
+                }}
+                className={`px-6 py-3 text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-300 ${
+                  mode === "founder"
+                    ? "bg-[#FF4D00] text-white"
+                    : "bg-transparent text-white border border-white/20 hover:border-white/40"
+                }`}
               >
-                Submit Application
-                <ArrowRight className="w-4 h-4" />
+                A STARTUP FOUNDER Looking to join xCelero.
+              </button>
+              <button
+                suppressHydrationWarning
+                onClick={() => {
+                  setMode("partner");
+                  setSubmitError(null);
+                }}
+                className={`px-6 py-3 text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-300 ${
+                  mode === "partner"
+                    ? "bg-[#FF4D00] text-white"
+                    : "bg-transparent text-white border border-white/20 hover:border-white/40"
+                }`}
+              >
+                Looking to partner or invest with xCelero.
               </button>
             </div>
-          </form>
-        </motion.div>
-      </div>
+          </motion.div>
+
+          {/* Form or Success */}
+          <AnimatePresence mode="wait">
+            {submitSuccess ? (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="flex flex-col items-center justify-center text-center py-16 md:py-24"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
+                  className="w-20 h-20 rounded-full bg-[#FF4D00] flex items-center justify-center mb-8"
+                >
+                  <CheckCircle2 className="w-10 h-10 text-white" />
+                </motion.div>
+
+                <h3 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em] leading-[1.1] mb-4">
+                  Application Received
+                </h3>
+
+                <p className="text-[15px] md:text-[17px] text-white/50 font-medium leading-[1.7] max-w-lg mb-3">
+                  Thank you for applying to join the xCelero ecosystem. Our team
+                  will review your application and reach out within 5–7 business
+                  days.
+                </p>
+
+                <p className="text-[13px] font-mono tracking-[0.1em] uppercase text-white/30 mb-10">
+                  The Route is assembling.
+                </p>
+
+                <button
+                  suppressHydrationWarning
+                  onClick={() => {
+                    setSubmitSuccess(false);
+                    setFounderFields(initialFounderFields);
+                    setPartnerFields(initialPartnerFields);
+                    setSubmitError(null);
+                  }}
+                  className="inline-flex items-center gap-3 px-8 py-4 border border-white/20 text-[11px] font-bold tracking-[0.12em] uppercase hover:bg-white hover:text-[#111111] transition-colors duration-300"
+                >
+                  Submit Another Application
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              >
+                <form onSubmit={handleSubmit} suppressHydrationWarning>
+                  {mode === "founder" ? (
+                    <FounderForm fields={founderFields} setField={setFounderField} />
+                  ) : (
+                    <PartnerForm fields={partnerFields} setField={setPartnerField} />
+                  )}
+
+                  {/* Error message */}
+                  {submitError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-8 flex items-start gap-3 p-4 border border-[#FF4D00]/30 bg-[#FF4D00]/10"
+                    >
+                      <AlertCircle className="w-5 h-5 text-[#FF4D00] shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[13px] font-bold text-[#FF4D00]">
+                          Submission failed
+                        </p>
+                        <p className="text-[13px] text-white/60 mt-1">
+                          {submitError}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Privacy disclaimer */}
+                  <p className="text-[12px] text-white/30 leading-[1.7] mt-10 max-w-3xl">
+                    xCelero needs the contact information you provide to us to contact
+                    you about our products and services. You may unsubscribe from these
+                    communications at any time. For information on how to unsubscribe,
+                    as well as our privacy practices and commitment to protecting your
+                    privacy, check out our Privacy Policy.
+                  </p>
+
+                  {/* Submit button */}
+                  <div className="mt-10">
+                    <button
+                      type="submit"
+                      suppressHydrationWarning
+                      disabled={isSubmitting}
+                      className={`inline-flex items-center gap-3 px-10 py-5 text-[12px] uppercase tracking-[0.12em] font-bold transition-colors duration-300 ${
+                        isSubmitting
+                          ? "bg-white/20 text-white/50 cursor-not-allowed"
+                          : "bg-[#FF4D00] text-white hover:bg-white hover:text-[#111111]"
+                      }`}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Submitting…
+                        </>
+                      ) : (
+                        <>
+                          Submit Application
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );

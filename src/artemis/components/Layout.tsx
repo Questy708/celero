@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown, LogIn, ArrowLeft } from "lucide-react";
+import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown, LogIn, ArrowLeft, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "../router";
 import { SearchModal } from "./SearchModal";
@@ -13,7 +13,7 @@ function getTransitionForPath(path: string) {
   // Content-heavy pages — slide-up
   const contentPaths = ["/ventures", "/programs", "/routes", "/capital", "/platform"];
   // Data pages — subtle crossfade
-  const dataPaths = ["/community", "/insights", "/careers", "/team", "/case-studies"];
+  const dataPaths = ["/community", "/insights", "/careers", "/team", "/case-studies", "/admin"];
 
   if (editorialPaths.includes(path)) {
     return {
@@ -580,6 +580,10 @@ function Footer() {
               <span className="text-[10px] font-bold tracking-widest uppercase text-white/30">Legal</span>
               <Link to="/" className="text-[13px] font-bold text-white/60 hover:text-white transition-colors">Terms of Use</Link>
               <Link to="/" className="text-[13px] font-bold text-white/60 hover:text-white transition-colors">Privacy</Link>
+              <Link to="/admin" className="text-[13px] font-bold text-white/40 hover:text-[#FF4D00] transition-colors inline-flex items-center gap-1.5">
+                <Shield className="w-3 h-3" />
+                Admin
+              </Link>
             </div>
           </div>
         </div>

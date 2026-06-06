@@ -789,3 +789,91 @@ Stage Summary:
 - Page transitions are now distinctive per page type
 - All images use <img> instead of backgroundImage style
 - Routes Journey section has visual timeline
+
+---
+Task ID: 5
+Agent: wire-join-forms
+Task: Wire up Join page forms to backend API
+
+Work Log:
+- Read worklog.md and current JoinPage.tsx to understand the existing form structure
+- Confirmed API route at /api/applications already exists with full POST/GET/PATCH support and Prisma Application model
+- Added FounderFields and PartnerFields TypeScript interfaces with all required form fields
+- Created initialFounderFields and initialPartnerFields default state objects
+- Added useState for founderFields, partnerFields, isSubmitting, submitSuccess, and submitError in ApplicationSection
+- Created generic setFounderField and setPartnerField helper functions for type-safe state updates
+- Updated FounderForm to accept fields/setField props and bind all inputs to controlled state (value + onChange)
+- Updated PartnerForm to accept fields/setField props and bind all inputs to controlled state (value + onChange)
+- Updated CustomSelect to accept value and onChange props for controlled component behavior (replacing defaultValue)
+- Implemented async handleSubmit that builds the correct JSON payload based on form mode (founder/partner) and POSTs to /api/applications
+- Added loading state: submit button shows Loader2 spinner with "Submitting…" text and disabled styling during submission
+- Added success state: animated success message with CheckCircle2 icon, "Application Received" heading, and "Submit Another Application" button
+- Added error state: AlertCircle icon with error message in a styled error box, displayed inline below the form
+- Added AnimatePresence for smooth transition between form and success states
+- Clearing error when toggling between founder/partner mode
+- Reset form fields when submitting another application after success
+- Added Loader2, CheckCircle2, AlertCircle icons from lucide-react
+- Lint passes cleanly with no errors
+- Dev server compiles successfully
+
+Stage Summary:
+- Both FounderForm and PartnerForm are fully wired with controlled state management
+- Form submission POSTs correct JSON payloads to /api/applications API endpoint
+- Loading spinner and disabled button during submission
+- Animated success screen replaces form after successful submission
+- Inline error message displays on submission failure
+- All existing visual design preserved (dark bg, #FF4D00 accent, FieldLabel, RequiredStar, CustomSelect)
+
+---
+Task ID: 6
+Agent: admin-dashboard-builder
+Task: Build Admin Dashboard page
+
+Work Log:
+- Read worklog.md, existing API route, Prisma schema, router, and page.tsx to understand context
+- Created comprehensive AdminDashboard.tsx at /home/z/my-project/src/artemis/pages/AdminDashboard.tsx
+- Dark theme (bg-[#111111], text-white) with #FF4D00 accent, left-aligned layout, framer-motion animations
+- Header section: "Admin" label (mono, tracking-widest, #FF4D00), "Operations Hub" title, subtitle, last refreshed timestamp, refresh button with spinner
+- Stats row: 4 responsive cards (Total Subscribers, Investment Inquiries with total amount, Applications with founder/partner split, Pending Items with inquiry/app breakdown)
+- Tab navigation with animated underline indicator using framer-motion layoutId
+- Subscribers tab: table with email, source, consent badge, date, delete button; count display; empty state with Mail icon
+- Investment Inquiries tab: table with name, email, amount, tier badge (color-coded), accredited badge, status dropdown (color-coded), date, delete button; total amount display; empty state
+- Applications tab: filter buttons (All/Founders/Partners), expandable rows with AnimatePresence, TypeBadge (founder/partner), status dropdown, detail fields for founder (linkedin, company, website, location, role, pitch deck, motivation) and partner (org, website, role, interest, description), delete button; empty state
+- Status badges with distinct colors: pending (yellow), reviewing (blue), contacted (green), declined (red), invested/accepted (#FF4D00)
+- Tier badges with distinct colors: scout (emerald), syndicate (violet), partner (amber), anchor (rose)
+- Loading skeletons while data fetches, auto-refresh on status change/delete, window.confirm before delete
+- Relative date formatting ("2h ago", "3d ago") and currency formatting ($ with commas)
+- Registered /admin route in page.tsx router
+- Lint passes cleanly, dev server compiles successfully
+
+Stage Summary:
+- Full Admin Dashboard page created at /admin route with all requested features
+- Three tabs: Subscribers, Investment Inquiries, Applications with full CRUD via existing API
+- Expandable application details with framer-motion AnimatePresence
+- Dark theme matching xCelero editorial style with responsive design
+- No lint errors, site compiles correctly
+---
+Task ID: 1-8
+Agent: main
+Task: Build complete data management system - database, APIs, forms, and admin dashboard
+
+Work Log:
+- Updated Prisma schema with Subscriber, InvestmentInquiry, and Application models (replaced stale User/Post models)
+- Ran db:push to sync schema to SQLite database
+- Created /api/applications route (POST for submission, GET for listing, PATCH for status updates)
+- Created /api/admin route (GET for stats/subscribers/inquiries/applications, PATCH for status updates, DELETE for records)
+- Wired up JoinPage.tsx forms - both Founder and Partner forms now collect data via controlled state and POST to /api/applications
+- Added loading state, success state (animated thank-you message), and error state to form submission
+- Built AdminDashboard.tsx with: header (Operations Hub), 4 stat cards, 3 tabs (Subscribers, Investment Inquiries, Applications), status dropdowns, delete buttons, expandable application details
+- Added /admin route to page.tsx router and admin page transition to Layout.tsx
+- Added subtle "Admin" link with Shield icon in footer Legal section
+- Verified end-to-end: filled founder form → submitted → "Application Received" success → admin dashboard shows APPLICATIONS(1) with correct data
+- Confirmed all API endpoints return correct data via curl testing
+
+Stage Summary:
+- Complete data management system built from scratch
+- 3 database models: Subscriber, InvestmentInquiry, Application
+- 2 API route groups: /api/applications and /api/admin
+- All forms now functional (previously just called e.preventDefault())
+- Admin dashboard at #/admin with full CRUD capabilities
+- Admin link accessible from footer
