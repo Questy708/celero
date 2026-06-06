@@ -466,7 +466,8 @@ function HowWeWorkSection() {
       ref={ref}
       className="py-16 md:py-24 px-5 sm:px-6 md:px-12 lg:px-20 bg-[#FAFAFA]"
     >
-      <div className="w-full max-w-[1200px] mx-auto">
+      {/* Header — narrow, aligned with rest of page */}
+      <div className="w-full max-w-3xl mx-auto">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -486,7 +487,10 @@ function HowWeWorkSection() {
             Every function exists to compound founder outcomes.
           </p>
         </motion.div>
+      </div>
 
+      {/* Filter tabs + Team grid — wider for the card grid */}
+      <div className="w-full max-w-[1200px] mx-auto">
         {/* Filter tabs */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -757,7 +761,7 @@ function ManifestoCardsSection() {
       ref={ref}
       className="py-16 md:py-24 px-5 sm:px-6 md:px-12 lg:px-20 bg-white"
     >
-      <div className="w-full max-w-[1200px] mx-auto">
+      <div className="w-full max-w-3xl mx-auto">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

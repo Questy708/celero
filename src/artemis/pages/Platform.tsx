@@ -256,7 +256,7 @@ function CaseForInfrastructure() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-          className="mt-12 md:mt-16 bg-[#111111] text-white p-8 md:p-12"
+          className="mt-12 md:mt-16 bg-[#111111] text-white p-8 md:p-12 rounded-sm overflow-hidden"
         >
           <div className="max-w-3xl">
             <p className="text-[18px] md:text-[22px] font-display font-medium leading-[1.5] mb-4">
@@ -585,7 +585,7 @@ function RouteHubsSection() {
   return (
     <section
       ref={ref}
-      className="py-16 md:py-24 px-6 md:px-12 lg:px-20"
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-b border-[#111111]/10"
     >
       <div className="w-full max-w-[1400px] mx-auto">
         {/* Header */}

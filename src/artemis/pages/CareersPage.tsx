@@ -687,9 +687,10 @@ export function CareersPage() {
                   className="group relative overflow-hidden border border-white/10 hover:border-[#FF4D00]/30 transition-all duration-500 aspect-[3/4]"
                 >
                   {/* Background image */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${card.image})` }}
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   {/* Dark overlay */}
                   <div className="absolute inset-0 bg-[#111111]/70 group-hover:bg-[#111111]/60 transition-colors duration-500" />

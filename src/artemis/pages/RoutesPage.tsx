@@ -100,7 +100,7 @@ function RoutesBridge() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="px-6 md:px-12 lg:px-20 pb-16 md:pb-24">
+    <section ref={ref} className="px-6 md:px-12 lg:px-20 pb-16 md:pb-24 border-b border-[#111111]/10">
       <div className="w-full max-w-[1400px] mx-auto">
         {/* Image strip — three overlapping images */}
         <motion.div
@@ -289,8 +289,8 @@ function HeroSection() {
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <section className="relative bg-white text-[#111111] pt-24 pb-16 sm:pt-32 sm:pb-20 md:pt-44 md:pb-28 px-5 sm:px-6 md:px-12 lg:px-20">
-      <div ref={ref} className="w-full max-w-4xl mx-auto text-center">
+    <section className="relative bg-white text-[#111111] pt-24 pb-16 sm:pt-32 sm:pb-20 md:pt-44 md:pb-28 px-5 sm:px-6 md:px-12 lg:px-20 border-b border-[#111111]/10">
+      <div ref={ref} className="w-full max-w-3xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -1308,13 +1308,13 @@ function JourneySection() {
       ref={ref}
       className="py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10"
     >
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-[1400px] mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-16 md:mb-24"
+          className="max-w-3xl mb-16 md:mb-24"
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] mb-6 block">
             The Journey
@@ -1330,7 +1330,170 @@ function JourneySection() {
           </p>
         </motion.div>
 
-        {/* ── Timeline Visualization ── */}
+        {/* ── Route Journey Steps Timeline ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+          className="mb-20 md:mb-28"
+        >
+          <div className="flex items-center gap-2 mb-8">
+            <Route className="w-4 h-4 text-[#FF4D00]" />
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#111111]/30">
+              The Route Journey
+            </span>
+          </div>
+
+          {/* Desktop: Horizontal steps with connecting line */}
+          <div className="hidden md:block">
+            <div className="relative">
+              {/* Continuous horizontal line */}
+              <div className="absolute top-[28px] left-0 right-0 h-[2px] bg-[#111111]/8" />
+
+              <div className="flex">
+                {[
+                  {
+                    step: "01",
+                    icon: Database,
+                    title: "Application",
+                    desc: "Submit your venture thesis, team profile, and route alignment. We evaluate conviction, not credentials.",
+                  },
+                  {
+                    step: "02",
+                    icon: Check,
+                    title: "Acceptance",
+                    desc: "Covenant selection. 100 Xcitizens per cohort, chosen for what they'll contribute to the Route, not just what they'll take.",
+                  },
+                  {
+                    step: "03",
+                    icon: Anchor,
+                    title: "Departure",
+                    desc: "The cohort assembles. Orientation at the origin hub. Market walks, operator introductions, and the first deal room.",
+                  },
+                  {
+                    step: "04",
+                    icon: MapPin,
+                    title: "Hub Rotation",
+                    desc: "Six legs. Each hub is a new market, a new counterparty, a new operating environment. The flywheel accelerates.",
+                  },
+                  {
+                    step: "05",
+                    icon: Flame,
+                    title: "Return",
+                    desc: "The covenant ceremony. Signed deals, codified playbooks, and lifelong membership in the Routes alumni network.",
+                  },
+                ].map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: "easeOut" }}
+                      className="flex-1 relative group"
+                    >
+                      {/* Node on the line */}
+                      <div className="flex items-center justify-center mb-6 relative z-10">
+                        <div className="w-14 h-14 rounded-full border-2 border-[#111111]/10 bg-white flex items-center justify-center group-hover:border-[#FF4D00] group-hover:bg-[#FF4D00]/5 transition-all duration-300">
+                          <Icon className="w-5 h-5 text-[#FF4D00]" strokeWidth={1.5} />
+                        </div>
+                      </div>
+
+                      {/* Step number */}
+                      <span className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#FF4D00] block text-center mb-2">
+                        Step {item.step}
+                      </span>
+
+                      {/* Title */}
+                      <h4 className="text-[16px] font-display font-medium tracking-tight text-center mb-3 group-hover:text-[#FF4D00] transition-colors">
+                        {item.title}
+                      </h4>
+
+                      {/* Description */}
+                      <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6] text-center max-w-[200px] mx-auto">
+                        {item.desc}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: Vertical steps with connecting line */}
+          <div className="md:hidden">
+            <div className="relative">
+              {/* Continuous vertical line */}
+              <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-[#111111]/8" />
+
+              {[
+                {
+                  step: "01",
+                  icon: Database,
+                  title: "Application",
+                  desc: "Submit your venture thesis, team profile, and route alignment. We evaluate conviction, not credentials.",
+                },
+                {
+                  step: "02",
+                  icon: Check,
+                  title: "Acceptance",
+                  desc: "Covenant selection. 100 Xcitizens per cohort, chosen for what they'll contribute to the Route.",
+                },
+                {
+                  step: "03",
+                  icon: Anchor,
+                  title: "Departure",
+                  desc: "The cohort assembles. Orientation at the origin hub. Market walks and the first deal room.",
+                },
+                {
+                  step: "04",
+                  icon: MapPin,
+                  title: "Hub Rotation",
+                  desc: "Six legs. Each hub is a new market, a new counterparty. The flywheel accelerates.",
+                },
+                {
+                  step: "05",
+                  icon: Flame,
+                  title: "Return",
+                  desc: "The covenant ceremony. Signed deals, codified playbooks, and lifelong alumni membership.",
+                },
+              ].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.step}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.2 + i * 0.08, ease: "easeOut" }}
+                    className="relative pl-14 pb-8 last:pb-0"
+                  >
+                    {/* Node on the line */}
+                    <div className="absolute left-[5px] top-0 w-7 h-7 rounded-full border-2 border-[#111111]/10 bg-white flex items-center justify-center z-10">
+                      <Icon className="w-3.5 h-3.5 text-[#FF4D00]" strokeWidth={1.5} />
+                    </div>
+
+                    {/* Step number */}
+                    <span className="text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#FF4D00] block mb-1">
+                      Step {item.step}
+                    </span>
+
+                    {/* Title */}
+                    <h4 className="text-[16px] font-display font-medium tracking-tight mb-2">
+                      {item.title}
+                    </h4>
+
+                    {/* Description */}
+                    <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6]">
+                      {item.desc}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Annual Schedule Timeline ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -1689,12 +1852,12 @@ function PricingSection() {
       ref={ref}
       className="py-20 md:py-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10 bg-white"
     >
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-[1400px] mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-16"
+          className="max-w-3xl mb-16"
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] mb-6 block">
             Pricing

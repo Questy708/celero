@@ -194,9 +194,10 @@ function ProgramShowcase() {
                 <div className="pb-8 md:pb-10 pl-10 md:pl-[3.5rem]">
                   {/* Image */}
                   <div className="relative w-full aspect-[21/8] mb-6 overflow-hidden">
-                    <div
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${program.image})` }}
+                    <img
+                      src={program.image}
+                      alt={program.title}
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/50 to-transparent" />
                     <div className="absolute bottom-4 left-5 md:bottom-6 md:left-6">

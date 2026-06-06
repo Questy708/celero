@@ -94,9 +94,10 @@ function FeaturedCaseStudy() {
       >
         {/* Background image with overlay */}
         <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${featured.image})` }}
+          <img
+            src={featured.image}
+            alt={featured.title}
+            className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-[#111111]/85" />
         </div>

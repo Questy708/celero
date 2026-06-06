@@ -1,10 +1,52 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown, LogIn } from "lucide-react";
+import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown, LogIn, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "../router";
 import { SearchModal } from "./SearchModal";
+
+/* ── Page transition variants based on path ── */
+function getTransitionForPath(path: string) {
+  // Editorial pages — fade-only, no y movement
+  const editorialPaths = ["/about", "/manifesto", "/approach"];
+  // Content-heavy pages — slide-up
+  const contentPaths = ["/ventures", "/programs", "/routes", "/capital", "/platform"];
+  // Data pages — subtle crossfade
+  const dataPaths = ["/community", "/insights", "/careers", "/team", "/case-studies"];
+
+  if (editorialPaths.includes(path)) {
+    return {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+    };
+  }
+  if (contentPaths.includes(path)) {
+    return {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -10 },
+      transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+    };
+  }
+  if (dataPaths.includes(path)) {
+    return {
+      initial: { opacity: 0, y: 4 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -4 },
+      transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+    };
+  }
+  // Default / home — gentle fade
+  return {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -8 },
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+  };
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { path } = useRouter();
@@ -16,9 +58,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [path]);
 
+  const t = getTransitionForPath(path);
+
   if (isImmersive) {
     return (
       <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#FF4D00]/20 selection:text-[#111111]">
+        {/* Floating close button for immersive mode */}
+        <Link
+          to="/"
+          className="fixed top-4 left-4 z-[100] w-10 h-10 rounded-full bg-[#FF4D00] text-white flex items-center justify-center shadow-lg hover:bg-[#FF4D00]/90 transition-colors"
+          aria-label="Close and return to home"
+        >
+          <X className="w-5 h-5" />
+        </Link>
         <AnimatePresence mode="wait">
           <motion.div
             key={path}
@@ -41,10 +93,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <AnimatePresence mode="wait">
           <motion.div
             key={path}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            initial={t.initial}
+            animate={t.animate}
+            exit={t.exit}
+            transition={t.transition}
           >
             {children}
           </motion.div>
