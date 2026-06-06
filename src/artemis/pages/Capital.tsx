@@ -880,7 +880,7 @@ function InvestmentVehicles() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   CAPITAL MEDIA — Full-width image/video panel following alignment rules
+   CAPITAL MEDIA — Full-width image/video panel
    ══════════════════════════════════════════════════════════════════════════ */
 function CapitalMedia() {
   const ref = useRef<HTMLDivElement>(null);
@@ -896,39 +896,21 @@ function CapitalMedia() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end"
+          className="relative overflow-hidden bg-[#F5F5F5] shadow-lg"
         >
-          {/* Left: Image — left-aligned, not full width */}
-          <div className="lg:col-span-8">
-            <div className="relative overflow-hidden bg-[#F5F5F5] shadow-lg">
-              <img
-                src="/capital-media.png"
-                alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
-                className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              />
-              {/* Overlay label */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#111111]/60 to-transparent p-6 md:p-8">
-                <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/60 block mb-2">
-                  xCelero Capital
-                </span>
-                <p className="text-[16px] md:text-[20px] font-display font-medium text-white leading-[1.3]">
-                  Building infrastructure where it&apos;s needed{" "}
-                  <em className="font-serif italic text-[#FF4D00]">most</em>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Caption text */}
-          <div className="lg:col-span-4">
-            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] block mb-4">
-              Capital in Motion
+          <img
+            src="/capital-media.png"
+            alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
+            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
+          />
+          {/* Overlay label */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#111111]/60 to-transparent p-6 md:p-8">
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/60 block mb-2">
+              xCelero Capital
             </span>
-            <p className="text-[15px] md:text-[17px] leading-[1.6] text-[#111111]/55 font-medium mb-4">
-              From solar installations in Nairobi to manufacturing hubs in Lagos — xCelero deploys where the technology is most needed.
-            </p>
-            <p className="text-[13px] leading-[1.6] text-[#111111]/35 font-medium">
-              $4B target across 39 countries. 6 vehicles. 190 route hubs. Capital that moves at the speed of the Route.
+            <p className="text-[16px] md:text-[20px] font-display font-medium text-white leading-[1.3]">
+              Building infrastructure where it&apos;s needed{" "}
+              <em className="font-serif italic text-[#FF4D00]">most</em>
             </p>
           </div>
         </motion.div>
