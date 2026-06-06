@@ -747,3 +747,23 @@ Stage Summary:
 - Manifesto cards enhanced with top accent line reveal on hover, large watermark number background, and left border appearing on hover
 - All enhancements use xCelero design language (#FF4D00 accent, font-display, smooth transitions)
 - Clean lint, no errors, site compiles correctly
+---
+Task ID: 16
+Agent: Main Agent
+Task: Fix About page zigzag layout + add Sign In button to navigation header
+
+Work Log:
+- Analyzed current About.tsx WhatIsXceleroSection: 12-column grid with 7+5 split (copy left, stat cards right) creating a "zigzag" layout the user disliked
+- Analyzed current Layout.tsx Nav: had search button + "join" link but no "Sign In" / feed button
+- Redesigned WhatIsXceleroSection: replaced 7+5 grid with clean single-column editorial layout (max-w-3xl centered), stats displayed as horizontal row below text with orange (#FF4D00) numbers and border-t separator
+- Added "sign in" button to desktop nav: orange (#FF4D00) background, white text, LogIn icon from lucide-react, links to /townsquare
+- Added "Sign In" as primary CTA (orange button with LogIn icon) to mobile menu bottom CTAs, placed above "Invest Now" and "Join"
+- Added LogIn to lucide-react imports in Layout.tsx
+- Lint passes cleanly, dev server compiles successfully
+- Verified with Agent Browser: Sign In button visible in nav with correct orange styling, navigates to Town Square; About page WhatIsXceleroSection is clean single-column with horizontal stats row
+- Pushed to GitHub (commit 07d594e)
+
+Stage Summary:
+- About page "What is xCelero Labs" section: zigzag 7+5 grid → clean single-column layout with horizontal orange stats
+- Navigation: orange "sign in" button added to desktop + mobile nav, links to Town Square feed
+- Changes pushed to GitHub
