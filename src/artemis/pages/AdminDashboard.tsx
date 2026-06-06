@@ -34,6 +34,8 @@ import {
 interface Subscriber {
   id: string;
   email: string;
+  firstName: string | null;
+  lastName: string | null;
   consent: boolean;
   source: string;
   createdAt: string;
@@ -138,7 +140,7 @@ interface Stats {
 
 type Tab = "subscribers" | "inquiries" | "applications" | "jobApplications" | "programApplications";
 type AppFilter = "all" | "founder" | "partner";
-type ProgramFilter = "all" | "quest-fellowship" | "xcelerator" | "venture-studio" | "lab-residency";
+type ProgramFilter = "all" | "xhansa-fellowship" | "xcelero-accelerator" | "inception-studios" | "quest-fellowship";
 
 /* ══════════════════════════════════════════════════════════════════════════
    HELPERS
@@ -255,16 +257,16 @@ function AccreditedBadge({ accredited }: { accredited: boolean }) {
 
 function ProgramBadge({ slug }: { slug: string }) {
   const labels: Record<string, string> = {
+    "xhansa-fellowship": "Xhansa Fellowship",
+    "xcelero-accelerator": "Xcelero Accelerator",
+    "inception-studios": "Inception Studios",
     "quest-fellowship": "Quest Fellowship",
-    "xcelerator": "Xcelerator",
-    "venture-studio": "Venture Studio",
-    "lab-residency": "Lab Residency",
   };
   const styles: Record<string, string> = {
-    "quest-fellowship": "bg-[#FF4D00]/15 text-[#FF4D00] border-[#FF4D00]/30",
-    "xcelerator": "bg-violet-500/15 text-violet-400 border-violet-500/30",
-    "venture-studio": "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-    "lab-residency": "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+    "xhansa-fellowship": "bg-[#FF4D00]/15 text-[#FF4D00] border-[#FF4D00]/30",
+    "xcelero-accelerator": "bg-violet-500/15 text-violet-400 border-violet-500/30",
+    "inception-studios": "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    "quest-fellowship": "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border rounded-sm ${styles[slug] || "bg-white/10 text-white/40 border-white/20"}`}>
@@ -574,10 +576,10 @@ export function AdminDashboard() {
   const jobAppRoleCount = stats?.jobApplicationsByRole?.length || 0;
   const programAppBreakdown = stats?.programApplicationsByProgram?.map((p) => {
     const labels: Record<string, string> = {
+      "xhansa-fellowship": "Xhansa",
+      "xcelero-accelerator": "Xcel",
+      "inception-studios": "Studio",
       "quest-fellowship": "Quest",
-      "xcelerator": "Xcel",
-      "venture-studio": "Studio",
-      "lab-residency": "Lab",
     };
     return `${labels[p.programSlug] || p.programSlug}: ${p._count.programSlug}`;
   }).join(" · ") || "";
@@ -1030,13 +1032,16 @@ function SubscribersTab({
 
       {/* Table header */}
       <div className="hidden md:grid md:grid-cols-12 gap-4 pb-3 border-b border-white/10 mb-0">
-        <div className="col-span-5 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+        <div className="col-span-3 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Name
+        </div>
+        <div className="col-span-3 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
           Email
         </div>
         <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
           Source
         </div>
-        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
           Consent
         </div>
         <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
@@ -1064,8 +1069,13 @@ function SubscribersTab({
               transition={{ duration: 0.3, delay: i * 0.03 }}
               className="py-4 md:grid md:grid-cols-12 md:gap-4 md:items-center hover:bg-white/[0.02] transition-colors group"
             >
-              <div className="col-span-5 mb-1 md:mb-0">
+              <div className="col-span-3 mb-1 md:mb-0">
                 <span className="text-[13px] md:text-[14px] font-medium text-white/80 group-hover:text-white transition-colors">
+                  {sub.firstName && sub.lastName ? `${sub.firstName} ${sub.lastName}` : sub.firstName || "—"}
+                </span>
+              </div>
+              <div className="col-span-3 mb-1 md:mb-0">
+                <span className="text-[12px] font-mono text-white/50 group-hover:text-white/70 transition-colors">
                   {sub.email}
                 </span>
               </div>
@@ -1073,7 +1083,7 @@ function SubscribersTab({
                 <span className="md:hidden text-[10px] font-mono text-white/20 mr-2">Source </span>
                 <span className="text-[11px] font-mono text-white/40">{sub.source}</span>
               </div>
-              <div className="col-span-2 mb-1 md:mb-0">
+              <div className="col-span-1 mb-1 md:mb-0">
                 <span className="md:hidden text-[10px] font-mono text-white/20 mr-2">Consent </span>
                 <ConsentBadge consent={sub.consent} />
               </div>
@@ -1676,10 +1686,10 @@ function ProgramApplicationsTab({
   const progStatuses = ["pending", "reviewing", "contacted", "accepted", "declined"];
   const filters: { key: ProgramFilter; label: string }[] = [
     { key: "all", label: "All" },
+    { key: "xhansa-fellowship", label: "Xhansa Fellowship" },
+    { key: "xcelero-accelerator", label: "Xcelero Accelerator" },
+    { key: "inception-studios", label: "Inception Studios" },
     { key: "quest-fellowship", label: "Quest Fellowship" },
-    { key: "xcelerator", label: "Xcelerator" },
-    { key: "venture-studio", label: "Venture Studio" },
-    { key: "lab-residency", label: "Lab Residency" },
   ];
 
   return (

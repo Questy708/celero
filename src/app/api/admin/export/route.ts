@@ -74,9 +74,9 @@ export async function GET(req: NextRequest) {
         take: 5000,
       });
 
-      const headers = ["ID", "Email", "Consent", "Source", "Created At"];
+      const headers = ["ID", "First Name", "Last Name", "Email", "Consent", "Source", "Created At"];
       const rows = subscribers.map((s) => [
-        s.id, s.email, String(s.consent), s.source,
+        s.id, s.firstName || "", s.lastName || "", s.email, String(s.consent), s.source,
         new Date(s.createdAt).toISOString(),
       ]);
       csv = generateCSV(headers, rows);

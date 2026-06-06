@@ -1385,7 +1385,7 @@ function NewsletterSection() {
                     const res = await fetch("/api/capital/subscribe", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ email, consent: true, source: "newsletter_home" }),
+                      body: JSON.stringify({ email, firstName, lastName, consent: true, source: "newsletter_home" }),
                     });
                     if (!res.ok) {
                       const data = await res.json().catch(() => ({}));

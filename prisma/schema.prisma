@@ -16,6 +16,8 @@ datasource db {
 model Subscriber {
   id        String   @id @default(cuid())
   email     String   @unique
+  firstName String?
+  lastName  String?
   consent   Boolean  @default(false)
   source    String   @default("capital_page")
   createdAt DateTime @default(now())

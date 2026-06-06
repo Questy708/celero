@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate program slug
-    const validSlugs = ["quest-fellowship", "xcelerator", "venture-studio", "lab-residency"];
+    const validSlugs = ["xhansa-fellowship", "xcelero-accelerator", "inception-studios", "quest-fellowship"];
     if (!validSlugs.includes(programSlug)) {
       return NextResponse.json(
         { error: "Invalid program slug" },
