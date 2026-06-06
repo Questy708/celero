@@ -394,10 +394,10 @@ function MissionBridge() {
             className="lg:col-span-6"
           >
             <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
-              Startups are building the critical technologies that will define our future economy — but <span className="text-[#FF4D00]">90% of them never make it to market</span>.
+              The next century belongs to the markets building what the world needs — but <span className="text-[#FF4D00]">brilliance alone doesn&apos;t compound</span>.
             </p>
             <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
-              xCelero unlocks commercialization for critical technology startups through infrastructure, ventures, capital, and community in the geographies focused on rapid industrialization — so the right ideas don&apos;t just survive, they <span className="text-[#111111] font-semibold">scale</span>.
+              xCelero wires 190 hubs across 39 countries into one commercialization engine — infrastructure to prototype, programs to validate, capital to scale, and a community that compounds every advantage. Isolated breakthroughs fade. <span className="text-[#111111] font-semibold">Connected ones compound.</span>
             </p>
           </motion.div>
 
