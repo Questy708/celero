@@ -573,10 +573,10 @@ function CapitalBridge() {
             className="lg:col-span-6"
           >
             <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
-              Capital that moves where the <span className="text-[#FF4D00]">opportunity is compounding</span> — not where it&apos;s already proven.
+              Capital that understands the terrain — not just the <span className="text-[#FF4D00]">return profile</span>.
             </p>
             <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
-              The youngest populations, the fastest-growing markets, the boldest infrastructure ambitions — they&apos;re not in Silicon Valley. xCelero structures six vehicles around a single thesis: <span className="text-[#111111] font-semibold">critical technology, built where it matters most, funded to match the terrain</span>.
+              Traditional venture capital flows where returns are proven. xCelero deploys capital where the technology is most needed — in the geographies building the next century&apos;s infrastructure. Six vehicles, one thesis: <span className="text-[#111111] font-semibold">critical technology in the markets that need it most</span>.
             </p>
           </motion.div>
 

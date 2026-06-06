@@ -394,10 +394,10 @@ function MissionBridge() {
             className="lg:col-span-6"
           >
             <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
-              The next century belongs to the markets building what the world needs — but <span className="text-[#FF4D00]">brilliance alone doesn&apos;t compound</span>.
+              The markets with the <span className="text-[#FF4D00]">fewest shortcuts</span> are building the technologies the world can&apos;t live without.
             </p>
             <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
-              xCelero wires 190 hubs across 39 countries into one commercialization engine — infrastructure to prototype, programs to validate, capital to scale, and a community that compounds every advantage. Isolated breakthroughs fade. <span className="text-[#111111] font-semibold">Connected ones compound.</span>
+              Across the Route, founders are prototyping energy, food, and defense solutions in conditions that would kill most startups. xCelero gives them what grit alone can&apos;t: infrastructure to build, programs to validate, capital to scale, and a network that turns solo fights into <span className="text-[#111111] font-semibold">compound momentum</span>.
             </p>
           </motion.div>
 
