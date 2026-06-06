@@ -320,14 +320,14 @@ function BentoGrid() {
   ];
 
   return (
-    <section ref={ref} className="pt-4 md:pt-8 pb-20 md:pb-32 px-6 md:px-12 lg:px-20 border-t border-[#111111]/10">
+    <section ref={ref} className="pt-8 md:pt-12 pb-20 md:pb-32 px-6 md:px-12 lg:px-20">
       <div className="w-full max-w-[1400px] mx-auto">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-12 md:mb-16 text-center"
+          className="mb-12 md:mb-16"
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.3em] uppercase text-[#FF4D00] mb-4 block">
             The Platform
