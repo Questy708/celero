@@ -19,6 +19,7 @@ import {
   PiggyBank,
   Banknote,
   CircleDollarSign,
+  Clock,
   Layers,
 } from "lucide-react";
 
@@ -676,15 +677,13 @@ function StatsBar() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   INVESTMENT VEHICLES, Expandable detail cards with full-page expansion
+   INVESTMENT VEHICLES, Tabbed editorial layout
    ══════════════════════════════════════════════════════════════════════════ */
 function InvestmentVehicles() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const detailRef = useRef<HTMLDivElement>(null);
-
-  const selectedVehicle = investmentVehicles.find((v) => v.id === expanded);
+  const [activeId, setActiveId] = useState<string>(investmentVehicles[0].id);
+  const activeVehicle = investmentVehicles.find((v) => v.id === activeId)!;
 
   return (
     <section
@@ -693,11 +692,12 @@ function InvestmentVehicles() {
       className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-b border-[#111111]/10"
     >
       <div className="w-full max-w-[1400px] mx-auto">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12 md:mb-16"
+          className="mb-10 md:mb-14"
         >
           <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
             Investment Vehicles
@@ -708,311 +708,267 @@ function InvestmentVehicles() {
           </h2>
           <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4">
             From $500 in the xCelero Fund to custom Anchor Mandates at $250K+,
-            every vehicle is built for the same thesis, critical technology in
+            every vehicle is built for the same thesis: critical technology in
             the markets that need it most.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {investmentVehicles.map((vehicle, i) => {
-            const Icon = vehicle.icon;
-            const isSelected = expanded === vehicle.id;
-            return (
-              <motion.div
-                key={vehicle.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className={`border p-6 md:p-8 bg-white transition-all flex flex-col cursor-pointer group ${
-                  isSelected
-                    ? "border-[#FF4D00] ring-1 ring-[#FF4D00]/20"
-                    : "border-[#111111]/10 hover:border-[#FF4D00]/30"
-                }`}
-                onClick={() => {
-                  setExpanded(isSelected ? null : vehicle.id);
-                  if (!isSelected) {
-                    setTimeout(() => {
-                      detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 100);
-                  }
-                }}
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
+        <div className="grid lg:grid-cols-12 gap-0 border border-[#111111]/10">
+          {/* Left: Vertical tab nav */}
+          <div className="lg:col-span-4 xl:col-span-3 border-b lg:border-b-0 lg:border-r border-[#111111]/10">
+            {/* Mobile: horizontal scroll */}
+            <div className="flex lg:flex-col overflow-x-auto lg:overflow-visible">
+              {investmentVehicles.map((vehicle, i) => {
+                const Icon = vehicle.icon;
+                const isActive = activeId === vehicle.id;
+                return (
+                  <motion.button
+                    key={vehicle.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.4, delay: i * 0.06 }}
+                    onClick={() => setActiveId(vehicle.id)}
+                    className={`flex items-center gap-3 px-5 py-4 lg:py-5 lg:px-6 text-left transition-all shrink-0 lg:shrink border-b lg:border-b lg:border-b-0 lg:border-r-0 border-[#111111]/5 whitespace-nowrap lg:whitespace-normal ${
+                      isActive
+                        ? "bg-[#FF4D00]/[0.04] border-l-2 border-l-[#FF4D00] lg:border-l-2"
+                        : "border-l-2 border-l-transparent hover:bg-[#111111]/[0.02] hover:border-l-[#111111]/10"
+                    }`}
+                  >
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                        isSelected
-                          ? "bg-[#FF4D00]"
-                          : "border border-[#111111]/10 group-hover:border-[#FF4D00]/30"
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        isActive ? "bg-[#FF4D00]" : "border border-[#111111]/10"
                       }`}
                     >
                       <Icon
-                        className={`w-4 h-4 transition-colors ${
-                          isSelected ? "text-white" : "text-[#FF4D00]"
+                        className={`w-3.5 h-3.5 transition-colors ${
+                          isActive ? "text-white" : "text-[#FF4D00]"
                         }`}
                         strokeWidth={1.5}
                       />
                     </div>
-                    <div>
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 block">
+                    <div className="min-w-0">
+                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block">
                         {vehicle.shortName}
                       </span>
+                      <span
+                        className={`text-[13px] md:text-[14px] font-medium leading-tight block truncate ${
+                          isActive ? "text-[#111111]" : "text-[#111111]/50"
+                        }`}
+                      >
+                        {vehicle.name}
+                      </span>
                     </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: Active vehicle detail */}
+          <div className="lg:col-span-8 xl:col-span-9 bg-white">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeVehicle.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="p-6 md:p-8 lg:p-10"
+              >
+                {/* Vehicle header */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                      <activeVehicle.icon className="w-5 h-5 text-white" strokeWidth={1.5} />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">
+                      {activeVehicle.shortName}
+                    </span>
                   </div>
-                  <ChevronDown
-                    className={`w-5 h-5 text-[#111111]/30 transition-transform duration-300 ${
-                      isSelected ? "rotate-180" : ""
-                    }`}
-                  />
+                  <h3 className="text-[24px] md:text-[30px] font-display font-medium tracking-tight mb-2">
+                    {activeVehicle.name}
+                  </h3>
+                  <p className="text-[14px] md:text-[15px] text-[#FF4D00] font-medium leading-[1.5] mb-4">
+                    {activeVehicle.tagline}
+                  </p>
+                  <p className="text-[14px] md:text-[15px] text-[#111111]/55 font-medium leading-[1.7] max-w-2xl">
+                    {activeVehicle.description}
+                  </p>
                 </div>
 
-                {/* Title + Tagline */}
-                <h3 className="text-[20px] md:text-[24px] font-display font-medium tracking-tight mb-2">
-                  {vehicle.name}
-                </h3>
-                <p className="text-[13px] text-[#FF4D00] font-medium leading-[1.5] mb-3">
-                  {vehicle.tagline}
-                </p>
-
-                {/* Description */}
-                <p className="text-[13px] md:text-[14px] text-[#111111]/50 font-medium leading-[1.7] mb-4">
-                  {vehicle.description}
-                </p>
-
-                {/* Details Grid */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
-                  {vehicle.details.map((detail, di) => (
-                    <div key={di} className="flex flex-col">
-                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">
+                {/* Key terms bar */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8 border-t border-b border-[#111111]/5 py-5">
+                  {activeVehicle.details.map((detail, i) => (
+                    <div key={i}>
+                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">
                         {detail.label}
                       </span>
-                      <span className="text-[12px] md:text-[13px] font-medium text-[#111111]/70 leading-[1.4]">
+                      <span className="text-[13px] md:text-[14px] font-medium text-[#111111]/70 leading-[1.3]">
                         {detail.value}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* Click hint */}
-                <div className="mt-auto pt-4 border-t border-[#111111]/5 flex items-center gap-2 text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/20 group-hover:text-[#FF4D00]/60 transition-colors">
-                  <span>{isSelected ? "Close details" : "View details"}</span>
-                  <ArrowRight className={`w-3 h-3 transition-transform ${isSelected ? "rotate-90" : ""}`} />
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Full Detail Expansion */}
-        <AnimatePresence>
-          {selectedVehicle && (
-            <motion.div
-              ref={detailRef}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-8 md:mt-12 border border-[#111111]/10 bg-white"
-            >
-              {/* Detail Header */}
-              <div className="p-8 md:p-12 lg:p-16 border-b border-[#111111]/10 bg-[#FAFAFA]">
-                <div className="flex items-start justify-between mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-[#FF4D00] flex items-center justify-center">
-                      <selectedVehicle.icon className="w-6 h-6 text-white" strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 block">
-                        {selectedVehicle.shortName}
-                      </span>
-                      <h3 className="text-[28px] md:text-[40px] font-display font-medium tracking-[-0.02em]">
-                        {selectedVehicle.name}
-                      </h3>
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-10">
+                  {/* How It Works timeline */}
+                  <div className="lg:col-span-7">
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-5">
+                      <Clock className="w-3.5 h-3.5 inline mr-2 -mt-0.5" />
+                      How It Works
+                    </span>
+                    <div className="relative ml-1">
+                      {activeVehicle.howItWorks.map((step, si) => (
+                        <div key={si} className="flex gap-4 relative pb-5 last:pb-0">
+                          {si < activeVehicle.howItWorks.length - 1 && (
+                            <div className="absolute left-[15px] top-[34px] w-[2px] bottom-0 bg-[#FF4D00]/12" />
+                          )}
+                          <div className="shrink-0 w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center text-[11px] font-mono font-bold text-white z-10">
+                            {String(si + 1).padStart(2, "0")}
+                          </div>
+                          <p className="text-[13px] md:text-[14px] text-[#111111]/55 font-medium leading-[1.6] pt-1">
+                            {step}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <button
-                    onClick={() => setExpanded(null)}
-                    className="p-3 border border-[#111111]/10 hover:border-[#111111] hover:bg-[#111111] hover:text-white transition-all"
-                    aria-label="Close details"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <p className="text-[17px] md:text-[20px] text-[#FF4D00] font-medium leading-[1.5] mb-4">
-                  {selectedVehicle.tagline}
-                </p>
-                <p className="text-[15px] md:text-[17px] text-[#111111]/60 font-medium leading-[1.7] max-w-3xl">
-                  {selectedVehicle.description}
-                </p>
-              </div>
 
-              <div className="p-8 md:p-12 lg:p-16">
-                <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
-                  {/* Left Column: Details + Best For */}
+                  {/* Key Features + Best For + Risk */}
                   <div className="lg:col-span-5">
-                    {/* Details Table */}
-                    <div className="mb-10">
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
-                        Key Terms
-                      </span>
-                      <div className="space-y-0">
-                        {selectedVehicle.details.map((detail, i) => (
-                          <div
-                            key={i}
-                            className={`flex justify-between items-center py-3 ${
-                              i > 0 ? "border-t border-[#111111]/5" : ""
-                            }`}
-                          >
-                            <span className="text-[12px] font-mono font-bold tracking-widest uppercase text-[#111111]/40">
-                              {detail.label}
-                            </span>
-                            <span className="text-[14px] font-medium text-[#111111]/80">
-                              {detail.value}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-4">
+                      Key Features
+                    </span>
+                    <ul className="space-y-2.5 mb-6">
+                      {activeVehicle.keyFeatures.map((feature, fi) => (
+                        <li key={fi} className="flex items-start gap-2.5">
+                          <Check className="w-3.5 h-3.5 text-[#FF4D00] shrink-0 mt-0.5" strokeWidth={2} />
+                          <span className="text-[12px] md:text-[13px] text-[#111111]/55 font-medium leading-[1.5]">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
 
-                    {/* Best For */}
-                    <div>
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-3">
+                    <div className="border-t border-[#111111]/5 pt-4 mb-5">
+                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-2">
                         Best For
                       </span>
-                      <p className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.7]">
-                        {selectedVehicle.bestFor}
+                      <p className="text-[12px] md:text-[13px] text-[#111111]/45 font-medium leading-[1.6]">
+                        {activeVehicle.bestFor}
                       </p>
                     </div>
-                  </div>
 
-                  {/* Right Column: How It Works + Key Features */}
-                  <div className="lg:col-span-7">
-                    {/* How It Works */}
-                    <div className="mb-10">
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-5">
-                        How It Works
+                    <div className="border-l-2 border-[#FF4D00]/15 pl-4">
+                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/20 block mb-1.5">
+                        Risk
                       </span>
-                      <div className="space-y-4">
-                        {selectedVehicle.howItWorks.map((step, i) => (
-                          <div key={i} className="flex gap-4">
-                            <div className="shrink-0 w-8 h-8 rounded-full border border-[#111111]/10 flex items-center justify-center text-[11px] font-mono font-bold text-[#111111]/30">
-                              {String(i + 1).padStart(2, "0")}
-                            </div>
-                            <p className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.6] pt-1">
-                              {step}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Key Features */}
-                    <div className="mb-10">
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-5">
-                        Key Features
-                      </span>
-                      <div className="space-y-3">
-                        {selectedVehicle.keyFeatures.map((feature, i) => (
-                          <div key={i} className="flex items-start gap-3">
-                            <Check className="w-4 h-4 text-[#FF4D00] shrink-0 mt-0.5" strokeWidth={2} />
-                            <span className="text-[14px] md:text-[15px] text-[#111111]/60 font-medium leading-[1.6]">
-                              {feature}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Risk Note */}
-                    <div className="border-l-2 border-[#FF4D00]/20 pl-4">
-                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 block mb-2">
-                        Risk Consideration
-                      </span>
-                      <p className="text-[13px] text-[#111111]/40 font-medium leading-[1.6] italic">
-                        {selectedVehicle.riskNote}
+                      <p className="text-[11px] text-[#111111]/35 font-medium leading-[1.6] italic">
+                        {activeVehicle.riskNote}
                       </p>
                     </div>
                   </div>
                 </div>
-
-                {/* CTA Bar */}
-                <div className="mt-12 pt-8 border-t border-[#111111]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <p className="text-[13px] text-[#111111]/40 font-medium">
-                    Ready to invest? Select your tier below or get updates on new opportunities.
-                  </p>
-                  <div className="flex gap-3">
-                    <Link
-                      to="#invest-tiers"
-                      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                        e.preventDefault();
-                        document
-                          .getElementById("invest-tiers")
-                          ?.scrollIntoView({ behavior: "smooth" });
-                      }}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#111111] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00] transition-colors"
-                    >
-                      Invest Now
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   INVESTMENT TIERS, Interactive selection + inline form
+   INVESTMENT TIERS, Multi-step wizard flow
    ══════════════════════════════════════════════════════════════════════════ */
+
+/* Map each tier to its matching vehicle for howItWorks data */
+const tierVehicleMap: Record<string, typeof investmentVehicles[number] | undefined> = {
+  scout: investmentVehicles.find((v) => v.id === "xcelero-fund"),
+  syndicate: investmentVehicles.find((v) => v.id === "spv-syndicates"),
+  partner: investmentVehicles.find((v) => v.id === "thematic-funds"),
+  anchor: investmentVehicles.find((v) => v.id === "anchor-mandate"),
+};
+
+type WizardStep = 1 | 2 | 3 | 4 | 5;
+
+const stepLabels = [
+  { step: 1 as WizardStep, label: "Choose Tier", shortLabel: "Tier" },
+  { step: 2 as WizardStep, label: "Your Vehicle", shortLabel: "Vehicle" },
+  { step: 3 as WizardStep, label: "Benefits", shortLabel: "Benefits" },
+  { step: 4 as WizardStep, label: "Get Started", shortLabel: "Start" },
+  { step: 5 as WizardStep, label: "Fund", shortLabel: "Fund" },
+];
+
+/* ── Payment Methods ── */
+const paymentMethods = [
+  {
+    id: "bank-transfer",
+    name: "Bank Transfer",
+    description: "Direct wire or ACH from your bank. Largest amounts, lowest fees. Settlement in 1–3 business days.",
+    details: ["No transaction limits", "1–3 business day settlement", "USD, EUR, GBP, AED, KES, ZAR, NGN", "No processing fee"],
+    icon: "🏦",
+    bestFor: "Anchor & Partner tier investors, large allocations",
+    speed: "1–3 days",
+    fee: "None",
+  },
+  {
+    id: "card",
+    name: "Card Payment",
+    description: "Visa or Mastercard for fast entry. Instant confirmation, higher processing fees apply.",
+    details: ["Instant confirmation", "$50,000 per transaction limit", "Visa & Mastercard accepted", "2.5% processing fee"],
+    icon: "💳",
+    bestFor: "Scout & Syndicate tier, quick initial deposits",
+    speed: "Instant",
+    fee: "2.5%",
+  },
+  {
+    id: "crypto",
+    name: "Crypto Transfer",
+    description: "USDC, USDT, or BTC via our partnered custodian. On-chain confirmation, converted to USD at point of deposit.",
+    details: ["USDC, USDT, BTC supported", "On-chain confirmation", "Converted to USD at deposit", "0.5% conversion fee"],
+    icon: "₿",
+    bestFor: "Global investors seeking speed and jurisdiction flexibility",
+    speed: "Minutes",
+    fee: "0.5%",
+  },
+  {
+    id: "mobile-money",
+    name: "Mobile Money",
+    description: "M-Pesa, Airtel Money, MTN Mobile Money. Built for African investors who move capital through mobile rails.",
+    details: ["M-Pesa, Airtel, MTN supported", "Local agent deposit options", "KES, UGX, TZS, GHS, NGN", "No processing fee"],
+    icon: "📱",
+    bestFor: "East & West African investors, Scout tier entry",
+    speed: "Instant",
+    fee: "None",
+  },
+];
+
 function InvestmentTiers() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const [selectedTier, setSelectedTier] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    amount: "",
-    tier: "",
-    accredited: false,
-    consent: false,
-  });
+  const [currentStep, setCurrentStep] = useState<WizardStep>(1);
+  const [selectedTierId, setSelectedTierId] = useState<string>("scout");
 
-  const handleSelectTier = (tierId: string) => {
-    setSelectedTier(tierId);
-    const tier = investmentTiers.find((t) => t.id === tierId);
-    if (tier) {
-      setFormData((prev) => ({
-        ...prev,
-        tier: tierId,
-        amount: tier.min.toString(),
-      }));
-    }
-    setShowForm(true);
+  const selectedTier = investmentTiers.find((t) => t.id === selectedTierId)!;
+  const selectedVehicle = tierVehicleMap[selectedTierId];
+
+  const [direction, setDirection] = useState<1 | -1>(1);
+
+  const goToStep = (step: WizardStep) => {
+    setDirection(step > currentStep ? 1 : -1);
+    setCurrentStep(step);
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormState("submitting");
-
-    try {
-      const res = await fetch("/api/capital/invest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error("Submission failed");
-
-      setFormState("success");
-    } catch {
-      setFormState("error");
+  const goNext = () => {
+    if (currentStep < 5) {
+      setDirection(1);
+      setCurrentStep((currentStep + 1) as WizardStep);
+    }
+  };
+  const goBack = () => {
+    if (currentStep > 1) {
+      setDirection(-1);
+      setCurrentStep((currentStep - 1) as WizardStep);
     }
   };
 
@@ -1023,300 +979,755 @@ function InvestmentTiers() {
       className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-[#FAFAFA] border-t border-[#111111]/10"
     >
       <div className="w-full max-w-[1400px] mx-auto">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12 md:mb-16"
+          className="mb-10 md:mb-14"
         >
           <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
             Invest Now
           </span>
           <h2 className="text-[32px] md:text-[48px] lg:text-[64px] font-display font-medium tracking-[-0.03em] leading-[0.9] mt-3">
-            Pick your{" "}
-            <em className="font-serif italic text-[#FF4D00]">entry</em>
+            Your investment{" "}
+            <em className="font-serif italic text-[#FF4D00]">journey</em>
           </h2>
           <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4">
-            Four tiers, each mapped to the investment vehicle that fits your
-            capital and conviction. Select a tier to start your investment
-            inquiry.
+            Five steps from curiosity to commitment. Choose your tier, understand
+            your vehicle, see what you unlock, learn the process, and fund.
           </p>
         </motion.div>
 
-        {/* Tier Cards, horizontal scroll on mobile */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-          {investmentTiers.map((tier, i) => {
-            const Icon = tier.icon;
-            const isSelected = selectedTier === tier.id;
-            return (
-              <motion.div
-                key={tier.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                onClick={() => handleSelectTier(tier.id)}
-                className={`border p-6 md:p-8 bg-white cursor-pointer transition-all flex flex-col ${
-                  isSelected
-                    ? "border-[#FF4D00] ring-1 ring-[#FF4D00]/20"
-                    : "border-[#111111]/10 hover:border-[#FF4D00]/30"
-                }`}
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      isSelected ? "bg-[#FF4D00]" : "border border-[#111111]/10"
+        {/* ── Step Progress Bar ── */}
+        <div className="mb-10 md:mb-14">
+          <div className="flex items-center gap-0">
+            {stepLabels.map((s, i) => {
+              const isActive = currentStep === s.step;
+              const isCompleted = currentStep > s.step;
+              const isLast = i === stepLabels.length - 1;
+              return (
+                <div key={s.step} className="flex items-center flex-1 last:flex-none">
+                  {/* Step circle + label */}
+                  <button
+                    onClick={() => {
+                      if (isCompleted || isActive) goToStep(s.step);
+                    }}
+                    className={`flex items-center gap-2.5 group transition-all ${
+                      isCompleted || isActive ? "cursor-pointer" : "cursor-default"
                     }`}
                   >
-                    <Icon
-                      className={`w-4 h-4 ${
-                        isSelected ? "text-white" : "text-[#FF4D00]"
+                    <div
+                      className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-[11px] font-mono font-bold transition-all duration-300 ${
+                        isActive
+                          ? "bg-[#FF4D00] text-white scale-110"
+                          : isCompleted
+                          ? "bg-[#FF4D00] text-white"
+                          : "bg-[#111111]/8 text-[#111111]/30"
                       }`}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">
-                    {tier.vehicle}
-                  </span>
-                </div>
-
-                <h3 className="text-[24px] md:text-[28px] font-display font-medium tracking-tight mb-1">
-                  {tier.name}
-                </h3>
-                <p className="text-[13px] text-[#111111]/40 font-medium mb-4">
-                  {tier.tagline}
-                </p>
-
-                <div className="mb-5">
-                  <span className="text-[32px] md:text-[40px] font-display font-medium tracking-[-0.03em] leading-[1]">
-                    ${tier.min.toLocaleString()}
-                  </span>
-                  <span className="text-[13px] text-[#111111]/40 font-medium ml-1">
-                    {tier.max ? `\u2013 $${tier.max.toLocaleString()}` : "+ "}
-                    minimum
-                  </span>
-                </div>
-
-                <ul className="space-y-2 mb-6 flex-grow">
-                  {tier.benefits.map((benefit, bi) => (
-                    <li key={bi} className="flex items-start gap-2">
-                      <Check
-                        className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
-                          isSelected ? "text-[#FF4D00]" : "text-[#111111]/20"
-                        }`}
-                        strokeWidth={2}
+                    >
+                      {isCompleted ? (
+                        <Check className="w-4 h-4" strokeWidth={2.5} />
+                      ) : (
+                        String(s.step).padStart(2, "0")
+                      )}
+                    </div>
+                    <span
+                      className={`text-[11px] font-mono font-bold tracking-widest uppercase hidden sm:inline transition-colors ${
+                        isActive
+                          ? "text-[#FF4D00]"
+                          : isCompleted
+                          ? "text-[#111111]/60"
+                          : "text-[#111111]/25"
+                      }`}
+                    >
+                      {s.label}
+                    </span>
+                  </button>
+                  {/* Connecting line */}
+                  {!isLast && (
+                    <div className="flex-1 mx-3 md:mx-4 h-[2px] bg-[#111111]/8 relative overflow-hidden">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 bg-[#FF4D00]"
+                        initial={{ width: "0%" }}
+                        animate={{
+                          width: isCompleted ? "100%" : isActive ? "50%" : "0%",
+                        }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       />
-                      <span className="text-[12px] md:text-[13px] text-[#111111]/60 font-medium leading-[1.5]">
-                        {benefit}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="flex items-center justify-between text-[11px] font-mono text-[#111111]/30 border-t border-[#111111]/10 pt-4 mt-auto">
-                  <span>{tier.holdPeriod}</span>
-                  <span>{tier.reporting}</span>
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* Inline Investment Form */}
-        <AnimatePresence>
-          {showForm && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="overflow-hidden"
-            >
-              <div className="border border-[#111111]/10 bg-white p-8 md:p-12 max-w-2xl mx-auto">
-                {formState === "success" ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-                      <Check className="w-8 h-8 text-green-600" strokeWidth={2} />
-                    </div>
-                    <h3 className="text-[24px] font-display font-medium mb-3">
-                      Investment inquiry submitted
-                    </h3>
-                    <p className="text-[14px] text-[#111111]/50 font-medium leading-[1.7] max-w-md mx-auto">
-                      Our investor relations team will reach out within 24 hours
-                      with next steps, offering documents, and wire instructions.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-center justify-between mb-8">
-                      <div>
-                        <h3 className="text-[20px] md:text-[24px] font-display font-medium tracking-tight">
-                          Start your investment
-                        </h3>
-                        <p className="text-[13px] text-[#111111]/40 font-medium mt-1">
-                          {investmentTiers.find((t) => t.id === selectedTier)?.name} tier
-                          {" "}via{" "}
-                          {investmentTiers.find((t) => t.id === selectedTier)?.vehicle}{" "}
-                          &mdash; from $
-                          {investmentTiers
-                            .find((t) => t.id === selectedTier)
-                            ?.min.toLocaleString()}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setShowForm(false)}
-                        className="p-2 hover:bg-[#111111]/5 transition-colors"
-                        aria-label="Close form"
+        {/* ── Step Content ── */}
+        <div className="min-h-[420px]">
+          <AnimatePresence mode="wait">
+            {/* STEP 1: Choose Your Tier */}
+            {currentStep === 1 && (
+              <motion.div
+                key="step-1"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-6">
+                  <h3 className="text-[20px] md:text-[26px] font-display font-medium tracking-tight mb-2">
+                    Choose your tier
+                  </h3>
+                  <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6]">
+                    Every tier builds on the one before. Start where you are — upgrade anytime.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                  {investmentTiers.map((tier, i) => {
+                    const Icon = tier.icon;
+                    const isSelected = selectedTierId === tier.id;
+                    return (
+                      <motion.button
+                        key={tier.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: i * 0.08 }}
+                        onClick={() => setSelectedTierId(tier.id)}
+                        className={`text-left border bg-white transition-all p-5 md:p-6 ${
+                          isSelected
+                            ? "border-[#FF4D00] ring-1 ring-[#FF4D00]/20 shadow-md"
+                            : "border-[#111111]/10 hover:border-[#FF4D00]/30 hover:shadow-sm"
+                        }`}
                       >
-                        <X className="w-5 h-5 text-[#111111]/40" />
-                      </button>
-                    </div>
+                        {/* Top accent */}
+                        <div
+                          className={`h-1 w-10 mb-4 transition-colors ${
+                            isSelected ? "bg-[#FF4D00]" : "bg-[#111111]/10"
+                          }`}
+                        />
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                      <div className="grid sm:grid-cols-2 gap-5">
-                        <div>
-                          <label className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
-                            Full Name
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={(e) =>
-                              setFormData((p) => ({ ...p, name: e.target.value }))
-                            }
-                            className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-medium focus:outline-none focus:border-[#FF4D00] transition-colors bg-white"
-                            placeholder="Your name"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
-                            Email
-                          </label>
-                          <input
-                            type="email"
-                            required
-                            value={formData.email}
-                            onChange={(e) =>
-                              setFormData((p) => ({ ...p, email: e.target.value }))
-                            }
-                            className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-medium focus:outline-none focus:border-[#FF4D00] transition-colors bg-white"
-                            placeholder="investor@xcelero.com"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
-                          Investment Amount (USD)
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px] text-[#111111]/30 font-medium">
-                            $
+                        <div className="flex items-center gap-3 mb-3">
+                          <div
+                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                              isSelected ? "bg-[#FF4D00]" : "border border-[#111111]/10"
+                            }`}
+                          >
+                            <Icon
+                              className={`w-4 h-4 transition-colors ${
+                                isSelected ? "text-white" : "text-[#FF4D00]"
+                              }`}
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">
+                            {tier.vehicle}
                           </span>
-                          <input
-                            type="number"
-                            required
-                            min={
-                              investmentTiers.find(
-                                (t) => t.id === selectedTier
-                              )?.min
-                            }
-                            value={formData.amount}
-                            onChange={(e) =>
-                              setFormData((p) => ({
-                                ...p,
-                                amount: e.target.value,
-                              }))
-                            }
-                            className="w-full border border-[#111111]/10 px-4 py-3 pl-8 text-[14px] font-medium focus:outline-none focus:border-[#FF4D00] transition-colors bg-white"
-                            placeholder="5000"
-                          />
+                        </div>
+
+                        <h4 className="text-[20px] md:text-[24px] font-display font-medium tracking-tight mb-1">
+                          {tier.name}
+                        </h4>
+                        <div className="mb-2">
+                          <span className="text-[24px] md:text-[30px] font-display font-medium tracking-[-0.02em] leading-[1]">
+                            ${tier.min.toLocaleString()}
+                          </span>
+                          <span className="text-[12px] text-[#111111]/35 font-medium ml-1">
+                            {tier.max ? `– $${tier.max.toLocaleString()}` : "+"}
+                          </span>
+                        </div>
+                        <p className="text-[12px] text-[#FF4D00] font-medium">
+                          {tier.tagline}
+                        </p>
+
+                        {/* Selected indicator */}
+                        {isSelected && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="mt-4 pt-3 border-t border-[#FF4D00]/10 flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]"
+                          >
+                            <Check className="w-3 h-3" strokeWidth={2.5} />
+                            Selected
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Next button */}
+                <div className="mt-8 flex justify-end">
+                  <button
+                    onClick={goNext}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#111111] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00] transition-colors"
+                  >
+                    Continue to your vehicle
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 2: Your Vehicle */}
+            {currentStep === 2 && selectedVehicle && (
+              <motion.div
+                key="step-2"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+                  {/* Left: Vehicle details */}
+                  <div className="lg:col-span-7">
+                    <div className="mb-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                          <selectedVehicle.icon className="w-5 h-5 text-white" strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">
+                            {selectedTier.name} Tier
+                          </span>
+                          <h3 className="text-[22px] md:text-[28px] font-display font-medium tracking-tight">
+                            {selectedVehicle.name}
+                          </h3>
+                        </div>
+                      </div>
+                      <p className="text-[13px] text-[#FF4D00] font-medium mb-3">
+                        {selectedVehicle.tagline}
+                      </p>
+                      <p className="text-[14px] md:text-[15px] text-[#111111]/55 font-medium leading-[1.7]">
+                        {selectedVehicle.description}
+                      </p>
+                    </div>
+
+                    {/* Key terms grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 border-t border-[#111111]/5 pt-6">
+                      {selectedVehicle.details.map((detail, i) => (
+                        <div key={i}>
+                          <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 block mb-1">
+                            {detail.label}
+                          </span>
+                          <span className="text-[14px] md:text-[15px] font-medium text-[#111111]/80 leading-[1.4]">
+                            {detail.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Risk note */}
+                    <div className="bg-[#111111]/[0.03] border border-[#111111]/5 p-4">
+                      <p className="text-[11px] text-[#111111]/40 font-medium leading-[1.6]">
+                        <span className="font-bold uppercase tracking-wider text-[#111111]/50">Risk note:</span>{" "}
+                        {selectedVehicle.riskNote}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: Key features */}
+                  <div className="lg:col-span-5">
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-5">
+                      Key Features
+                    </span>
+                    <ul className="space-y-3 mb-6">
+                      {selectedVehicle.keyFeatures.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <div className="w-5 h-5 rounded-full bg-[#FF4D00]/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <Check className="w-3 h-3 text-[#FF4D00]" strokeWidth={2.5} />
+                          </div>
+                          <span className="text-[13px] md:text-[14px] text-[#111111]/60 font-medium leading-[1.5]">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="border-t border-[#111111]/5 pt-5">
+                      <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-2">
+                        Best For
+                      </span>
+                      <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6]">
+                        {selectedVehicle.bestFor}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="mt-10 flex items-center justify-between border-t border-[#111111]/5 pt-6">
+                  <button
+                    onClick={goBack}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#111111]/10 text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:border-[#111111] hover:text-[#111111] transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                    Back
+                  </button>
+                  <button
+                    onClick={goNext}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#111111] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00] transition-colors"
+                  >
+                    See your benefits
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 3: Benefits Unlocked */}
+            {currentStep === 3 && (
+              <motion.div
+                key="step-3"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+                  {/* Left: Tier summary */}
+                  <div className="lg:col-span-4">
+                    <div className="border border-[#FF4D00] bg-white p-6 md:p-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                          <selectedTier.icon className="w-5 h-5 text-white" strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <h3 className="text-[22px] md:text-[28px] font-display font-medium tracking-tight">
+                            {selectedTier.name}
+                          </h3>
+                          <p className="text-[12px] text-[#FF4D00] font-medium">
+                            {selectedTier.tagline}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3 py-2">
-                        <input
-                          type="checkbox"
-                          id="accredited"
-                          checked={formData.accredited}
-                          onChange={(e) =>
-                            setFormData((p) => ({
-                              ...p,
-                              accredited: e.target.checked,
-                            }))
-                          }
-                          className="mt-1 accent-[#FF4D00]"
-                        />
-                        <label
-                          htmlFor="accredited"
-                          className="text-[12px] text-[#111111]/50 font-medium leading-[1.6]"
-                        >
-                          I am an accredited/qualified investor (required for
-                          Syndicate tier and above)
-                        </label>
+                      <div className="border-t border-[#111111]/5 pt-4 space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Investment</span>
+                          <span className="text-[13px] font-medium">
+                            ${selectedTier.min.toLocaleString()}
+                            {selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Vehicle</span>
+                          <span className="text-[13px] font-medium">{selectedTier.vehicle}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Hold period</span>
+                          <span className="text-[13px] font-medium">{selectedTier.holdPeriod}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Reporting</span>
+                          <span className="text-[13px] font-medium">{selectedTier.reporting}</span>
+                        </div>
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="flex items-start gap-3 py-2">
-                        <input
-                          type="checkbox"
-                          id="consent"
-                          required
-                          checked={formData.consent}
-                          onChange={(e) =>
-                            setFormData((p) => ({
-                              ...p,
-                              consent: e.target.checked,
-                            }))
-                          }
-                          className="mt-1 accent-[#FF4D00]"
-                        />
-                        <label
-                          htmlFor="consent"
-                          className="text-[12px] text-[#111111]/50 font-medium leading-[1.6]"
+                  {/* Right: Cumulative benefits */}
+                  <div className="lg:col-span-8">
+                    <h3 className="text-[20px] md:text-[26px] font-display font-medium tracking-tight mb-2">
+                      What you unlock
+                    </h3>
+                    <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6] mb-8">
+                      Every tier includes the benefits of all tiers below it. Here&apos;s everything the{" "}
+                      <span className="text-[#FF4D00] font-semibold">{selectedTier.name}</span> tier unlocks.
+                    </p>
+
+                    {/* Show all cumulative benefits from this tier and all below */}
+                    {(() => {
+                      const tierIndex = investmentTiers.findIndex((t) => t.id === selectedTierId);
+                      const allBenefits = investmentTiers.slice(0, tierIndex + 1);
+                      return (
+                        <div className="space-y-6">
+                          {allBenefits.map((t, tIdx) => {
+                            const TierIcon = t.icon;
+                            const isCurrentTier = t.id === selectedTierId;
+                            return (
+                              <div key={t.id}>
+                                {/* Tier header */}
+                                <div className="flex items-center gap-2.5 mb-3">
+                                  <TierIcon
+                                    className={`w-4 h-4 ${isCurrentTier ? "text-[#FF4D00]" : "text-[#111111]/25"}`}
+                                    strokeWidth={1.5}
+                                  />
+                                  <span
+                                    className={`text-[10px] font-mono font-bold tracking-widest uppercase ${
+                                      isCurrentTier ? "text-[#FF4D00]" : "text-[#111111]/25"
+                                    }`}
+                                  >
+                                    {t.name}
+                                  </span>
+                                  {isCurrentTier && (
+                                    <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] bg-[#FF4D00]/10 px-2 py-0.5">
+                                      Your tier
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Benefits list */}
+                                <ul className="space-y-2.5 ml-6">
+                                  {t.benefits.map((benefit, bIdx) => (
+                                    <motion.li
+                                      key={bIdx}
+                                      initial={{ opacity: 0, x: -10 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        delay: tIdx * 0.1 + bIdx * 0.06,
+                                      }}
+                                      className="flex items-start gap-3"
+                                    >
+                                      <Check
+                                        className={`w-4 h-4 mt-0.5 shrink-0 ${
+                                          isCurrentTier ? "text-[#FF4D00]" : "text-[#111111]/20"
+                                        }`}
+                                        strokeWidth={2}
+                                      />
+                                      <span
+                                        className={`text-[13px] md:text-[14px] font-medium leading-[1.5] ${
+                                          isCurrentTier ? "text-[#111111]/70" : "text-[#111111]/40"
+                                        }`}
+                                      >
+                                        {benefit}
+                                        {!isCurrentTier && (
+                                          <span className="text-[#111111]/20 ml-1 text-[10px] font-mono uppercase tracking-wider">
+                                            ({t.name})
+                                          </span>
+                                        )}
+                                      </span>
+                                    </motion.li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="mt-10 flex items-center justify-between border-t border-[#111111]/5 pt-6">
+                  <button
+                    onClick={goBack}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#111111]/10 text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:border-[#111111] hover:text-[#111111] transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                    Back
+                  </button>
+                  <button
+                    onClick={goNext}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#111111] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00] transition-colors"
+                  >
+                    How to get started
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 4: Get Started — How it works timeline + CTA */}
+            {currentStep === 4 && selectedVehicle && (
+              <motion.div
+                key="step-4"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+                  {/* Left: How it works timeline */}
+                  <div className="lg:col-span-7">
+                    <div className="mb-8">
+                      <h3 className="text-[20px] md:text-[26px] font-display font-medium tracking-tight mb-2">
+                        How to get started
+                      </h3>
+                      <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6]">
+                        Your path from here to invested. {selectedVehicle.howItWorks.length} steps, zero friction.
+                      </p>
+                    </div>
+
+                    <div className="relative">
+                      {/* Vertical line */}
+                      <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-[#FF4D00]/10" />
+
+                      {selectedVehicle.howItWorks.map((step, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: i * 0.1 }}
+                          className="flex gap-5 relative pb-8 last:pb-0"
                         >
-                          By selecting this I agree to receive communications
-                          from xCelero Labs related to investments xCelero has or
-                          intends to make. I understand this is an inquiry and not
-                          a binding commitment.
-                        </label>
-                      </div>
+                          {/* Step node */}
+                          <div className="relative z-10">
+                            <div className="w-10 h-10 rounded-full bg-[#FF4D00] flex items-center justify-center text-[12px] font-mono font-bold text-white shadow-lg shadow-[#FF4D00]/20">
+                              {String(i + 1).padStart(2, "0")}
+                            </div>
+                          </div>
+                          {/* Step content */}
+                          <div className="pt-1.5">
+                            <p className="text-[15px] md:text-[16px] text-[#111111]/70 font-medium leading-[1.6]">
+                              {step}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
 
-                      {formState === "error" && (
-                        <p className="text-red-600 text-[13px] font-medium">
-                          Something went wrong. Please try again.
-                        </p>
-                      )}
+                  {/* Right: Summary + CTA */}
+                  <div className="lg:col-span-5">
+                    <div className="border border-[#FF4D00] bg-white p-6 md:p-8 mb-6">
+                      <h4 className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-4">
+                        Investment Summary
+                      </h4>
+
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                            <selectedTier.icon className="w-4 h-4 text-white" strokeWidth={1.5} />
+                          </div>
+                          <div>
+                            <span className="text-[16px] font-display font-medium">{selectedTier.name} Tier</span>
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 ml-2">
+                              via {selectedVehicle.shortName}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="border-t border-[#111111]/5 pt-3 space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Entry</span>
+                            <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Structure</span>
+                            <span className="text-[13px] font-medium">{selectedVehicle.details[0]?.value}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Mgmt fee</span>
+                            <span className="text-[13px] font-medium">{selectedVehicle.details[2]?.value}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30">Hold</span>
+                            <span className="text-[13px] font-medium">{selectedTier.holdPeriod}</span>
+                          </div>
+                        </div>
+                      </div>
 
                       <button
-                        type="submit"
-                        disabled={formState === "submitting" || !formData.consent}
-                        className="w-full px-8 py-4 bg-[#111111] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#FF4D00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        onClick={goNext}
+                        className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#111111] transition-colors"
                       >
-                        {formState === "submitting" ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Processing&hellip;
-                          </>
-                        ) : (
-                          <>
-                            Submit Investment Inquiry
-                            <ArrowRight className="w-4 h-4" />
-                          </>
-                        )}
+                        Continue to funding
+                        <ArrowRight className="w-4 h-4" />
                       </button>
+                    </div>
 
-                      <p className="text-[10px] text-[#111111]/30 font-medium text-center leading-[1.6]">
-                        This is not an offer to sell securities. Investment
-                        inquiries are subject to eligibility verification and
-                        offering document review.
-                      </p>
-                    </form>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    {/* Quick actions */}
+                    <div className="flex flex-col gap-3 mt-4">
+                      <button
+                        onClick={() => { goToStep(1); setSelectedTierId("scout"); }}
+                        className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 hover:text-[#FF4D00] transition-colors text-left"
+                      >
+                        ← Start over with a different tier
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="mt-10 flex items-center justify-between border-t border-[#111111]/5 pt-6">
+                  <button
+                    onClick={goBack}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#111111]/10 text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:border-[#111111] hover:text-[#111111] transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                    Back to benefits
+                  </button>
+                  <button
+                    onClick={goNext}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors"
+                  >
+                    Fund your investment
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 5: Fund Your Investment — Payment methods */}
+            {currentStep === 5 && selectedVehicle && (
+              <motion.div
+                key="step-5"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-6">
+                  <h3 className="text-[20px] md:text-[26px] font-display font-medium tracking-tight mb-2">
+                    Fund your investment
+                  </h3>
+                  <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6] max-w-2xl">
+                    Choose how you move capital into your{" "}
+                    <span className="text-[#FF4D00] font-semibold">{selectedTier.name}</span>{" "}
+                    allocation. All methods are encrypted and PCI-compliant. Select the option that matches your geography and timeline.
+                  </p>
+                </div>
+
+                {/* Payment method cards */}
+                <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                  {paymentMethods.map((method, i) => (
+                    <motion.div
+                      key={method.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: i * 0.08 }}
+                      className="border border-[#111111]/10 bg-white hover:border-[#FF4D00]/30 transition-all group cursor-pointer"
+                    >
+                      {/* Header */}
+                      <div className="p-5 md:p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-[24px] leading-none">{method.icon}</span>
+                            <h4 className="text-[16px] md:text-[18px] font-display font-medium tracking-tight">
+                              {method.name}
+                            </h4>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                              {method.speed}
+                            </span>
+                            <span className={`text-[10px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 ${
+                              method.fee === "None"
+                                ? "text-[#FF4D00] bg-[#FF4D00]/10"
+                                : "text-[#111111]/40 bg-[#111111]/5"
+                            }`}>
+                              {method.fee === "None" ? "No fee" : method.fee + " fee"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6] mb-4">
+                          {method.description}
+                        </p>
+
+                        {/* Details */}
+                        <ul className="space-y-1.5 mb-4">
+                          {method.details.map((detail, di) => (
+                            <li key={di} className="flex items-start gap-2">
+                              <Check className="w-3 h-3 text-[#FF4D00] shrink-0 mt-0.5" strokeWidth={2} />
+                              <span className="text-[11px] md:text-[12px] text-[#111111]/45 font-medium leading-[1.5]">
+                                {detail}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* Best for */}
+                        <div className="border-t border-[#111111]/5 pt-3">
+                          <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                            Best for
+                          </span>
+                          <p className="text-[11px] text-[#111111]/35 font-medium leading-[1.5]">
+                            {method.bestFor}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Investment summary + CTA */}
+                <div className="border border-[#FF4D00] bg-white">
+                  <div className="p-6 md:p-8">
+                    <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-center">
+                      {/* Left: Summary */}
+                      <div className="md:col-span-7">
+                        <h4 className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-4">
+                          Ready to commit
+                        </h4>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                            <selectedTier.icon className="w-4 h-4 text-white" strokeWidth={1.5} />
+                          </div>
+                          <div>
+                            <span className="text-[16px] font-display font-medium">{selectedTier.name} Tier</span>
+                            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 ml-2">
+                              via {selectedVehicle.shortName}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Entry</span>
+                            <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Structure</span>
+                            <span className="text-[13px] font-medium">{selectedVehicle.details[0]?.value}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Fee</span>
+                            <span className="text-[13px] font-medium">{selectedVehicle.details[2]?.value}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Hold</span>
+                            <span className="text-[13px] font-medium">{selectedTier.holdPeriod}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: CTA */}
+                      <div className="md:col-span-5">
+                        <Link
+                          to="#invest-tiers"
+                          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                            e.preventDefault();
+                            document
+                              .getElementById("invest-tiers")
+                              ?.scrollIntoView({ behavior: "smooth" });
+                          }}
+                          className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[13px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors"
+                        >
+                          Begin your investment
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                        <p className="text-[10px] text-[#111111]/30 font-medium text-center mt-3 leading-[1.5]">
+                          You&apos;ll be redirected to our secure portal to complete KYC and fund transfer.
+                          No capital is committed until you confirm.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="mt-10 flex items-center justify-between border-t border-[#111111]/5 pt-6">
+                  <button
+                    onClick={goBack}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#111111]/10 text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:border-[#111111] hover:text-[#111111] transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                    Back
+                  </button>
+                  <button
+                    onClick={() => { goToStep(1 as WizardStep); setSelectedTierId("scout"); }}
+                    className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 hover:text-[#FF4D00] transition-colors"
+                  >
+                    ← Start over
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );
