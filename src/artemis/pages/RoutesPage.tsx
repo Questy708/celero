@@ -33,6 +33,173 @@ import {
 } from "@/artemis/data/routes";
 import type { RouteLeg, KeyCity, MapLocation } from "@/artemis/data/routes";
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ROUTES BRIDGE — Image strip + two-column routes thesis with dotted map
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const routesBridgeImages = [
+  {
+    src: "https://images.unsplash.com/photo-1611348524140-53c9a25263d6?auto=format&fit=crop&w=800&q=80",
+    alt: "Nairobi skyline",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1741991110666-88115e724741?auto=format&fit=crop&w=800&q=80",
+    alt: "African cityscape",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1669127300649-940337f1487e?auto=format&fit=crop&w=800&q=80",
+    alt: "African city development",
+  },
+];
+
+/* Dot-matrix world map for Routes page */
+const routesWorldDots = (() => {
+  const rows = [
+    ".......##..........###.............#####..####..............",
+    "......####.........####............######.######............",
+    ".....######........#####...........########.######..........",
+    ".....#######.......#####..........#########..######.........",
+    "....#########......######.........#########...######........",
+    "....##########.....#######........#########....#####........",
+    "...############....########.......########.....#####........",
+    "...############....########.......########......####........",
+    "....###########....#########......#######.......####........",
+    "....##########.....##########.....######........###.........",
+    ".....#########.....##########.....######........###.........",
+    "......########.....###########....#####.........##..........",
+    ".......#######.....###########....#####.........##..........",
+    "........######.....############...######.........#..........",
+    ".........#####.....####.#####....########...................",
+    "..........####.....####..####...#########...................",
+    "...........###.....####...####..#########...................",
+    "............##.....####....###..########....................",
+    ".............#......###....###..#######.....................",
+    "....................###.....##...######.....................",
+    ".....................##.....##...#####......................",
+    "......................##.....#...####.......................",
+    ".......................#.........###........................",
+    "................................##.........................",
+    "................................#..........................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+  ];
+  const dots: { row: number; col: number }[] = [];
+  rows.forEach((row, r) => {
+    [...row].forEach((ch, c) => {
+      if (ch === "#") dots.push({ row: r, col: c });
+    });
+  });
+  return dots;
+})();
+
+function RoutesBridge() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section ref={ref} className="px-6 md:px-12 lg:px-20 pb-16 md:pb-24">
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Image strip — three overlapping images */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex items-end justify-center gap-0 mb-16 md:mb-24"
+        >
+          {routesBridgeImages.map((img, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className={`relative overflow-hidden bg-[#F5F5F5] shadow-lg ${
+                i === 0
+                  ? "w-[40%] md:w-[36%] aspect-[4/3] z-10 translate-x-6 md:translate-x-14"
+                  : i === 1
+                  ? "w-[46%] md:w-[42%] aspect-[4/3] z-30 -mt-3"
+                  : "w-[40%] md:w-[36%] aspect-[4/3] z-10 -translate-x-6 md:-translate-x-14"
+              }`}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Two-column layout: text left, dotted map right */}
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left: Routes thesis text */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6"
+          >
+            <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
+              The world doesn&apos;t operate in countries. It operates in <span className="text-[#FF4D00]">Routes</span>.
+            </p>
+            <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
+              The Hanseatic League connected 190 cities through shared protocols for trade, law, and mutual defense. It lasted 300 years and made its member cities the wealthiest in Europe — not through conquest, but through flow. xCelero rebuilds that model for the 21st century: 190 hubs, 39 countries, one circulatory system for goods, capital, data, and people. <span className="text-[#111111] font-semibold">Where the Route connects, prosperity follows.</span>
+            </p>
+          </motion.div>
+
+          {/* Right: Dotted world map */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6 flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-lg">
+              <svg
+                viewBox="0 0 60 30"
+                className="w-full h-auto"
+                style={{ imageRendering: "auto" }}
+              >
+                {/* All land dots in dark color */}
+                {routesWorldDots.map((dot, i) => (
+                  <circle
+                    key={i}
+                    cx={dot.col * 1}
+                    cy={dot.row * 1}
+                    r="0.35"
+                    className="fill-[#111111]/70"
+                  />
+                ))}
+                {/* Africa highlighted region — cols 23-33, rows 3-21 */}
+                {routesWorldDots
+                  .filter(
+                    (d) =>
+                      d.col >= 23 && d.col <= 33 && d.row >= 3 && d.row <= 21
+                  )
+                  .map((dot, i) => (
+                    <circle
+                      key={`af-${i}`}
+                      cx={dot.col * 1}
+                      cy={dot.row * 1}
+                      r="0.4"
+                      className="fill-[#FF4D00]"
+                    />
+                  ))}
+              </svg>
+              {/* Label */}
+              <div className="absolute bottom-2 right-4 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
+                6 Legs · 190 Hubs
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -92,6 +259,7 @@ export function RoutesPage() {
     <div className="bg-[#FAFAFA] text-[#111111]">
       <HeroSection />
       <PreambleSection />
+      <RoutesBridge />
       <MapSection
         activeLeg={activeLeg}
         setActiveLeg={manualSetActiveLeg}

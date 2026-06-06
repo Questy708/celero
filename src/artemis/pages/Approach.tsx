@@ -127,6 +127,7 @@ export function Approach() {
   return (
     <div className="bg-white text-[#111111]">
       <HeroSection />
+      <ApproachBridge />
       <ThreeEnginesSection />
       <WhoWeBackSection />
       <HowWeWorkSection />
@@ -208,30 +209,180 @@ const engineTaglines: Record<string, string> = {
   Community: "Compound network effects",
 };
 
-/* ── Connection pairs (each engine connects to every other) ── */
-const connections: [number, number][] = [
-  [0, 1], [0, 2], [0, 3],
-  [1, 2], [1, 3],
-  [2, 3],
+/* ── Approach Bridge images ── */
+const approachBridgeImages = [
+  {
+    src: "https://images.unsplash.com/photo-1573164574511-73c773193279?auto=format&fit=crop&w=800&q=80",
+    alt: "Black professionals meeting",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1653566031587-74f7d86a2e71?auto=format&fit=crop&w=800&q=80",
+    alt: "Black professional team",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1579165466949-3180a3d056d5?auto=format&fit=crop&w=800&q=80",
+    alt: "Black researcher",
+  },
 ];
 
+/* Dot-matrix world map for Approach page */
+const approachWorldDots = (() => {
+  const rows = [
+    ".......##..........###.............#####..####..............",
+    "......####.........####............######.######............",
+    ".....######........#####...........########.######..........",
+    ".....#######.......#####..........#########..######.........",
+    "....#########......######.........#########...######........",
+    "....##########.....#######........#########....#####........",
+    "...############....########.......########.....#####........",
+    "...############....########.......########......####........",
+    "....###########....#########......#######.......####........",
+    "....##########.....##########.....######........###.........",
+    ".....#########.....##########.....######........###.........",
+    "......########.....###########....#####.........##..........",
+    ".......#######.....###########....#####.........##..........",
+    "........######.....############...######.........#..........",
+    ".........#####.....####.#####....########...................",
+    "..........####.....####..####...#########...................",
+    "...........###.....####...####..#########...................",
+    "............##.....####....###..########....................",
+    ".............#......###....###..#######.....................",
+    "....................###.....##...######.....................",
+    ".....................##.....##...#####......................",
+    "......................##.....#...####.......................",
+    ".......................#.........###........................",
+    "................................##.........................",
+    "................................#..........................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+  ];
+  const dots: { row: number; col: number }[] = [];
+  rows.forEach((row, r) => {
+    [...row].forEach((ch, c) => {
+      if (ch === "#") dots.push({ row: r, col: c });
+    });
+  });
+  return dots;
+})();
+
 /* ══════════════════════════════════════════════════════════════════════════
-   4 ENGINES, Interactive Node Diagram
+   APPROACH BRIDGE, Image strip + thesis text + dotted world map
+   ══════════════════════════════════════════════════════════════════════════ */
+function ApproachBridge() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section ref={ref} className="px-6 md:px-12 lg:px-20 pb-16 md:pb-24">
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Image strip — three overlapping images */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex items-end justify-center gap-0 mb-16 md:mb-24"
+        >
+          {approachBridgeImages.map((img, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className={`relative overflow-hidden bg-[#F5F5F5] shadow-lg ${
+                i === 0
+                  ? "w-[40%] md:w-[36%] aspect-[4/3] z-10 translate-x-6 md:translate-x-14"
+                  : i === 1
+                  ? "w-[46%] md:w-[42%] aspect-[4/3] z-30 -mt-3"
+                  : "w-[40%] md:w-[36%] aspect-[4/3] z-10 -translate-x-6 md:-translate-x-14"
+              }`}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Two-column layout: text left, dotted map right */}
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left: Approach thesis text */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6"
+          >
+            <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
+              We don&apos;t back slides. We back <span className="text-[#FF4D00]">conviction</span>.
+            </p>
+            <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
+              Most venture capital optimizes for momentum and social proof. xCelero optimizes for technical depth and founder obsession. Three to five hours of deep diligence with every team. No investment committees. No off-site partners. The people who work closest with you make the decision. <span className="text-[#111111] font-semibold">Conviction is the only edge that compounds.</span>
+            </p>
+          </motion.div>
+
+          {/* Right: Dotted world map */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6 flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-lg">
+              <svg
+                viewBox="0 0 60 30"
+                className="w-full h-auto"
+                style={{ imageRendering: "auto" }}
+              >
+                {/* All land dots in dark color */}
+                {approachWorldDots.map((dot, i) => (
+                  <circle
+                    key={i}
+                    cx={dot.col * 1}
+                    cy={dot.row * 1}
+                    r="0.35"
+                    className="fill-[#111111]/70"
+                  />
+                ))}
+                {/* Africa highlighted region — cols 23-33, rows 3-21 */}
+                {approachWorldDots
+                  .filter(
+                    (d) =>
+                      d.col >= 23 && d.col <= 33 && d.row >= 3 && d.row <= 21
+                  )
+                  .map((dot, i) => (
+                    <circle
+                      key={`af-${i}`}
+                      cx={dot.col * 1}
+                      cy={dot.row * 1}
+                      r="0.4"
+                      className="fill-[#FF4D00]"
+                    />
+                  ))}
+              </svg>
+              {/* Label */}
+              <div className="absolute bottom-2 right-4 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
+                190 Hubs · 39 Countries
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   4 ENGINES, Horizontal Pipeline / Flywheel Diagram
    ══════════════════════════════════════════════════════════════════════════ */
 function ThreeEnginesSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [active, setActive] = useState<number | null>(null);
-
-  /* Diamond positions: top, right, bottom, left (as % of container) */
-  const nodePositions = [
-    { top: "0%", left: "50%" },   // Infrastructure (top)
-    { top: "50%", left: "100%" },  // Ventures (right)
-    { top: "100%", left: "50%" },  // Capital (bottom)
-    { top: "50%", left: "0%" },    // Community (left)
-  ];
-
-  const activeEngine = active !== null ? engines[active] : null;
 
   return (
     <section
@@ -253,210 +404,280 @@ function ThreeEnginesSection() {
             Four engines, <span className="text-[#111111]/40">one machine.</span>
           </h2>
           <p className="text-[17px] md:text-[19px] text-[#111111]/50 font-medium leading-relaxed">
-            xCelero operates through four integrated engines, Infrastructure, Ventures, Capital, and Community, each reinforcing the others to unblock commercialization at civilizational scale.
+            xCelero operates through four integrated engines — Infrastructure, Ventures, Capital, and Community — each reinforcing the others to unblock commercialization at civilizational scale.
           </p>
         </motion.div>
 
-        {/* Interactive Diagram */}
-        <div className="flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
-          {/* Diagram container */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="w-full lg:w-1/2 flex justify-center"
-          >
-            {/* Desktop: Diamond layout */}
-            <div className="hidden md:block relative w-full max-w-[480px] aspect-square">
-              {/* Connection lines */}
-              {connections.map(([from, to], i) => {
-                const fromPos = nodePositions[from];
-                const toPos = nodePositions[to];
-                const isActiveLine = active !== null && (from === active || to === active);
-                return (
-                  <div
-                    key={i}
-                    className="absolute h-px transition-all duration-500"
-                    style={{
-                      left: fromPos.left,
-                      top: fromPos.top,
-                      width: "0px",
-                      transformOrigin: "0 0",
-                      backgroundColor: isActiveLine ? "#FF4D00" : "rgba(17,17,17,0.1)",
-                      boxShadow: isActiveLine ? "0 0 8px rgba(255,77,0,0.4)" : "none",
-                      /* We use a CSS trick: position at from, rotate toward to, width = distance */
-                    }}
-                    ref={(el) => {
-                      if (!el) return;
-                      const container = el.parentElement;
-                      if (!container) return;
-                      const w = container.offsetWidth;
-                      const h = container.offsetHeight;
-                      const fx = parseFloat(fromPos.left) / 100 * w;
-                      const fy = parseFloat(fromPos.top) / 100 * h;
-                      const tx = parseFloat(toPos.left) / 100 * w;
-                      const ty = parseFloat(toPos.top) / 100 * h;
-                      const dx = tx - fx;
-                      const dy = ty - fy;
-                      const length = Math.sqrt(dx * dx + dy * dy);
-                      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                      el.style.left = `${fx}px`;
-                      el.style.top = `${fy}px`;
-                      el.style.width = `${length}px`;
-                      el.style.transform = `rotate(${angle}deg)`;
-                    }}
-                  />
-                );
-              })}
+        {/* Desktop: Horizontal pipeline with flowing arrows */}
+        <div className="hidden lg:block">
+          <div className="flex items-stretch gap-0">
+            {engines.map((engine, i) => {
+              const Icon = engine.icon;
+              const isActive = active === i;
+              const isNextActive = active !== null && active === i + 1;
+              const isLast = i === engines.length - 1;
 
-              {/* Nodes */}
-              {engines.map((engine, i) => {
-                const Icon = engine.icon;
-                const pos = nodePositions[i];
-                const isActive = active === i;
-                return (
+              return (
+                <div key={i} className="flex items-stretch flex-1">
+                  {/* Engine card */}
                   <motion.button
-                    key={i}
                     suppressHydrationWarning
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.5, delay: 0.4 + i * 0.1, ease: "easeOut" }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.2 + i * 0.12, ease: "easeOut" }}
                     onClick={() => setActive(active === i ? null : i)}
                     onMouseEnter={() => setActive(i)}
-                    className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 cursor-pointer group transition-all duration-300`}
-                    style={{ top: pos.top, left: pos.left }}
-                  >
-                    <div
-                      className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                        isActive
-                          ? "border-[#FF4D00] bg-[#FF4D00]/10 shadow-lg shadow-[#FF4D00]/20"
-                          : "border-[#111111]/15 bg-white group-hover:border-[#FF4D00]/50 group-hover:bg-[#FF4D00]/5"
-                      }`}
-                    >
-                      <Icon
-                        className={`w-7 h-7 md:w-8 md:h-8 transition-colors duration-300 ${
-                          isActive ? "text-[#FF4D00]" : "text-[#111111]/40 group-hover:text-[#FF4D00]"
-                        }`}
-                        strokeWidth={1.5}
-                      />
-                    </div>
-                    <div className="text-center">
-                      <div className={`text-[13px] md:text-[15px] font-display font-medium transition-colors duration-300 ${
-                        isActive ? "text-[#FF4D00]" : "text-[#111111]"
-                      }`}>
-                        {engine.title}
-                      </div>
-                      <div className="text-[10px] md:text-[11px] font-mono tracking-wider uppercase text-[#111111]/40 mt-0.5">
-                        {engineTaglines[engine.title]}
-                      </div>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* Mobile: Vertical stack */}
-            <div className="md:hidden w-full flex flex-col gap-4">
-              {engines.map((engine, i) => {
-                const Icon = engine.icon;
-                const isActive = active === i;
-                return (
-                  <motion.button
-                    key={i}
-                    suppressHydrationWarning
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
-                    onClick={() => setActive(active === i ? null : i)}
-                    className={`flex items-center gap-4 p-4 border transition-all duration-300 text-left w-full ${
+                    onMouseLeave={() => setActive(null)}
+                    className={`group relative w-full text-left border p-6 transition-all duration-300 cursor-pointer flex flex-col ${
                       isActive
-                        ? "border-[#FF4D00] bg-[#FF4D00]/5"
-                        : "border-[#111111]/10 bg-white hover:border-[#FF4D00]/30"
+                        ? "border-[#FF4D00] bg-[#FF4D00]/5 shadow-lg shadow-[#FF4D00]/10 z-10 -mt-2 mb-0"
+                        : "border-[#111111]/10 bg-white hover:border-[#FF4D00]/30 hover:-mt-1"
                     }`}
                   >
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center border-2 shrink-0 transition-all duration-300 ${
-                        isActive
-                          ? "border-[#FF4D00] bg-[#FF4D00]/10"
-                          : "border-[#111111]/15 bg-white"
-                      }`}
-                    >
-                      <Icon
-                        className={`w-5 h-5 transition-colors duration-300 ${
-                          isActive ? "text-[#FF4D00]" : "text-[#111111]/40"
+                    {/* Engine number + icon */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 shrink-0 ${
+                          isActive
+                            ? "border-[#FF4D00] bg-[#FF4D00]/10"
+                            : "border-[#111111]/15 bg-white group-hover:border-[#FF4D00]/50"
                         }`}
-                        strokeWidth={1.5}
-                      />
-                    </div>
-                    <div>
-                      <div className={`text-[15px] font-display font-medium transition-colors ${
-                        isActive ? "text-[#FF4D00]" : "text-[#111111]"
-                      }`}>
-                        {engine.title}
+                      >
+                        <Icon
+                          className={`w-5 h-5 transition-colors duration-300 ${
+                            isActive ? "text-[#FF4D00]" : "text-[#111111]/40 group-hover:text-[#FF4D00]"
+                          }`}
+                          strokeWidth={1.5}
+                        />
                       </div>
-                      <div className="text-[10px] font-mono tracking-wider uppercase text-[#111111]/40">
-                        {engineTaglines[engine.title]}
-                      </div>
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
+                        Engine {engine.num}
+                      </span>
                     </div>
+
+                    {/* Title + tagline */}
+                    <h3 className={`text-[20px] md:text-[24px] font-display font-medium tracking-tight leading-[1.15] mb-1 transition-colors duration-300 ${
+                      isActive ? "text-[#FF4D00]" : "text-[#111111]"
+                    }`}>
+                      {engine.title}
+                    </h3>
+                    <div className="text-[10px] font-mono tracking-wider uppercase text-[#111111]/40 mb-4">
+                      {engineTaglines[engine.title]}
+                    </div>
+
+                    {/* Description (always visible, more prominent on active) */}
+                    <p className={`text-[14px] leading-[1.6] font-medium transition-all duration-300 ${
+                      isActive ? "text-[#111111]/70" : "text-[#111111]/40 group-hover:text-[#111111]/55"
+                    }`}>
+                      {engine.desc}
+                    </p>
+
+                    {/* Explore link (visible on active) */}
+                    <div className={`mt-auto pt-4 transition-all duration-300 overflow-hidden ${
+                      isActive ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
+                    }`}>
+                      <Link
+                        to={engine.link}
+                        className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors group/link"
+                      >
+                        Explore {engine.title}
+                        <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+
+                    {/* Top accent line on active */}
+                    <div className={`absolute top-0 left-0 right-0 h-1 bg-[#FF4D00] transition-all duration-300 ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`} />
                   </motion.button>
-                );
-              })}
+
+                  {/* Arrow connector between cards */}
+                  {!isLast && (
+                    <div className="flex items-center justify-center w-10 shrink-0 relative z-20">
+                      <div className={`h-px flex-1 transition-all duration-500 ${
+                        isActive || isNextActive
+                          ? "bg-[#FF4D00] w-4"
+                          : "bg-[#111111]/15"
+                      }`} />
+                      <svg
+                        className={`w-3 h-3 shrink-0 -ml-px transition-colors duration-500 ${
+                          isActive || isNextActive ? "text-[#FF4D00]" : "text-[#111111]/15"
+                        }`}
+                        viewBox="0 0 6 10"
+                        fill="currentColor"
+                      >
+                        <path d="M0 0L6 5L0 10V0Z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Flyback arrow: Community → Infrastructure (cycle indicator) */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+            className="flex items-center justify-center mt-6"
+          >
+            <div className="flex items-center gap-3 text-[#FF4D00]/60">
+              <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase">Community</span>
+              <svg className="w-4 h-3" viewBox="0 0 16 10" fill="none">
+                <path d="M0 5H12M12 5L8 1M12 5L8 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase">Infrastructure</span>
+              <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-[#111111]/30 ml-2">→ flywheel</span>
             </div>
           </motion.div>
+        </div>
 
-          {/* Description panel */}
-          <div className="w-full lg:w-1/2 min-h-[280px]">
-            <AnimatePresence mode="wait">
-              {activeEngine ? (
-                <motion.div
-                  key={active}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="border-l-4 border-[#FF4D00] pl-8 py-2"
-                >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-[#FF4D00]/10 flex items-center justify-center">
-                      <activeEngine.icon className="w-5 h-5 text-[#FF4D00]" strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <span className="text-[11px] font-mono font-bold text-[#FF4D00]">Engine {activeEngine.num}</span>
-                      <h3 className="text-[28px] md:text-[36px] font-display font-medium tracking-tight leading-[1.1]">
-                        {activeEngine.title}
-                      </h3>
-                    </div>
+        {/* Tablet: 2x2 grid with connection lines */}
+        <div className="hidden md:grid lg:hidden md:grid-cols-2 gap-6">
+          {engines.map((engine, i) => {
+            const Icon = engine.icon;
+            const isActive = active === i;
+            return (
+              <motion.button
+                key={i}
+                suppressHydrationWarning
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 + i * 0.12, ease: "easeOut" }}
+                onClick={() => setActive(active === i ? null : i)}
+                className={`group text-left border p-6 transition-all duration-300 cursor-pointer ${
+                  isActive
+                    ? "border-[#FF4D00] bg-[#FF4D00]/5 shadow-lg shadow-[#FF4D00]/10"
+                    : "border-[#111111]/10 bg-white hover:border-[#FF4D00]/30"
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 shrink-0 ${
+                    isActive
+                      ? "border-[#FF4D00] bg-[#FF4D00]/10"
+                      : "border-[#111111]/15 bg-white group-hover:border-[#FF4D00]/50"
+                  }`}>
+                    <Icon className={`w-5 h-5 transition-colors duration-300 ${
+                      isActive ? "text-[#FF4D00]" : "text-[#111111]/40 group-hover:text-[#FF4D00]"
+                    }`} strokeWidth={1.5} />
                   </div>
-
-                  <p className="text-[16px] md:text-[18px] text-[#111111]/60 font-medium leading-[1.7] mb-8">
-                    {activeEngine.desc}
-                  </p>
-
+                  <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">Engine {engine.num}</span>
+                </div>
+                <h3 className={`text-[20px] font-display font-medium tracking-tight leading-[1.15] mb-1 transition-colors ${
+                  isActive ? "text-[#FF4D00]" : "text-[#111111]"
+                }`}>{engine.title}</h3>
+                <div className="text-[10px] font-mono tracking-wider uppercase text-[#111111]/40 mb-3">{engineTaglines[engine.title]}</div>
+                <p className={`text-[14px] leading-[1.6] font-medium transition-colors ${
+                  isActive ? "text-[#111111]/70" : "text-[#111111]/40"
+                }`}>{engine.desc}</p>
+                {isActive && (
                   <Link
-                    to={activeEngine.link}
-                    className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors group/link"
+                    to={engine.link}
+                    className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors mt-4 group/link"
                   >
-                    Explore {activeEngine.title}
+                    Explore {engine.title}
                     <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center justify-center h-full min-h-[280px] text-[#111111]/25"
+                )}
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-[#FF4D00] transition-all duration-300 ${
+                  isActive ? "opacity-100" : "opacity-0"
+                }`} />
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Mobile: Vertical stack with flowing connectors */}
+        <div className="md:hidden flex flex-col">
+          {engines.map((engine, i) => {
+            const Icon = engine.icon;
+            const isActive = active === i;
+            const isLast = i === engines.length - 1;
+            return (
+              <div key={i}>
+                <motion.button
+                  suppressHydrationWarning
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
+                  onClick={() => setActive(active === i ? null : i)}
+                  className={`group w-full text-left border p-5 transition-all duration-300 cursor-pointer ${
+                    isActive
+                      ? "border-[#FF4D00] bg-[#FF4D00]/5 shadow-md shadow-[#FF4D00]/10"
+                      : "border-[#111111]/10 bg-white hover:border-[#FF4D00]/30"
+                  }`}
                 >
-                  <div className="text-center">
-                    <div className="text-[16px] font-display font-medium mb-2">Select an engine</div>
-                    <div className="text-[13px] font-mono tracking-wider">Hover or tap a node to explore</div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 shrink-0 ${
+                      isActive
+                        ? "border-[#FF4D00] bg-[#FF4D00]/10"
+                        : "border-[#111111]/15 bg-white group-hover:border-[#FF4D00]/50"
+                    }`}>
+                      <Icon className={`w-5 h-5 transition-colors duration-300 ${
+                        isActive ? "text-[#FF4D00]" : "text-[#111111]/40 group-hover:text-[#FF4D00]"
+                      }`} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] block">Engine {engine.num}</span>
+                      <h3 className={`text-[18px] font-display font-medium tracking-tight leading-[1.15] transition-colors ${
+                        isActive ? "text-[#FF4D00]" : "text-[#111111]"
+                      }`}>{engine.title}</h3>
+                    </div>
+                    <div className="ml-auto text-[10px] font-mono tracking-wider uppercase text-[#111111]/40">
+                      {engineTaglines[engine.title]}
+                    </div>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  <p className={`text-[14px] leading-[1.6] font-medium transition-all duration-300 ${
+                    isActive ? "text-[#111111]/70" : "text-[#111111]/40"
+                  }`}>{engine.desc}</p>
+                  {isActive && (
+                    <Link
+                      to={engine.link}
+                      className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#FF4D00] hover:text-[#111111] transition-colors mt-4 group/link"
+                    >
+                      Explore {engine.title}
+                      <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                  )}
+                  {/* Top accent line on active */}
+                  <div className={`absolute top-0 left-0 right-0 h-1 bg-[#FF4D00] transition-all duration-300 ${
+                    isActive ? "opacity-100" : "opacity-0"
+                  }`} />
+                </motion.button>
+
+                {/* Vertical connector between cards */}
+                {!isLast && (
+                  <div className="flex justify-center py-2">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-px h-4 transition-colors duration-300 ${
+                        isActive ? "bg-[#FF4D00]" : "bg-[#111111]/15"
+                      }`} />
+                      <svg
+                        className={`w-3 h-3 -mt-px transition-colors duration-300 ${
+                          isActive ? "text-[#FF4D00]" : "text-[#111111]/15"
+                        }`}
+                        viewBox="0 0 6 10"
+                        fill="currentColor"
+                      >
+                        <path d="M0 0L6 5L0 10V0Z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+
+                {/* Flyback indicator at bottom of last card */}
+                {isLast && (
+                  <div className="flex items-center justify-center py-3 gap-2 text-[#FF4D00]/50">
+                    <svg className="w-3 h-3 rotate-180" viewBox="0 0 6 10" fill="currentColor">
+                      <path d="M0 0L6 5L0 10V0Z" />
+                    </svg>
+                    <span className="text-[9px] font-mono font-bold tracking-[0.15em] uppercase">→ Infrastructure → flywheel</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

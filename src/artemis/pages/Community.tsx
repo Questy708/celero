@@ -23,6 +23,8 @@ import {
   Check,
   MessageSquare,
   X,
+  Rocket,
+  Coins,
 } from "lucide-react";
 import { Link } from "@/artemis/router";
 
@@ -78,91 +80,47 @@ const galleryImages = [
   },
 ];
 
-/* ── Current Members (Featured XCitizens) ── */
-const featuredMembers = [
+/* ── Network Architecture (Member Types) ── */
+const memberTypes = [
   {
-    name: "Amina Osei-Mensah",
-    role: "CEO & Founder",
-    location: "Nairobi",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
-    type: "Founder",
+    id: "founder",
+    label: "Founder",
+    icon: Rocket,
+    description: "Building ventures from the ground up. Founders turn thesis into companies, iterating through the Route's infrastructure and mentorship to reach product-market fit.",
+    count: "Coming soon",
+    accent: "bg-[#FF4D00]",
+    accentLight: "bg-[#FF4D00]/10 text-[#FF4D00]",
+    borderHover: "hover:border-[#FF4D00]/40",
   },
   {
-    name: "David Kamau",
-    role: "CTO",
-    location: "Addis Ababa",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-    type: "Operator",
+    id: "operator",
+    label: "Operator",
+    icon: Building2,
+    description: "Running the infrastructure that makes the Route work. Operators manage hubs, programs, and the systems that turn individual effort into collective momentum.",
+    count: "Coming soon",
+    accent: "bg-[#111111]",
+    accentLight: "bg-[#111111]/10 text-[#111111]",
+    borderHover: "hover:border-[#111111]/40",
   },
   {
-    name: "Ngozi Eze",
-    role: "Sr. Investment Associate",
-    location: "Lagos",
-    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80",
-    type: "Investor",
+    id: "investor",
+    label: "Investor",
+    icon: Coins,
+    description: "Deploying capital with conviction. Investors access curated deal flow across six vehicles, co-investing alongside the xCelero thesis for compounding returns.",
+    count: "Coming soon",
+    accent: "bg-[#FF4D00]",
+    accentLight: "bg-[#FF4D00]/10 text-[#FF4D00]",
+    borderHover: "hover:border-[#FF4D00]/40",
   },
   {
-    name: "Thandiwe Moyo",
-    role: "Director of Programs",
-    location: "Harare",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-    type: "Mentor",
-  },
-  {
-    name: "Yusuf Hassan",
-    role: "Accelerator Lead",
-    location: "Mombasa",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80",
-    type: "Operator",
-  },
-  {
-    name: "Fatima Al-Rashid",
-    role: "COO",
-    location: "Lagos",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
-    type: "Founder",
-  },
-  {
-    name: "Isata Bangura",
-    role: "Investment Associate",
-    location: "Freetown",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-    type: "Investor",
-  },
-  {
-    name: "Marie-Claire Uwimana",
-    role: "Fellowship Director",
-    location: "Kigali",
-    image: "https://images.unsplash.com/photo-1570840306053-7a4117db0f62?auto=format&fit=crop&w=400&q=80",
-    type: "Mentor",
-  },
-  {
-    name: "Emeka Obi",
-    role: "Hub Operations Lead",
-    location: "Lagos",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
-    type: "Operator",
-  },
-  {
-    name: "Samuel Mengistu",
-    role: "Investment Analyst",
-    location: "Addis Ababa",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-    type: "Investor",
-  },
-  {
-    name: "Liya Tadesse",
-    role: "Engineering Lead",
-    location: "Addis Ababa",
-    image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=400&q=80",
-    type: "Operator",
-  },
-  {
-    name: "Blessing Okonkwo",
-    role: "Route Infrastructure Mgr",
-    location: "Accra",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80",
-    type: "Operator",
+    id: "mentor",
+    label: "Mentor",
+    icon: Heart,
+    description: "Transferring hard-won knowledge. Mentors accelerate the flywheel by sharing domain expertise, connections, and operational playbooks from the field.",
+    count: "Coming soon",
+    accent: "bg-[#111111]",
+    accentLight: "bg-[#111111]/10 text-[#111111]",
+    borderHover: "hover:border-[#111111]/30",
   },
 ];
 
@@ -521,7 +479,7 @@ function NetworkStatsSection() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   FEATURED MEMBERS, Photo grid of current XCitizens
+   NETWORK ARCHITECTURE, The four member types forming on the Route
    ══════════════════════════════════════════════════════════════════════════ */
 function FeaturedMembersSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -530,17 +488,10 @@ function FeaturedMembersSection() {
 
   const filters = ["all", "Founder", "Operator", "Investor", "Mentor"];
 
-  const filteredMembers =
+  const filteredTypes =
     filter === "all"
-      ? featuredMembers
-      : featuredMembers.filter((m) => m.type === filter);
-
-  const typeColor: Record<string, string> = {
-    Founder: "bg-[#FF4D00] text-white",
-    Operator: "bg-[#111111] text-white",
-    Investor: "bg-[#FF4D00]/10 text-[#FF4D00]",
-    Mentor: "bg-[#111111]/10 text-[#111111]",
-  };
+      ? memberTypes
+      : memberTypes.filter((m) => m.label === filter);
 
   return (
     <section
@@ -556,16 +507,16 @@ function FeaturedMembersSection() {
           className="max-w-3xl mx-auto text-center mb-10 md:mb-14"
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] mb-6 block">
-            Current Members
+            The Network is Forming
           </span>
           <h2 className="text-[32px] md:text-[48px] lg:text-[56px] font-display font-medium tracking-tight leading-[1.05] mb-6">
             The people on the{" "}
             <em className="italic font-serif text-[#FF4D00]">Route</em>.
           </h2>
           <p className="text-[17px] md:text-[19px] text-[#111111]/50 font-medium leading-relaxed">
-            Founders building ventures, operators running infrastructure,
-            investors deploying capital, mentors transferring knowledge. Every
-            XCitizen plays a part.
+            Four archetypes, one flywheel. Founders, operators, investors, and
+            mentors — each role compounds the others. The architecture is set;
+            the network is assembling.
           </p>
         </motion.div>
 
@@ -592,52 +543,73 @@ function FeaturedMembersSection() {
           ))}
         </motion.div>
 
-        {/* Members grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5">
-          <AnimatePresence mode="popLayout">
-            {filteredMembers.map((member, i) => (
+        {/* Type cards grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          {filteredTypes.map((type, i) => {
+            const TypeIcon = type.icon;
+            return (
               <motion.div
-                key={member.name}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.35, delay: i * 0.04, ease: "easeOut" }}
-                className="group"
+                key={type.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.1, ease: "easeOut" }}
+                className={`group border border-[#111111]/10 bg-white overflow-hidden transition-all duration-300 ${type.borderHover}`}
               >
-                <div className="border border-[#111111]/10 bg-white overflow-hidden hover:border-[#FF4D00]/30 transition-all duration-300">
-                  {/* Photo */}
-                  <div className="aspect-[4/5] overflow-hidden relative">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                    />
-                    {/* Type badge */}
-                    <div className="absolute top-2 left-2">
-                      <span className={`text-[9px] font-mono font-bold tracking-[0.1em] uppercase px-2 py-1 ${typeColor[member.type]}`}>
-                        {member.type}
-                      </span>
+                {/* Silhouette placeholder area */}
+                <div className="relative aspect-[4/3] bg-[#FAFAFA] flex flex-col items-center justify-center overflow-hidden">
+                  {/* Background pattern - subtle grid */}
+                  <div className="absolute inset-0 opacity-[0.03]" style={{
+                    backgroundImage: "radial-gradient(circle, #111 1px, transparent 1px)",
+                    backgroundSize: "16px 16px",
+                  }} />
+                  {/* Large Users silhouette */}
+                  <div className="relative flex flex-col items-center">
+                    <Users className="w-12 h-12 text-[#111111]/12 group-hover:text-[#111111]/20 transition-colors duration-500" />
+                    {/* Type icon badge overlaid */}
+                    <div className={`-mt-2 w-8 h-8 flex items-center justify-center ${type.accentLight} transition-colors duration-300`}>
+                      <TypeIcon className="w-4 h-4" />
                     </div>
                   </div>
-                  {/* Info */}
-                  <div className="p-3 md:p-4">
-                    <h3 className="text-[14px] md:text-[15px] font-display font-medium tracking-tight leading-tight">
-                      {member.name}
-                    </h3>
-                    <p className="text-[11px] text-[#111111]/50 font-medium mt-1">
-                      {member.role}
-                    </p>
-                    <div className="flex items-center gap-1 mt-2 text-[10px] text-[#111111]/35 font-medium">
-                      <MapPin className="w-3 h-3" />
-                      {member.location}
-                    </div>
+                  {/* Count label */}
+                  <div className="mt-3 text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/25">
+                    {type.count}
                   </div>
                 </div>
+
+                {/* Info */}
+                <div className="p-5 md:p-6">
+                  {/* Type label */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <TypeIcon className="w-4 h-4 text-[#FF4D00]" />
+                    <span className="text-[11px] font-mono font-bold tracking-[0.12em] uppercase text-[#FF4D00]">
+                      {type.label}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-[13px] md:text-[14px] text-[#111111]/55 leading-[1.65] font-medium">
+                    {type.description}
+                  </p>
+
+                  {/* Bottom accent line */}
+                  <div className={`mt-5 h-[2px] w-8 ${type.accent} opacity-20 group-hover:opacity-60 group-hover:w-12 transition-all duration-500`} />
+                </div>
               </motion.div>
-            ))}
-          </AnimatePresence>
+            );
+          })}
         </div>
+
+        {/* Bottom note */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+          className="text-center mt-10 md:mt-14"
+        >
+          <p className="text-[12px] font-mono font-bold tracking-[0.15em] uppercase text-[#111111]/25">
+            The network is forming · Join the Route
+          </p>
+        </motion.div>
       </div>
     </section>
   );
