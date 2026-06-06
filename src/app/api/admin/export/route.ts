@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-// Auth verification helper (duplicated to avoid import issues in route handlers)
+// Auth verification helper
 async function verifyAuth(req: NextRequest): Promise<boolean> {
   try {
     const authHeader = req.headers.get("Authorization");
@@ -36,7 +36,6 @@ async function verifyAuth(req: NextRequest): Promise<boolean> {
 function escapeCSV(value: string | number | boolean | null | undefined): string {
   if (value === null || value === undefined) return "";
   const str = String(value);
-  // If the value contains a comma, quote, or newline, wrap it in quotes
   if (str.includes(",") || str.includes('"') || str.includes("\n")) {
     return `"${str.replace(/"/g, '""')}"`;
   }
@@ -50,7 +49,6 @@ function generateCSV(headers: string[], rows: string[][]): string {
 }
 
 export async function GET(req: NextRequest) {
-  // Verify auth
   const isAuthed = await verifyAuth(req);
   if (!isAuthed) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -58,11 +56,11 @@ export async function GET(req: NextRequest) {
 
   try {
     const { searchParams } = new URL(req.url);
-    const section = searchParams.get("section"); // subscribers, inquiries, applications
+    const section = searchParams.get("section");
 
     if (!section) {
       return NextResponse.json(
-        { error: "section parameter is required (subscribers, inquiries, applications)" },
+        { error: "section parameter is required" },
         { status: 400 }
       );
     }
@@ -78,39 +76,27 @@ export async function GET(req: NextRequest) {
 
       const headers = ["ID", "Email", "Consent", "Source", "Created At"];
       const rows = subscribers.map((s) => [
-        s.id,
-        s.email,
-        String(s.consent),
-        s.source,
+        s.id, s.email, String(s.consent), s.source,
         new Date(s.createdAt).toISOString(),
       ]);
-
       csv = generateCSV(headers, rows);
       filename = `xcelero-subscribers-${new Date().toISOString().split("T")[0]}.csv`;
+
     } else if (section === "inquiries") {
       const inquiries = await db.investmentInquiry.findMany({
         orderBy: { createdAt: "desc" },
         take: 5000,
       });
 
-      const headers = [
-        "ID", "Name", "Email", "Amount", "Tier", "Accredited",
-        "Consent", "Status", "Created At",
-      ];
+      const headers = ["ID", "Name", "Email", "Amount", "Tier", "Accredited", "Consent", "Status", "Created At"];
       const rows = inquiries.map((i) => [
-        i.id,
-        i.name,
-        i.email,
-        String(i.amount),
-        i.tier,
-        String(i.accredited),
-        String(i.consent),
-        i.status,
+        i.id, i.name, i.email, String(i.amount), i.tier,
+        String(i.accredited), String(i.consent), i.status,
         new Date(i.createdAt).toISOString(),
       ]);
-
       csv = generateCSV(headers, rows);
       filename = `xcelero-inquiries-${new Date().toISOString().split("T")[0]}.csv`;
+
     } else if (section === "applications") {
       const applications = await db.application.findMany({
         orderBy: { createdAt: "desc" },
@@ -125,39 +111,63 @@ export async function GET(req: NextRequest) {
         "Status", "Notes", "Created At",
       ];
       const rows = applications.map((a) => [
-        a.id,
-        a.type,
-        a.firstName,
-        a.lastName,
-        a.email,
-        a.referral || "",
-        a.linkedinUrl || "",
-        a.companyName || "",
-        a.companyWebsite || "",
-        a.location || "",
-        a.role || "",
-        a.pitchDeckUrl || "",
-        a.motivation || "",
-        a.orgName || "",
-        a.orgWebsite || "",
-        a.partnerRole || "",
-        a.interest || "",
-        a.description || "",
-        a.status,
-        a.notes || "",
-        new Date(a.createdAt).toISOString(),
+        a.id, a.type, a.firstName, a.lastName, a.email, a.referral || "",
+        a.linkedinUrl || "", a.companyName || "", a.companyWebsite || "", a.location || "",
+        a.role || "", a.pitchDeckUrl || "", a.motivation || "",
+        a.orgName || "", a.orgWebsite || "", a.partnerRole || "", a.interest || "", a.description || "",
+        a.status, a.notes || "", new Date(a.createdAt).toISOString(),
       ]);
-
       csv = generateCSV(headers, rows);
       filename = `xcelero-applications-${new Date().toISOString().split("T")[0]}.csv`;
+
+    } else if (section === "jobApplications") {
+      const jobApplications = await db.jobApplication.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5000,
+      });
+
+      const headers = [
+        "ID", "First Name", "Last Name", "Email", "Phone",
+        "LinkedIn URL", "Portfolio URL", "Role", "Location",
+        "Availability", "Motivation", "Referral", "Resume URL",
+        "Status", "Notes", "Created At",
+      ];
+      const rows = jobApplications.map((j) => [
+        j.id, j.firstName, j.lastName, j.email, j.phone || "",
+        j.linkedinUrl || "", j.portfolioUrl || "", j.role, j.location || "",
+        j.availability || "", j.motivation || "", j.referral || "", j.resumeUrl || "",
+        j.status, j.notes || "", new Date(j.createdAt).toISOString(),
+      ]);
+      csv = generateCSV(headers, rows);
+      filename = `xcelero-job-applications-${new Date().toISOString().split("T")[0]}.csv`;
+
+    } else if (section === "programApplications") {
+      const programApplications = await db.programApplication.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5000,
+      });
+
+      const headers = [
+        "ID", "Program Slug", "First Name", "Last Name", "Email", "Phone",
+        "LinkedIn URL", "Location", "Current Role", "Company Name",
+        "Motivation", "Referral", "Status", "Notes", "Created At",
+      ];
+      const rows = programApplications.map((p) => [
+        p.id, p.programSlug, p.firstName, p.lastName, p.email, p.phone || "",
+        p.linkedinUrl || "", p.location || "", p.currentRole || "", p.companyName || "",
+        p.motivation || "", p.referral || "", p.status, p.notes || "",
+        new Date(p.createdAt).toISOString(),
+      ]);
+      csv = generateCSV(headers, rows);
+      filename = `xcelero-program-applications-${new Date().toISOString().split("T")[0]}.csv`;
+
     } else {
       return NextResponse.json(
-        { error: "Invalid section. Must be subscribers, inquiries, or applications" },
+        { error: "Invalid section. Must be subscribers, inquiries, applications, jobApplications, or programApplications" },
         { status: 400 }
       );
     }
 
-    // Return CSV as downloadable file
     return new NextResponse(csv, {
       status: 200,
       headers: {

@@ -997,9 +997,15 @@ function InvestmentTiers() {
   const selectedVehicle = tierVehicleMap[selectedTierId];
   const [selectedPaymentId, setSelectedPaymentId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const confirmationRef = useRef<string>(`XCL-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
 
   const [direction, setDirection] = useState<1 | -1>(1);
+
+  /* ── Investor info state ── */
+  const [investorName, setInvestorName] = useState("");
+  const [investorEmail, setInvestorEmail] = useState("");
+  const [accredited, setAccredited] = useState(false);
 
   /* ── Payment form state ── */
   const [cardNumber, setCardNumber] = useState("");
@@ -1042,13 +1048,35 @@ function InvestmentTiers() {
     }
   })();
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     if (!selectedPaymentId || !isFormValid) return;
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
+    setPaymentError(null);
+    try {
+      const res = await fetch("/api/capital/invest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: investorName.trim() || "Investor",
+          email: investorEmail.trim(),
+          amount: selectedTier.min,
+          tier: selectedTierId,
+          accredited,
+          consent: true,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Submission failed. Please try again.");
+      }
+
       goNext(); // go to step 7
-    }, 2200);
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const goToStep = (step: WizardStep) => {
@@ -1617,6 +1645,48 @@ function InvestmentTiers() {
                         </div>
                       </div>
 
+                      {/* Investor info fields */}
+                      <div className="border-t border-[#111111]/5 pt-4 space-y-4 mb-6">
+                        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 block">
+                          Your Details
+                        </span>
+                        <div>
+                          <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-1.5">
+                            Full Name
+                          </label>
+                          <input
+                            type="text"
+                            value={investorName}
+                            onChange={(e) => setInvestorName(e.target.value)}
+                            placeholder="Your full name"
+                            className="w-full border border-[#111111]/10 px-3 py-2.5 text-[13px] font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-1.5">
+                            Email Address
+                          </label>
+                          <input
+                            type="email"
+                            value={investorEmail}
+                            onChange={(e) => setInvestorEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            className="w-full border border-[#111111]/10 px-3 py-2.5 text-[13px] font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                          />
+                        </div>
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={accredited}
+                            onChange={(e) => setAccredited(e.target.checked)}
+                            className="mt-0.5 w-4 h-4 rounded border-[#111111]/20 text-[#FF4D00] focus:ring-[#FF4D00]/20 accent-[#FF4D00]"
+                          />
+                          <span className="text-[11px] text-[#111111]/50 font-medium leading-[1.5] group-hover:text-[#111111]/70 transition-colors">
+                            I am an accredited investor (qualified under applicable jurisdiction)
+                          </span>
+                        </label>
+                      </div>
+
                       <button
                         onClick={goNext}
                         className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#111111] transition-colors"
@@ -2153,6 +2223,13 @@ function InvestmentTiers() {
                         <p className="text-[10px] text-[#111111]/30 font-medium text-center mt-3 leading-[1.5]">
                           Secure, encrypted transaction. Do not close this page.
                         </p>
+                      )}
+
+                      {paymentError && !isProcessing && (
+                        <div className="mt-3 p-3 border border-red-200 bg-red-50 text-[11px] text-red-700 font-medium leading-[1.5] text-center">
+                          <X className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
+                          {paymentError}
+                        </div>
                       )}
                     </div>
                   </div>

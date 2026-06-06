@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, consent } = body;
+    const { email, consent, source } = body;
 
     // Validate email
     if (!email) {
@@ -35,12 +35,12 @@ export async function POST(req: NextRequest) {
       where: { email },
       update: {
         consent: true,
-        source: "capital_page",
+        source: source || "capital_page",
       },
       create: {
         email,
         consent: true,
-        source: "capital_page",
+        source: source || "capital_page",
       },
     });
 

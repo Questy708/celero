@@ -53,6 +53,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   // Town Square is a full-screen immersive experience — no nav, footer, or sticky bars
   const isImmersive = path === "/townsquare";
+  // Admin dashboard has its own dark layout — no nav, footer, or sticky bars
+  const isAdmin = path === "/admin";
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -71,6 +73,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
         >
           <X className="w-5 h-5" />
         </Link>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={path}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#111111] text-white font-sans selection:bg-[#FF4D00]/20 selection:text-white">
         <AnimatePresence mode="wait">
           <motion.div
             key={path}

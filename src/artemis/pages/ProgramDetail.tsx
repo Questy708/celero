@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/artemis/router";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Plus, Minus, Users, Zap, Shield, Workflow, Activity, Globe, Target, Search as SearchIcon, Calendar, Clock, ChevronRight, MapPin, ArrowRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Plus, Minus, Users, Zap, Shield, Workflow, Activity, Globe, Target, Search as SearchIcon, Calendar, Clock, ChevronRight, MapPin, ArrowRight, X, Loader2 } from "lucide-react";
 import { Link } from "@/artemis/router";
 import { programsData } from "@/artemis/data/programs";
 import { venturesData } from "@/artemis/data/ventures";
@@ -59,6 +59,58 @@ export function ProgramDetail() {
   const program = programsData.find((p) => p.id === id);
   const [activeSteps, setActiveSteps] = useState<number[]>([0, 1, 2]);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
+
+  // Application modal state
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [applySubmitting, setApplySubmitting] = useState(false);
+  const [applySuccess, setApplySuccess] = useState(false);
+  const [applyError, setApplyError] = useState("");
+  const [applyForm, setApplyForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    linkedinUrl: "",
+    location: "",
+    currentRole: "",
+    companyName: "",
+    motivation: "",
+    referral: "",
+  });
+
+  const openApplyModal = () => {
+    setApplySuccess(false);
+    setApplyError("");
+    setShowApplyModal(true);
+  };
+
+  const handleApplySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!applyForm.firstName || !applyForm.lastName || !applyForm.email) return;
+    setApplySubmitting(true);
+    setApplyError("");
+    try {
+      const res = await fetch("/api/programs/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programSlug: id,
+          ...applyForm,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setApplyError(data.error || "Submission failed. Please try again.");
+        setApplySubmitting(false);
+        return;
+      }
+      setApplySubmitting(false);
+      setApplySuccess(true);
+    } catch {
+      setApplyError("Network error. Please try again.");
+      setApplySubmitting(false);
+    }
+  };
 
   // Carousel state
   const images = (id && carouselImages[id]) || [];
@@ -202,7 +254,7 @@ export function ProgramDetail() {
               </div>
               <div>
                 {program.applicationCycles!.some(c => c.status === 'open') && (
-                  <button className="inline-flex items-center justify-center gap-2 bg-[#FF4D00] text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#E54300] transition-colors">
+                  <button onClick={openApplyModal} className="inline-flex items-center justify-center gap-2 bg-[#FF4D00] text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#E54300] transition-colors">
                     Apply Now <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
@@ -732,13 +784,227 @@ export function ProgramDetail() {
                <h2 className="text-5xl md:text-[80px] lg:text-[120px] font-display font-medium text-white uppercase leading-[0.9] tracking-tighter">
                   BUILD THE <br /> EXCEPTIONAL <br /> TODAY AND <br /> LAUNCH NOW
                </h2>
-               <button className="button relative inline-flex items-center justify-center bg-white text-[#1B1C1E] px-12 py-5 text-sm font-bold uppercase tracking-widest transition-transform hover:scale-105 group overflow-hidden rounded-md">
+               <button onClick={openApplyModal} className="button relative inline-flex items-center justify-center bg-white text-[#1B1C1E] px-12 py-5 text-sm font-bold uppercase tracking-widest transition-transform hover:scale-105 group overflow-hidden rounded-md">
                   <span className="relative z-10 transition-colors group-hover:text-white">Apply</span>
                   <div className="button-gradient !opacity-0 group-hover:!opacity-100 transition-opacity" />
                </button>
             </div>
          </div>
       </section>
+
+      {/* ── APPLICATION MODAL ── */}
+      <AnimatePresence>
+        {showApplyModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            onClick={(e) => { if (e.target === e.currentTarget && !applySubmitting) setShowApplyModal(false); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-[#111111] text-white rounded-2xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="sticky top-0 z-10 bg-[#111111] flex items-center justify-between px-8 pt-8 pb-4 border-b border-white/10">
+                <div>
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.4em] text-[#FF4D00] mb-1">APPLICATION</p>
+                  <h2 className="text-2xl font-display font-medium uppercase tracking-tighter">
+                    Apply to {program.title}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => { if (!applySubmitting) setShowApplyModal(false); }}
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Success state */}
+              {applySuccess ? (
+                <div className="px-8 py-16 text-center">
+                  <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#FF4D00]/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8 text-[#FF4D00]" />
+                  </div>
+                  <h3 className="text-2xl font-display font-medium mb-3 uppercase tracking-tighter">Application Submitted</h3>
+                  <p className="text-white/60 leading-relaxed mb-8">
+                    Your application to {program.title} has been received. We&apos;ll review it and get back to you soon.
+                  </p>
+                  <button
+                    onClick={() => { setShowApplyModal(false); setApplySuccess(false); setApplyForm({ firstName: "", lastName: "", email: "", phone: "", linkedinUrl: "", location: "", currentRole: "", companyName: "", motivation: "", referral: "" }); }}
+                    className="inline-flex items-center justify-center bg-[#FF4D00] text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#E54300] transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+              ) : (
+                /* Form */
+                <form onSubmit={handleApplySubmit} className="px-8 py-6 space-y-5">
+                  {/* Error message */}
+                  {applyError && (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-sm text-red-400">
+                      {applyError}
+                    </div>
+                  )}
+
+                  {/* Name row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">First Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={applyForm.firstName}
+                        onChange={(e) => setApplyForm({ ...applyForm, firstName: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                        placeholder="Jane"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Last Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={applyForm.lastName}
+                        onChange={(e) => setApplyForm({ ...applyForm, lastName: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                        placeholder="Doe"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={applyForm.email}
+                      onChange={(e) => setApplyForm({ ...applyForm, email: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                      placeholder="jane@example.com"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      value={applyForm.phone}
+                      onChange={(e) => setApplyForm({ ...applyForm, phone: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+
+                  {/* LinkedIn */}
+                  <div>
+                    <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">LinkedIn URL</label>
+                    <input
+                      type="url"
+                      value={applyForm.linkedinUrl}
+                      onChange={(e) => setApplyForm({ ...applyForm, linkedinUrl: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                      placeholder="https://linkedin.com/in/janedoe"
+                    />
+                  </div>
+
+                  {/* Location + Current Role */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Location</label>
+                      <input
+                        type="text"
+                        value={applyForm.location}
+                        onChange={(e) => setApplyForm({ ...applyForm, location: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                        placeholder="Lagos, Nigeria"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Current Role</label>
+                      <input
+                        type="text"
+                        value={applyForm.currentRole}
+                        onChange={(e) => setApplyForm({ ...applyForm, currentRole: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                        placeholder="Software Engineer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Company */}
+                  <div>
+                    <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Company Name</label>
+                    <input
+                      type="text"
+                      value={applyForm.companyName}
+                      onChange={(e) => setApplyForm({ ...applyForm, companyName: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                      placeholder="Acme Inc."
+                    />
+                  </div>
+
+                  {/* Motivation */}
+                  <div>
+                    <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Why do you want to join? (Motivation)</label>
+                    <textarea
+                      rows={4}
+                      value={applyForm.motivation}
+                      onChange={(e) => setApplyForm({ ...applyForm, motivation: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors resize-none"
+                      placeholder="Tell us why you want to join this program..."
+                    />
+                  </div>
+
+                  {/* Referral */}
+                  <div>
+                    <label className="block font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mb-2">Referral Code</label>
+                    <input
+                      type="text"
+                      value={applyForm.referral}
+                      onChange={(e) => setApplyForm({ ...applyForm, referral: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00] transition-colors"
+                      placeholder="Optional referral code"
+                    />
+                  </div>
+
+                  {/* Program slug indicator */}
+                  <div className="flex items-center gap-2 text-white/30 text-xs font-mono">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D00]" />
+                    <span>Applying to: <span className="text-[#FF4D00]">{id}</span></span>
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    disabled={applySubmitting || !applyForm.firstName || !applyForm.lastName || !applyForm.email}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-[#FF4D00] text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#E54300] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {applySubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit Application"
+                    )}
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

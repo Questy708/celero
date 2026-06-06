@@ -75,24 +75,70 @@ interface Application {
   createdAt: string;
 }
 
+interface JobApplication {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  linkedinUrl: string | null;
+  portfolioUrl: string | null;
+  role: string;
+  location: string | null;
+  availability: string | null;
+  motivation: string | null;
+  referral: string | null;
+  resumeUrl: string | null;
+  status: string;
+  notes: string | null;
+  createdAt: string;
+}
+
+interface ProgramApplication {
+  id: string;
+  programSlug: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  linkedinUrl: string | null;
+  location: string | null;
+  currentRole: string | null;
+  companyName: string | null;
+  motivation: string | null;
+  referral: string | null;
+  status: string;
+  notes: string | null;
+  createdAt: string;
+}
+
 interface Stats {
   totalSubscribers: number;
   totalInquiries: number;
   totalApplications: number;
+  totalJobApplications: number;
+  totalProgramApplications: number;
   pendingInquiries: number;
   pendingApplications: number;
+  pendingJobApplications: number;
+  pendingProgramApplications: number;
   totalInvestmentAmount: number;
   inquiriesByTier: { tier: string; _count: { tier: number }; _sum: { amount: number | null } }[];
   applicationsByType: { type: string; _count: { type: number } }[];
   inquiriesByStatus: { status: string; _count: { status: number } }[];
   applicationsByStatus: { status: string; _count: { status: number } }[];
+  jobApplicationsByRole: { role: string; _count: { role: number } }[];
+  jobApplicationsByStatus: { status: string; _count: { status: number } }[];
+  programApplicationsByProgram: { programSlug: string; _count: { programSlug: number } }[];
+  programApplicationsByStatus: { status: string; _count: { status: number } }[];
   recentSubscribers: Subscriber[];
   recentInquiries: InvestmentInquiry[];
   recentApplications: Application[];
 }
 
-type Tab = "subscribers" | "inquiries" | "applications";
+type Tab = "subscribers" | "inquiries" | "applications" | "jobApplications" | "programApplications";
 type AppFilter = "all" | "founder" | "partner";
+type ProgramFilter = "all" | "quest-fellowship" | "xcelerator" | "venture-studio" | "lab-residency";
 
 /* ══════════════════════════════════════════════════════════════════════════
    HELPERS
@@ -207,6 +253,26 @@ function AccreditedBadge({ accredited }: { accredited: boolean }) {
   ) : null;
 }
 
+function ProgramBadge({ slug }: { slug: string }) {
+  const labels: Record<string, string> = {
+    "quest-fellowship": "Quest Fellowship",
+    "xcelerator": "Xcelerator",
+    "venture-studio": "Venture Studio",
+    "lab-residency": "Lab Residency",
+  };
+  const styles: Record<string, string> = {
+    "quest-fellowship": "bg-[#FF4D00]/15 text-[#FF4D00] border-[#FF4D00]/30",
+    "xcelerator": "bg-violet-500/15 text-violet-400 border-violet-500/30",
+    "venture-studio": "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    "lab-residency": "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+  };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border rounded-sm ${styles[slug] || "bg-white/10 text-white/40 border-white/20"}`}>
+      {labels[slug] || slug}
+    </span>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    SKELETON
    ══════════════════════════════════════════════════════════════════════════ */
@@ -236,8 +302,11 @@ export function AdminDashboard() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [inquiries, setInquiries] = useState<InvestmentInquiry[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [jobApplications, setJobApplications] = useState<JobApplication[]>([]);
+  const [programApplications, setProgramApplications] = useState<ProgramApplication[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("subscribers");
   const [appFilter, setAppFilter] = useState<AppFilter>("all");
+  const [programFilter, setProgramFilter] = useState<ProgramFilter>("all");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
@@ -305,6 +374,8 @@ export function AdminDashboard() {
     setSubscribers([]);
     setInquiries([]);
     setApplications([]);
+    setJobApplications([]);
+    setProgramApplications([]);
   };
 
   /* ── Auth: helper to clear token on 401 ── */
@@ -381,26 +452,50 @@ export function AdminDashboard() {
     }
   }, [authFetch]);
 
+  const fetchJobApplications = useCallback(async () => {
+    try {
+      const res = await authFetch("/api/admin?section=jobApplications");
+      if (res.ok) {
+        const data = await res.json();
+        setJobApplications(data.jobApplications || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch job applications:", err);
+    }
+  }, [authFetch]);
+
+  const fetchProgramApplications = useCallback(async () => {
+    try {
+      const res = await authFetch("/api/admin?section=programApplications");
+      if (res.ok) {
+        const data = await res.json();
+        setProgramApplications(data.programApplications || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch program applications:", err);
+    }
+  }, [authFetch]);
+
   const refreshAll = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([fetchStats(), fetchSubscribers(), fetchInquiries(), fetchApplications()]);
+    await Promise.all([fetchStats(), fetchSubscribers(), fetchInquiries(), fetchApplications(), fetchJobApplications(), fetchProgramApplications()]);
     setLastRefreshed(new Date());
     setRefreshing(false);
-  }, [fetchStats, fetchSubscribers, fetchInquiries, fetchApplications]);
+  }, [fetchStats, fetchSubscribers, fetchInquiries, fetchApplications, fetchJobApplications, fetchProgramApplications]);
 
   useEffect(() => {
     if (!token) return;
     const load = async () => {
       setLoading(true);
-      await Promise.all([fetchStats(), fetchSubscribers(), fetchInquiries(), fetchApplications()]);
+      await Promise.all([fetchStats(), fetchSubscribers(), fetchInquiries(), fetchApplications(), fetchJobApplications(), fetchProgramApplications()]);
       setLastRefreshed(new Date());
       setLoading(false);
     };
     load();
-  }, [token, fetchStats, fetchSubscribers, fetchInquiries, fetchApplications]);
+  }, [token, fetchStats, fetchSubscribers, fetchInquiries, fetchApplications, fetchJobApplications, fetchProgramApplications]);
 
   /* ── Actions ── */
-  const updateStatus = async (model: "inquiry" | "application", id: string, status: string) => {
+  const updateStatus = async (model: "inquiry" | "application" | "jobApplication" | "programApplication", id: string, status: string) => {
     setUpdatingStatus(id);
     try {
       const res = await authFetch("/api/admin", {
@@ -411,8 +506,12 @@ export function AdminDashboard() {
       if (res.ok) {
         if (model === "inquiry") {
           setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status } : inq)));
-        } else {
+        } else if (model === "application") {
           setApplications((prev) => prev.map((app) => (app.id === id ? { ...app, status } : app)));
+        } else if (model === "jobApplication") {
+          setJobApplications((prev) => prev.map((ja) => (ja.id === id ? { ...ja, status } : ja)));
+        } else if (model === "programApplication") {
+          setProgramApplications((prev) => prev.map((pa) => (pa.id === id ? { ...pa, status } : pa)));
         }
         await fetchStats();
       }
@@ -422,7 +521,7 @@ export function AdminDashboard() {
     setUpdatingStatus(null);
   };
 
-  const deleteRecord = async (model: "subscriber" | "inquiry" | "application", id: string) => {
+  const deleteRecord = async (model: "subscriber" | "inquiry" | "application" | "jobApplication" | "programApplication", id: string) => {
     if (!window.confirm("Are you sure you want to delete this record? This cannot be undone.")) return;
     try {
       const res = await authFetch(`/api/admin?model=${model}&id=${id}`, { method: "DELETE" });
@@ -433,6 +532,8 @@ export function AdminDashboard() {
           setApplications((prev) => prev.filter((a) => a.id !== id));
           if (expandedAppId === id) setExpandedAppId(null);
         }
+        if (model === "jobApplication") setJobApplications((prev) => prev.filter((ja) => ja.id !== id));
+        if (model === "programApplication") setProgramApplications((prev) => prev.filter((pa) => pa.id !== id));
         await fetchStats();
       }
     } catch (err) {
@@ -463,17 +564,32 @@ export function AdminDashboard() {
   };
 
   /* ── Computed ── */
-  const pendingTotal = (stats?.pendingInquiries || 0) + (stats?.pendingApplications || 0);
+  const pendingTotal = (stats?.pendingInquiries || 0) + (stats?.pendingApplications || 0) + (stats?.pendingJobApplications || 0) + (stats?.pendingProgramApplications || 0);
   const filteredApps = applications.filter((a) => appFilter === "all" || a.type === appFilter);
   const founderCount = stats?.applicationsByType?.find((t) => t.type === "founder")?._count.type || 0;
   const partnerCount = stats?.applicationsByType?.find((t) => t.type === "partner")?._count.type || 0;
 
   const inquiryTotalAmount = inquiries.reduce((sum, i) => sum + i.amount, 0);
 
+  const jobAppRoleCount = stats?.jobApplicationsByRole?.length || 0;
+  const programAppBreakdown = stats?.programApplicationsByProgram?.map((p) => {
+    const labels: Record<string, string> = {
+      "quest-fellowship": "Quest",
+      "xcelerator": "Xcel",
+      "venture-studio": "Studio",
+      "lab-residency": "Lab",
+    };
+    return `${labels[p.programSlug] || p.programSlug}: ${p._count.programSlug}`;
+  }).join(" · ") || "";
+
+  const filteredProgramApps = programApplications.filter((pa) => programFilter === "all" || pa.programSlug === programFilter);
+
   const tabs: { key: Tab; label: string; count: number }[] = [
     { key: "subscribers", label: "Subscribers", count: stats?.totalSubscribers || 0 },
     { key: "inquiries", label: "Investment Inquiries", count: stats?.totalInquiries || 0 },
-    { key: "applications", label: "Applications", count: stats?.totalApplications || 0 },
+    { key: "applications", label: "Join Applications", count: stats?.totalApplications || 0 },
+    { key: "jobApplications", label: "Job Applications", count: stats?.totalJobApplications || 0 },
+    { key: "programApplications", label: "Program Applications", count: stats?.totalProgramApplications || 0 },
   ];
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -630,7 +746,7 @@ export function AdminDashboard() {
       {/* ── Stats Row ── */}
       <section className="px-6 md:px-12 lg:px-20 pb-12">
         <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             <StatCard
               icon={<Users className="w-4 h-4" />}
               label="Total Subscribers"
@@ -648,17 +764,33 @@ export function AdminDashboard() {
             />
             <StatCard
               icon={<FileText className="w-4 h-4" />}
-              label="Applications"
+              label="Join Applications"
               value={stats?.totalApplications ?? "—"}
               sub={stats ? `${founderCount} founder · ${partnerCount} partner` : undefined}
               loading={loading}
+              delay={0.15}
+            />
+            <StatCard
+              icon={<Briefcase className="w-4 h-4" />}
+              label="Job Applications"
+              value={stats?.totalJobApplications ?? "—"}
+              sub={stats ? `${jobAppRoleCount} role${jobAppRoleCount !== 1 ? "s" : ""}` : undefined}
+              loading={loading}
               delay={0.2}
+            />
+            <StatCard
+              icon={<Globe className="w-4 h-4" />}
+              label="Program Applications"
+              value={stats?.totalProgramApplications ?? "—"}
+              sub={stats && programAppBreakdown ? programAppBreakdown : undefined}
+              loading={loading}
+              delay={0.25}
             />
             <StatCard
               icon={<Clock className="w-4 h-4" />}
               label="Pending Items"
               value={pendingTotal || "—"}
-              sub={stats ? `${stats.pendingInquiries} inq · ${stats.pendingApplications} app` : undefined}
+              sub={stats ? `${stats.pendingInquiries} inq · ${stats.pendingApplications} app · ${stats.pendingJobApplications} job · ${stats.pendingProgramApplications} prog` : undefined}
               loading={loading}
               delay={0.3}
               accent
@@ -670,12 +802,12 @@ export function AdminDashboard() {
       {/* ── Tabs ── */}
       <section className="px-6 md:px-12 lg:px-20 pb-4">
         <div className="max-w-[1400px] mx-auto">
-          <div className="flex gap-0 border-b border-white/10">
+          <div className="flex gap-0 border-b border-white/10 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`relative px-5 py-3 text-[12px] font-bold uppercase tracking-[0.1em] transition-colors ${
+                className={`relative px-5 py-3 text-[12px] font-bold uppercase tracking-[0.1em] transition-colors whitespace-nowrap ${
                   activeTab === tab.key
                     ? "text-[#FF4D00]"
                     : "text-white/40 hover:text-white/70"
@@ -755,6 +887,45 @@ export function AdminDashboard() {
                   onUpdateStatus={(id, status) => updateStatus("application", id, status)}
                   onDelete={(id) => deleteRecord("application", id)}
                   onExport={() => handleExport("applications")}
+                />
+              </motion.div>
+            )}
+            {activeTab === "jobApplications" && (
+              <motion.div
+                key="jobApplications"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+              >
+                <JobApplicationsTab
+                  jobApplications={jobApplications}
+                  loading={loading}
+                  updatingStatus={updatingStatus}
+                  onUpdateStatus={(id, status) => updateStatus("jobApplication", id, status)}
+                  onDelete={(id) => deleteRecord("jobApplication", id)}
+                  onExport={() => handleExport("jobApplications")}
+                />
+              </motion.div>
+            )}
+            {activeTab === "programApplications" && (
+              <motion.div
+                key="programApplications"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+              >
+                <ProgramApplicationsTab
+                  programApplications={filteredProgramApps}
+                  totalCount={programApplications.length}
+                  filter={programFilter}
+                  onFilterChange={setProgramFilter}
+                  loading={loading}
+                  updatingStatus={updatingStatus}
+                  onUpdateStatus={(id, status) => updateStatus("programApplication", id, status)}
+                  onDelete={(id) => deleteRecord("programApplication", id)}
+                  onExport={() => handleExport("programApplications")}
                 />
               </motion.div>
             )}
@@ -1313,6 +1484,353 @@ function ApplicationsTab({
                   </motion.div>
                 )}
               </AnimatePresence>
+            </motion.div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   JOB APPLICATIONS TAB
+   ══════════════════════════════════════════════════════════════════════════ */
+function JobApplicationsTab({
+  jobApplications,
+  loading: isLoading,
+  updatingStatus,
+  onUpdateStatus,
+  onDelete,
+  onExport,
+}: {
+  jobApplications: JobApplication[];
+  loading: boolean;
+  updatingStatus: string | null;
+  onUpdateStatus: (id: string, status: string) => void;
+  onDelete: (id: string) => void;
+  onExport: () => void;
+}) {
+  const jobStatuses = ["pending", "reviewing", "contacted", "accepted", "declined"];
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-[11px] font-mono text-white/40">
+          Showing {jobApplications.length} job application{jobApplications.length !== 1 ? "s" : ""}
+        </span>
+        <button
+          onClick={onExport}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono font-bold tracking-wider uppercase text-white/40 hover:text-white hover:border-white/30 transition-colors"
+        >
+          <Download className="w-3 h-3" />
+          Export CSV
+        </button>
+      </div>
+
+      {/* Table header */}
+      <div className="hidden lg:grid lg:grid-cols-12 gap-4 pb-3 border-b border-white/10 mb-0">
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Name
+        </div>
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Email
+        </div>
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Role
+        </div>
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Location
+        </div>
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Avail.
+        </div>
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Status
+        </div>
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Date
+        </div>
+        <div className="col-span-1" />
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-white/5">
+        {isLoading ? (
+          Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={8} />)
+        ) : jobApplications.length === 0 ? (
+          <div className="py-16 text-center">
+            <Briefcase className="w-8 h-8 text-white/10 mx-auto mb-4" />
+            <p className="text-white/30 text-sm font-medium">No job applications yet</p>
+            <p className="text-white/15 text-[11px] mt-1">Job applications will appear here when candidates apply</p>
+          </div>
+        ) : (
+          jobApplications.map((ja, i) => (
+            <motion.div
+              key={ja.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.03 }}
+              className="py-4 lg:grid lg:grid-cols-12 lg:gap-4 lg:items-center hover:bg-white/[0.02] transition-colors group"
+            >
+              {/* Name */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="text-[13px] md:text-[14px] font-medium text-white/80 group-hover:text-white transition-colors">
+                  {ja.firstName} {ja.lastName}
+                </span>
+              </div>
+
+              {/* Email */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="text-[12px] text-white/40 truncate block">{ja.email}</span>
+              </div>
+
+              {/* Role */}
+              <div className="col-span-1 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Role </span>
+                <span className="text-[12px] text-white/50">{ja.role}</span>
+              </div>
+
+              {/* Location */}
+              <div className="col-span-1 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Location </span>
+                <span className="text-[12px] text-white/40">{ja.location || "—"}</span>
+              </div>
+
+              {/* Availability */}
+              <div className="col-span-1 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Avail. </span>
+                <span className="text-[12px] text-white/40">{ja.availability || "—"}</span>
+              </div>
+
+              {/* Status dropdown */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Status </span>
+                <div className="relative inline-block">
+                  <select
+                    value={ja.status}
+                    onChange={(e) => onUpdateStatus(ja.id, e.target.value)}
+                    disabled={updatingStatus === ja.id}
+                    className="appearance-none bg-transparent text-[11px] font-mono font-bold tracking-wider uppercase cursor-pointer pr-5 border-none outline-none disabled:opacity-50"
+                    style={{ color: getStatusColor(ja.status) }}
+                  >
+                    {jobStatuses.map((s) => (
+                      <option key={s} value={s} className="bg-[#111111] text-white">
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {updatingStatus === ja.id && (
+                    <RefreshCw className="w-3 h-3 animate-spin inline ml-1 text-[#FF4D00]" />
+                  )}
+                </div>
+              </div>
+
+              {/* Date */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Date </span>
+                <span className="text-[11px] font-mono text-white/30">{formatDate(ja.createdAt)}</span>
+              </div>
+
+              {/* Delete */}
+              <div className="col-span-1 flex justify-end">
+                <button
+                  onClick={() => onDelete(ja.id)}
+                  className="p-1.5 text-white/10 hover:text-red-400 transition-colors"
+                  aria-label="Delete job application"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PROGRAM APPLICATIONS TAB
+   ══════════════════════════════════════════════════════════════════════════ */
+function ProgramApplicationsTab({
+  programApplications,
+  totalCount,
+  filter,
+  onFilterChange,
+  loading: isLoading,
+  updatingStatus,
+  onUpdateStatus,
+  onDelete,
+  onExport,
+}: {
+  programApplications: ProgramApplication[];
+  totalCount: number;
+  filter: ProgramFilter;
+  onFilterChange: (f: ProgramFilter) => void;
+  loading: boolean;
+  updatingStatus: string | null;
+  onUpdateStatus: (id: string, status: string) => void;
+  onDelete: (id: string) => void;
+  onExport: () => void;
+}) {
+  const progStatuses = ["pending", "reviewing", "contacted", "accepted", "declined"];
+  const filters: { key: ProgramFilter; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "quest-fellowship", label: "Quest Fellowship" },
+    { key: "xcelerator", label: "Xcelerator" },
+    { key: "venture-studio", label: "Venture Studio" },
+    { key: "lab-residency", label: "Lab Residency" },
+  ];
+
+  return (
+    <div>
+      {/* Filter tabs */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex gap-1 flex-wrap">
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => onFilterChange(f.key)}
+              className={`px-3 py-1.5 text-[10px] font-mono font-bold tracking-wider uppercase transition-colors ${
+                filter === f.key
+                  ? "bg-[#FF4D00]/15 text-[#FF4D00] border border-[#FF4D00]/30"
+                  : "text-white/30 hover:text-white/60 border border-transparent"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-[11px] font-mono text-white/40">
+            Showing {programApplications.length} of {totalCount}
+          </span>
+          <button
+            onClick={onExport}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono font-bold tracking-wider uppercase text-white/40 hover:text-white hover:border-white/30 transition-colors"
+          >
+            <Download className="w-3 h-3" />
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Table header */}
+      <div className="hidden lg:grid lg:grid-cols-12 gap-4 pb-3 border-b border-white/10 mb-0">
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Name
+        </div>
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Email
+        </div>
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Program
+        </div>
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Role / Company
+        </div>
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Location
+        </div>
+        <div className="col-span-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Status
+        </div>
+        <div className="col-span-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/25">
+          Date
+        </div>
+        <div className="col-span-1" />
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-white/5">
+        {isLoading ? (
+          Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={8} />)
+        ) : programApplications.length === 0 ? (
+          <div className="py-16 text-center">
+            <Globe className="w-8 h-8 text-white/10 mx-auto mb-4" />
+            <p className="text-white/30 text-sm font-medium">No program applications yet</p>
+            <p className="text-white/15 text-[11px] mt-1">Program applications will appear here when people apply</p>
+          </div>
+        ) : (
+          programApplications.map((pa, i) => (
+            <motion.div
+              key={pa.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.03 }}
+              className="py-4 lg:grid lg:grid-cols-12 lg:gap-4 lg:items-center hover:bg-white/[0.02] transition-colors group"
+            >
+              {/* Name */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="text-[13px] md:text-[14px] font-medium text-white/80 group-hover:text-white transition-colors">
+                  {pa.firstName} {pa.lastName}
+                </span>
+              </div>
+
+              {/* Email */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="text-[12px] text-white/40 truncate block">{pa.email}</span>
+              </div>
+
+              {/* Program */}
+              <div className="col-span-1 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Program </span>
+                <ProgramBadge slug={pa.programSlug} />
+              </div>
+
+              {/* Role / Company */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Role/Co </span>
+                <span className="text-[12px] text-white/50">
+                  {pa.currentRole || "—"}{pa.currentRole && pa.companyName ? " @ " : ""}{pa.companyName || ""}
+                </span>
+              </div>
+
+              {/* Location */}
+              <div className="col-span-1 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Location </span>
+                <span className="text-[12px] text-white/40">{pa.location || "—"}</span>
+              </div>
+
+              {/* Status dropdown */}
+              <div className="col-span-2 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Status </span>
+                <div className="relative inline-block">
+                  <select
+                    value={pa.status}
+                    onChange={(e) => onUpdateStatus(pa.id, e.target.value)}
+                    disabled={updatingStatus === pa.id}
+                    className="appearance-none bg-transparent text-[11px] font-mono font-bold tracking-wider uppercase cursor-pointer pr-5 border-none outline-none disabled:opacity-50"
+                    style={{ color: getStatusColor(pa.status) }}
+                  >
+                    {progStatuses.map((s) => (
+                      <option key={s} value={s} className="bg-[#111111] text-white">
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {updatingStatus === pa.id && (
+                    <RefreshCw className="w-3 h-3 animate-spin inline ml-1 text-[#FF4D00]" />
+                  )}
+                </div>
+              </div>
+
+              {/* Date */}
+              <div className="col-span-1 mb-1 lg:mb-0">
+                <span className="lg:hidden text-[10px] font-mono text-white/20 mr-2">Date </span>
+                <span className="text-[11px] font-mono text-white/30">{formatDate(pa.createdAt)}</span>
+              </div>
+
+              {/* Delete */}
+              <div className="col-span-1 flex justify-end">
+                <button
+                  onClick={() => onDelete(pa.id)}
+                  className="p-1.5 text-white/10 hover:text-red-400 transition-colors"
+                  aria-label="Delete program application"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </motion.div>
           ))
         )}

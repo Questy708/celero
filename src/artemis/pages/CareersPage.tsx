@@ -24,6 +24,14 @@ import {
   Building,
   Network,
   TrendingUp,
+  Loader2,
+  Send,
+  CheckCircle,
+  User,
+  Mail,
+  Phone,
+  Linkedin,
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "@/artemis/router";
 import {
@@ -155,8 +163,366 @@ function SalaryBadge({ job }: { job: Job }) {
   );
 }
 
+// ─── Application Modal ──────────────────────────────────────────────
+function ApplicationModal({
+  isOpen,
+  onClose,
+  initialRole,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  initialRole: string;
+}) {
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    linkedinUrl: "",
+    portfolioUrl: "",
+    role: initialRole,
+    location: "",
+    availability: "",
+    motivation: "",
+    referral: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setForm((prev) => ({ ...prev, role: initialRole }));
+  }, [initialRole]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const setField = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
+      setError("First name, last name, and email are required.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/careers/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Submission failed. Please try again.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (!submitting) {
+      setSubmitted(false);
+      setError("");
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  const labelClass =
+    "text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase mb-1.5 block";
+  const inputClass =
+    "w-full bg-white/5 border border-white/10 text-white text-[13px] px-4 py-3 focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-white/20";
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        onClick={handleClose}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-[#111111]/90 backdrop-blur-sm" />
+
+        {/* Modal */}
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.95 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#1A1A1A] border border-white/10 z-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="sticky top-0 z-10 flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10 bg-[#1A1A1A]">
+            <div>
+              <p className="text-[10px] font-mono tracking-[0.4em] text-[#FF4D00] uppercase mb-1">
+                Application
+              </p>
+              <h3 className="text-[20px] md:text-[24px] font-display font-medium text-white tracking-tight">
+                {form.role}
+              </h3>
+            </div>
+            <button
+              onClick={handleClose}
+              className="w-10 h-10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {submitted ? (
+            /* Success state */
+            <div className="px-6 md:px-8 py-16 flex flex-col items-center text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="w-16 h-16 rounded-full bg-[#FF4D00]/10 flex items-center justify-center mb-6"
+              >
+                <CheckCircle className="w-8 h-8 text-[#FF4D00]" />
+              </motion.div>
+              <h4 className="text-[22px] font-display font-medium text-white mb-3">
+                Application received
+              </h4>
+              <p className="text-[14px] text-white/50 leading-relaxed max-w-sm">
+                Thank you for your interest in {form.role}. Our team will review your profile and reach out if there&apos;s a fit.
+              </p>
+              <button
+                onClick={handleClose}
+                className="mt-8 px-8 py-3 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#FF4D00]/90 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          ) : (
+            /* Form */
+            <form onSubmit={handleSubmit} className="px-6 md:px-8 py-6">
+              {/* Name row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div>
+                  <label className={labelClass}>
+                    First Name <span className="text-[#FF4D00]">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <input
+                      type="text"
+                      value={form.firstName}
+                      onChange={setField("firstName")}
+                      placeholder="Jane"
+                      className={`${inputClass} pl-10`}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>
+                    Last Name <span className="text-[#FF4D00]">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.lastName}
+                    onChange={setField("lastName")}
+                    placeholder="Doe"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email + Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div>
+                  <label className={labelClass}>
+                    Email <span className="text-[#FF4D00]">*</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={setField("email")}
+                      placeholder="jane@example.com"
+                      className={`${inputClass} pl-10`}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Phone</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <input
+                      type="tel"
+                      value={form.phone}
+                      onChange={setField("phone")}
+                      placeholder="+254 700 000 000"
+                      className={`${inputClass} pl-10`}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* LinkedIn + Portfolio */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div>
+                  <label className={labelClass}>LinkedIn</label>
+                  <div className="relative">
+                    <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <input
+                      type="url"
+                      value={form.linkedinUrl}
+                      onChange={setField("linkedinUrl")}
+                      placeholder="linkedin.com/in/janedoe"
+                      className={`${inputClass} pl-10`}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Portfolio</label>
+                  <div className="relative">
+                    <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <input
+                      type="url"
+                      value={form.portfolioUrl}
+                      onChange={setField("portfolioUrl")}
+                      placeholder="yoursite.com"
+                      className={`${inputClass} pl-10`}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Role (read-only) + Location */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div>
+                  <label className={labelClass}>Role</label>
+                  <input
+                    type="text"
+                    value={form.role}
+                    readOnly
+                    className={`${inputClass} bg-white/[0.02] cursor-default text-white/70`}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Location</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <input
+                      type="text"
+                      value={form.location}
+                      onChange={setField("location")}
+                      placeholder="Nairobi, Kenya"
+                      className={`${inputClass} pl-10`}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Availability */}
+              <div className="mb-5">
+                <label className={labelClass}>Availability</label>
+                <select
+                  value={form.availability}
+                  onChange={setField("availability")}
+                  className={`${inputClass} appearance-none cursor-pointer`}
+                >
+                  <option value="" className="bg-[#1A1A1A]">Select availability</option>
+                  <option value="Immediate" className="bg-[#1A1A1A]">Immediate</option>
+                  <option value="2 Weeks Notice" className="bg-[#1A1A1A]">2 Weeks Notice</option>
+                  <option value="1 Month Notice" className="bg-[#1A1A1A]">1 Month Notice</option>
+                </select>
+              </div>
+
+              {/* Motivation */}
+              <div className="mb-5">
+                <label className={labelClass}>Motivation</label>
+                <textarea
+                  value={form.motivation}
+                  onChange={setField("motivation")}
+                  placeholder="Why this role? Why now? What drives you?"
+                  rows={4}
+                  className={`${inputClass} resize-none`}
+                />
+              </div>
+
+              {/* Referral */}
+              <div className="mb-8">
+                <label className={labelClass}>Referral</label>
+                <input
+                  type="text"
+                  value={form.referral}
+                  onChange={setField("referral")}
+                  placeholder="How did you hear about us?"
+                  className={inputClass}
+                />
+              </div>
+
+              {/* Error */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 px-4 py-3 border border-red-500/30 bg-red-500/10 text-red-400 text-[12px] font-medium"
+                >
+                  {error}
+                </motion.div>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#FF4D00]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Submitting…
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Submit Application
+                  </>
+                )}
+              </button>
+
+              <p className="text-[10px] text-white/25 text-center mt-4">
+                By submitting, you agree to xCelero&apos;s privacy practices regarding applicant data.
+              </p>
+            </form>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 // ─── Job Card ──────────────────────────────────────────────────────
-function JobCard({ job }: { job: Job }) {
+function JobCard({ job, onApply }: { job: Job; onApply: (role: string) => void }) {
   const postedLabel =
     job.postedDaysAgo === 0
       ? "Today"
@@ -169,18 +535,18 @@ function JobCard({ job }: { job: Job }) {
       <div className="flex flex-col gap-3">
         {/* Title + Apply */}
         <div className="flex items-start justify-between gap-4">
-          <Link
-            to="/join"
-            className="text-[15px] font-display font-medium text-[#111111] hover:text-[#FF4D00] transition-colors leading-tight"
+          <button
+            onClick={() => onApply(job.title)}
+            className="text-left text-[15px] font-display font-medium text-[#111111] hover:text-[#FF4D00] transition-colors leading-tight"
           >
             {job.title}
-          </Link>
-          <Link
-            to="/join"
+          </button>
+          <button
+            onClick={() => onApply(job.title)}
             className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#111111] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#FF4D00] transition-colors"
           >
             Apply <ArrowRight className="w-3 h-3" />
-          </Link>
+          </button>
         </div>
 
         {/* Badges row */}
@@ -230,12 +596,14 @@ function CompanyGroup({
   onToggle,
   visibleJobs,
   showAll,
+  onApply,
 }: {
   company: CompanyJobs;
   expanded: boolean;
   onToggle: () => void;
   visibleJobs: Job[];
   showAll: boolean;
+  onApply: (role: string) => void;
 }) {
   const jobsToShow = showAll ? visibleJobs : visibleJobs.slice(0, 3);
   const totalJobs = company.jobs.length;
@@ -324,19 +692,19 @@ function CompanyGroup({
           >
             <div>
               {jobsToShow.map((job) => (
-                <JobCard key={job.id} job={job} />
+                <JobCard key={job.id} job={job} onApply={onApply} />
               ))}
             </div>
 
             {/* Footer links */}
             <div className="flex items-center gap-4 p-4 border-t border-[#111111]/8">
-              <Link
-                to="/join"
+              <button
+                onClick={() => onApply(`General Application – ${company.companyName}`)}
                 className="flex items-center gap-1.5 text-[11px] font-bold text-[#FF4D00] hover:underline uppercase tracking-wide"
               >
                 {totalJobs} job{totalJobs !== 1 ? "s" : ""} at {company.companyName}
                 <ChevronRight className="w-3 h-3" />
-              </Link>
+              </button>
             </div>
           </motion.div>
         )}
@@ -360,6 +728,13 @@ export function CareersPage() {
     return new Set(careersData.map((c) => c.companyId));
   });
   const [showCount, setShowCount] = useState(5);
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [applyRole, setApplyRole] = useState("General Application");
+
+  const openApplyModal = (role: string) => {
+    setApplyRole(role);
+    setApplyModalOpen(true);
+  };
 
   const toggleCompany = (id: string) => {
     setExpandedCompanies((prev) => {
@@ -886,6 +1261,7 @@ export function CareersPage() {
                 onToggle={() => toggleCompany(company.companyId)}
                 visibleJobs={company.jobs}
                 showAll={true}
+                onApply={openApplyModal}
               />
             ))}
           </div>
@@ -923,12 +1299,12 @@ export function CareersPage() {
               xCelero is always looking for extraordinary builders who work for humanity. If you don&apos;t see a fit, submit your profile and we&apos;ll reach out when the right venture launches.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/join"
+              <button
+                onClick={() => openApplyModal("General Application")}
                 className="px-8 py-4 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#FF4D00]/90 transition-colors"
               >
                 Submit your profile
-              </Link>
+              </button>
               <Link
                 to="/ventures"
                 className="px-8 py-4 border border-white/20 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-white hover:text-[#111111] transition-colors"
@@ -939,6 +1315,13 @@ export function CareersPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* ── Application Modal ─────────────────────────────────── */}
+      <ApplicationModal
+        isOpen={applyModalOpen}
+        onClose={() => setApplyModalOpen(false)}
+        initialRole={applyRole}
+      />
     </div>
   );
 }

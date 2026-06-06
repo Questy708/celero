@@ -25,6 +25,7 @@ import {
   X,
   Rocket,
   Coins,
+  CheckCircle,
 } from "lucide-react";
 import { Link } from "@/artemis/router";
 
@@ -646,6 +647,33 @@ function EventDetailModal({
   event: (typeof upcomingEvents)[number];
   onClose: () => void;
 }) {
+  const [rsvpEmail, setRsvpEmail] = useState("");
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const [rsvpLoading, setRsvpLoading] = useState(false);
+  const [rsvpError, setRsvpError] = useState("");
+
+  const handleRSVP = async () => {
+    if (!rsvpEmail) return;
+    setRsvpLoading(true);
+    setRsvpError("");
+    try {
+      const res = await fetch("/api/capital/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: rsvpEmail, consent: true, source: `rsvp_${event.type.toLowerCase().replace(/\s+/g, "_")}` }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "RSVP failed");
+      }
+      setRsvpSubmitted(true);
+    } catch (err) {
+      setRsvpError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setRsvpLoading(false);
+    }
+  };
+
   const eventTypeColor: Record<string, string> = {
     "Demo Day": "bg-[#FF4D00] text-white",
     Summit: "bg-[#111111] text-white",
@@ -739,10 +767,35 @@ function EventDetailModal({
             <span>{event.spots}</span>
           </div>
 
-          {/* RSVP button */}
-          <button className="w-full py-3.5 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#FF4D00]/90 transition-colors">
-            RSVP Now
-          </button>
+          {/* RSVP */}
+          {rsvpSubmitted ? (
+            <div className="w-full py-3.5 bg-[#111111] text-white text-[12px] font-bold uppercase tracking-[0.12em] text-center flex items-center justify-center gap-2">
+              <CheckCircle className="w-4 h-4" />
+              You&apos;re on the list
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={rsvpEmail}
+                  onChange={(e) => setRsvpEmail(e.target.value)}
+                  placeholder="Your email"
+                  className="flex-1 px-4 py-3 border border-[#111111]/15 text-[13px] font-medium placeholder:text-[#111111]/30 focus:outline-none focus:border-[#FF4D00] transition-colors"
+                />
+                <button
+                  onClick={handleRSVP}
+                  disabled={rsvpLoading || !rsvpEmail}
+                  className="px-6 py-3 bg-[#FF4D00] text-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-[#FF4D00]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  {rsvpLoading ? "..." : "RSVP"}
+                </button>
+              </div>
+              {rsvpError && (
+                <p className="text-[11px] text-red-500 font-medium">{rsvpError}</p>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

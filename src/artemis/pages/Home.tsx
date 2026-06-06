@@ -1301,6 +1301,11 @@ function NewsletterSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [submitted, setSubmitted] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const handleReturnToSite = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1372,9 +1377,26 @@ function NewsletterSection() {
               </motion.div>
             ) : (
               <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  setSubmitted(true);
+                  setSubmitError("");
+                  setIsSubmitting(true);
+                  try {
+                    const res = await fetch("/api/capital/subscribe", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email, consent: true, source: "newsletter_home" }),
+                    });
+                    if (!res.ok) {
+                      const data = await res.json().catch(() => ({}));
+                      throw new Error(data.error || "Subscription failed");
+                    }
+                    setSubmitted(true);
+                  } catch (err) {
+                    setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+                  } finally {
+                    setIsSubmitting(false);
+                  }
                 }}
                 className="space-y-6"
               >
@@ -1387,6 +1409,8 @@ function NewsletterSection() {
                       suppressHydrationWarning
                       type="text"
                       required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
                       className="w-full border-b border-[#111111]/20 bg-transparent py-3 text-[15px] font-medium focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-[#111111]/20"
                       placeholder="First name"
                     />
@@ -1399,6 +1423,8 @@ function NewsletterSection() {
                       suppressHydrationWarning
                       type="text"
                       required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                       className="w-full border-b border-[#111111]/20 bg-transparent py-3 text-[15px] font-medium focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-[#111111]/20"
                       placeholder="Last name"
                     />
@@ -1412,6 +1438,8 @@ function NewsletterSection() {
                     suppressHydrationWarning
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full border-b border-[#111111]/20 bg-transparent py-3 text-[15px] font-medium focus:border-[#FF4D00] focus:outline-none transition-colors placeholder:text-[#111111]/20"
                     placeholder="you@email.com"
                   />
@@ -1421,13 +1449,17 @@ function NewsletterSection() {
                   <span className="text-[#2563EB] underline cursor-pointer">Privacy Policy</span>.
                   We respect your data. Unsubscribe anytime.
                 </p>
+                {submitError && (
+                  <p className="text-[13px] text-red-600 font-medium">{submitError}</p>
+                )}
                 <button
                   suppressHydrationWarning
                   type="submit"
-                  className="inline-flex items-center gap-3 px-10 py-4 bg-[#FF4D00] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-[#FF4D00]/90 transition-colors duration-300 shadow-lg shadow-[#FF4D00]/20"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-3 px-10 py-4 bg-[#FF4D00] text-white text-[12px] uppercase tracking-[0.12em] font-bold hover:bg-[#FF4D00]/90 transition-colors duration-300 shadow-lg shadow-[#FF4D00]/20 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Subscribe Now
-                  <ArrowRight className="w-4 h-4" />
+                  {isSubmitting ? "Subscribing…" : "Subscribe Now"}
+                  {!isSubmitting && <ArrowRight className="w-4 h-4" />}
                 </button>
                 <p className="text-[10px] text-[#111111]/25 leading-[1.5] mt-3 max-w-sm">
                   We never share your email with third parties. You can unsubscribe at any time. Read our Privacy Policy for details.
