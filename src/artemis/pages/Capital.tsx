@@ -529,7 +529,7 @@ function InvestmentVehicles() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12 md:mb-16"
+          className="mb-12 md:mb-16 text-center"
         >
           <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
             Investment Vehicles
@@ -538,7 +538,7 @@ function InvestmentVehicles() {
             Six ways to deploy{" "}
             <em className="font-serif italic text-[#FF4D00]">capital</em>
           </h2>
-          <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4">
+          <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4 mx-auto">
             From $500 in the xCelero Fund to custom Anchor Mandates at $250K+,
             every vehicle is built for the same thesis, critical technology in
             the markets that need it most.
@@ -859,7 +859,7 @@ function InvestmentTiers() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12 md:mb-16"
+          className="mb-12 md:mb-16 text-center"
         >
           <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00]">
             Invest Now
@@ -868,7 +868,7 @@ function InvestmentTiers() {
             Pick your{" "}
             <em className="font-serif italic text-[#FF4D00]">entry</em>
           </h2>
-          <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4">
+          <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4 mx-auto">
             Four tiers, each mapped to the investment vehicle that fits your
             capital and conviction. Select a tier to start your investment
             inquiry.
