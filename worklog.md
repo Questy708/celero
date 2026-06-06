@@ -767,3 +767,25 @@ Stage Summary:
 - About page "What is xCelero Labs" section: zigzag 7+5 grid → clean single-column layout with horizontal orange stats
 - Navigation: orange "sign in" button added to desktop + mobile nav, links to Town Square feed
 - Changes pushed to GitHub
+---
+Task ID: 17
+Agent: Main Agent
+Task: Fix About page alignment, page transitions, Town Square dead-end, Program images, Routes/Platform issues
+
+Work Log:
+- About page: Split HowWeWorkSection into header (max-w-3xl) + team grid (max-w-1200px) containers; changed ManifestoCardsSection to max-w-3xl
+- Layout: Added getTransitionForPath() helper with 4 transition types (editorial=fade-only, content-heavy=slide-up 20px, data=subtle 4px, default=8px)
+- Layout: Added floating orange close button (top-left, z-100) to immersive Town Square mode
+- Programs: Converted backgroundImage style to <img> with object-cover in Programs.tsx, CaseStudies.tsx, CareersPage.tsx
+- Routes: Added 5-step Journey Timeline (Application→Acceptance→Departure→Hub Rotation→Return) with icons and connecting line; fixed section widths; added border separators
+- Platform: Added rounded-sm to CaseForInfrastructure dark callout; added border separator to RouteHubsSection
+- All verified with Agent Browser: About alignment, Town Square close button, Programs images, Journey timeline, page transitions all working
+- Pushed to GitHub (commit 2067023)
+
+Stage Summary:
+- 9 files modified across 5 pages + Layout component
+- Consistent alignment rule applied: max-w-3xl for text, max-w-1200px/1400px for grids
+- Town Square no longer a dead-end (floating exit button)
+- Page transitions are now distinctive per page type
+- All images use <img> instead of backgroundImage style
+- Routes Journey section has visual timeline
