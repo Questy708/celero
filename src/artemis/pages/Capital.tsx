@@ -899,8 +899,8 @@ function CapitalMedia() {
           className="relative overflow-hidden bg-[#F5F5F5] shadow-lg"
         >
           <img
-            src="https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=2000&q=80"
-            alt="Solar energy infrastructure — renewable technology deployment across Africa"
+            src="/capital-media.png"
+            alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
             className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
           />
           {/* Overlay label */}
