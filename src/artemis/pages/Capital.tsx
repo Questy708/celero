@@ -363,6 +363,7 @@ export function Capital() {
   return (
     <div className="bg-white text-[#111111]">
       <Hero onSubscribe={() => setShowSubscribe(true)} />
+      <CapitalBridge />
       <InvestmentVehicles />
       <InvestmentTiers />
       <FAQSection />
@@ -458,6 +459,173 @@ function Hero({ onSubscribe }: { onSubscribe: () => void }) {
             </button>
           </div>
         </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CAPITAL BRIDGE — Image strip + two-column capital thesis with dotted map
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const capitalBridgeImages = [
+  {
+    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+    alt: "Financial analytics",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=800&q=80",
+    alt: "Collaborative workspace",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
+    alt: "Global network",
+  },
+];
+
+/* Dot-matrix world map for Capital page */
+const capitalWorldDots = (() => {
+  const rows = [
+    ".......##..........###.............#####..####..............",
+    "......####.........####............######.######............",
+    ".....######........#####...........########.######..........",
+    ".....#######.......#####..........#########..######.........",
+    "....#########......######.........#########...######........",
+    "....##########.....#######........#########....#####........",
+    "...############....########.......########.....#####........",
+    "...############....########.......########......####........",
+    "....###########....#########......#######.......####........",
+    "....##########.....##########.....######........###.........",
+    ".....#########.....##########.....######........###.........",
+    "......########.....###########....#####.........##..........",
+    ".......#######.....###########....#####.........##..........",
+    "........######.....############...######.........#..........",
+    ".........#####.....####.#####....########...................",
+    "..........####.....####..####...#########...................",
+    "...........###.....####...####..#########...................",
+    "............##.....####....###..########....................",
+    ".............#......###....###..#######.....................",
+    "....................###.....##...######.....................",
+    ".....................##.....##...#####......................",
+    "......................##.....#...####.......................",
+    ".......................#.........###........................",
+    "................................##.........................",
+    "................................#..........................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+    "............................................................",
+  ];
+  const dots: { row: number; col: number }[] = [];
+  rows.forEach((row, r) => {
+    [...row].forEach((ch, c) => {
+      if (ch === "#") dots.push({ row: r, col: c });
+    });
+  });
+  return dots;
+})();
+
+function CapitalBridge() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section ref={ref} className="px-6 md:px-12 lg:px-20 pb-16 md:pb-24">
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Image strip — three overlapping images */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex items-end justify-center gap-0 mb-16 md:mb-24"
+        >
+          {capitalBridgeImages.map((img, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className={`relative overflow-hidden bg-[#F5F5F5] shadow-lg ${
+                i === 0
+                  ? "w-[40%] md:w-[36%] aspect-[4/3] z-10 translate-x-6 md:translate-x-14"
+                  : i === 1
+                  ? "w-[46%] md:w-[42%] aspect-[4/3] z-30 -mt-3"
+                  : "w-[40%] md:w-[36%] aspect-[4/3] z-10 -translate-x-6 md:-translate-x-14"
+              }`}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Two-column layout: text left, dotted map right */}
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left: Capital thesis text */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6"
+          >
+            <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
+              Capital that understands the terrain — not just the <span className="text-[#FF4D00]">return profile</span>.
+            </p>
+            <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
+              Traditional venture capital flows where returns are proven. xCelero deploys capital where the technology is most needed — in the geographies building the next century&apos;s infrastructure. Six vehicles, one thesis: <span className="text-[#111111] font-semibold">critical technology in the markets that need it most</span>.
+            </p>
+          </motion.div>
+
+          {/* Right: Dotted world map */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6 flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-lg">
+              <svg
+                viewBox="0 0 60 30"
+                className="w-full h-auto"
+                style={{ imageRendering: "auto" }}
+              >
+                {/* All land dots in dark color */}
+                {capitalWorldDots.map((dot, i) => (
+                  <circle
+                    key={i}
+                    cx={dot.col * 1}
+                    cy={dot.row * 1}
+                    r="0.35"
+                    className="fill-[#111111]/70"
+                  />
+                ))}
+                {/* Africa highlighted region — cols 23-33, rows 3-21 */}
+                {capitalWorldDots
+                  .filter(
+                    (d) =>
+                      d.col >= 23 && d.col <= 33 && d.row >= 3 && d.row <= 21
+                  )
+                  .map((dot, i) => (
+                    <circle
+                      key={`af-${i}`}
+                      cx={dot.col * 1}
+                      cy={dot.row * 1}
+                      r="0.4"
+                      className="fill-[#FF4D00]"
+                    />
+                  ))}
+              </svg>
+              {/* Label */}
+              <div className="absolute bottom-2 right-4 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
+                $4B Target · 6 Vehicles
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

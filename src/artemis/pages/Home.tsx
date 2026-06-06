@@ -170,6 +170,7 @@ export function Home() {
   return (
     <div className="bg-white text-[#111111]">
       <Hero />
+      <MissionBridge />
       <BentoGrid />
       <NumbersSection />
       <ThreePillarsSection />
@@ -277,6 +278,175 @@ function Hero() {
             </Link>
           </div>
         </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MISSION BRIDGE — Image strip + two-column mission statement with dotted map
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Dot-matrix world map — recognizable continent outlines */
+const worldDots = (() => {
+  // Grid: 60 columns × 30 rows. '#' = land, '.' = ocean
+  // Roughly: Americas left, Europe/Africa center, Asia right
+  const rows = [
+    ".......##..........###.............#####..####..............",  // 0  Arctic
+    "......####.........####............######.######............",  // 1
+    ".....######........#####...........########.######..........",  // 2
+    ".....#######.......#####..........#########..######.........",  // 3
+    "....#########......######.........#########...######........",  // 4
+    "....##########.....#######........#########....#####........",  // 5
+    "...############....########.......########.....#####........",  // 6
+    "...############....########.......########......####........",  // 7
+    "....###########....#########......#######.......####........",  // 8
+    "....##########.....##########.....######........###.........",  // 9
+    ".....#########.....##########.....######........###.........",  // 10
+    "......########.....###########....#####.........##..........",  // 11
+    ".......#######.....###########....#####.........##..........",  // 12
+    "........######.....############...######.........#..........",  // 13
+    ".........#####.....####.#####....########...................",  // 14
+    "..........####.....####..####...#########...................",  // 15
+    "...........###.....####...####..#########...................",  // 16
+    "............##.....####....###..########....................",  // 17
+    ".............#......###....###..#######.....................",  // 18
+    "....................###.....##...######.....................",  // 19
+    ".....................##.....##...#####......................",  // 20
+    "......................##.....#...####.......................",  // 21
+    ".......................#.........###........................",  // 22
+    "................................##.........................",  // 23
+    "................................#..........................",  // 24
+    "............................................................",  // 25
+    "............................................................",  // 26
+    "............................................................",  // 27
+    "............................................................",  // 28
+    "............................................................",  // 29
+  ];
+  const dots: { row: number; col: number }[] = [];
+  rows.forEach((row, r) => {
+    [...row].forEach((ch, c) => {
+      if (ch === "#") dots.push({ row: r, col: c });
+    });
+  });
+  return dots;
+})();
+
+const bridgeImages = [
+  {
+    src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+    alt: "Laboratory research",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1565792323902-486ad4b6a110?auto=format&fit=crop&w=800&q=80",
+    alt: "Industrial infrastructure",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
+    alt: "Global connectivity",
+  },
+];
+
+function MissionBridge() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section ref={ref} className="px-6 md:px-12 lg:px-20 pb-16 md:pb-24">
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Image strip — three overlapping images */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex items-end justify-center gap-0 mb-16 md:mb-24"
+        >
+          {bridgeImages.map((img, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className={`relative overflow-hidden bg-[#F5F5F5] shadow-lg ${
+                i === 0
+                  ? "w-[40%] md:w-[36%] aspect-[4/3] z-10 translate-x-6 md:translate-x-14"
+                  : i === 1
+                  ? "w-[46%] md:w-[42%] aspect-[4/3] z-30 -mt-3"
+                  : "w-[40%] md:w-[36%] aspect-[4/3] z-10 -translate-x-6 md:-translate-x-14"
+              }`}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Two-column layout: text left, dotted map right */}
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left: Mission text */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6"
+          >
+            <p className="text-[22px] sm:text-[28px] md:text-[34px] leading-[1.25] font-display font-medium tracking-[-0.02em] text-[#111111] mb-6 md:mb-8">
+              Startups are building the critical technologies that will define our future economy — but <span className="text-[#FF4D00]">90% of them never make it to market</span>.
+            </p>
+            <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/60 font-medium max-w-xl">
+              xCelero unlocks commercialization for critical technology startups through infrastructure, ventures, capital, and community in the geographies focused on rapid industrialization — so the right ideas don&apos;t just survive, they <span className="text-[#111111] font-semibold">scale</span>.
+            </p>
+          </motion.div>
+
+          {/* Right: Dotted world map */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6 flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-lg">
+              <svg
+                viewBox="0 0 60 30"
+                className="w-full h-auto"
+                style={{ imageRendering: "auto" }}
+              >
+                {/* All land dots in dark color */}
+                {worldDots.map((dot, i) => (
+                  <circle
+                    key={i}
+                    cx={dot.col * 1}
+                    cy={dot.row * 1}
+                    r="0.35"
+                    className="fill-[#111111]/70"
+                  />
+                ))}
+                {/* Africa highlighted region — cols 23-33, rows 3-21 */}
+                {worldDots
+                  .filter(
+                    (d) =>
+                      d.col >= 23 && d.col <= 33 && d.row >= 3 && d.row <= 21
+                  )
+                  .map((dot, i) => (
+                    <circle
+                      key={`af-${i}`}
+                      cx={dot.col * 1}
+                      cy={dot.row * 1}
+                      r="0.4"
+                      className="fill-[#FF4D00]"
+                    />
+                  ))}
+              </svg>
+              {/* Label */}
+              <div className="absolute bottom-2 right-4 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00]">
+                39 Countries · 190 Hubs
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

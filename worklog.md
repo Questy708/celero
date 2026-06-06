@@ -169,3 +169,31 @@ Stage Summary:
 - Footer, Field Notes, Application Cycles, Program Journey, and Ideal Candidates sections all updated
 - Decorative elements (blur circles, background images) moved inside contained divs
 - Clean lint, no errors, site compiles correctly
+
+---
+Task ID: 10
+Agent: Main Agent
+Task: Implement MissionBridge section based on screenshot reference (Newlab-style image strip + two-column mission text with dotted world map)
+
+Work Log:
+- Analyzed uploaded screenshot with VLM: identified Newlab-inspired section with horizontal image strip (3 overlapping images) and two-column layout (text left, dotted world map right)
+- Created MissionBridge component in Home.tsx with:
+  - 3 overlapping grayscale images with enhanced overlap (translate-x-6/translate-x-14 for side images, center image on top with z-30)
+  - Two-column 12-grid layout below: bold mission statement text on left (with #FF4D00 accent on key phrases), dotted world map SVG on right
+  - SVG dot-matrix world map (60×30 grid) with Africa region highlighted in #FF4D00 orange
+  - "39 Countries · 190 Hubs" label positioned over the map
+  - Scroll-triggered framer-motion animations with staggered delays
+- Created CapitalBridge component in Capital.tsx with same layout pattern:
+  - Different images (financial analytics, collaborative workspace, global network)
+  - Capital-specific copy: "Capital that understands the terrain — not just the return profile"
+  - "$4B Target · 6 Vehicles" label on the map
+- Added both components to their respective page render trees (between Hero and next section)
+- Enhanced overlap from subtle (32px) to more pronounced (~56px) with shadow-lg on image cards
+- Lint passes clean, dev server compiles successfully
+- Verified with Agent Browser: both sections render correctly with all expected elements
+
+Stage Summary:
+- MissionBridge section added to Home page between Hero and BentoGrid
+- CapitalBridge section added to Capital page between Hero and InvestmentVehicles
+- Both sections feature 3 overlapping grayscale images, bold mission text, and dotted world map with Africa highlighted in orange
+- Clean lint, no errors, visual verification confirmed
