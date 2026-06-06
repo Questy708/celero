@@ -896,21 +896,39 @@ function CapitalMedia() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden bg-[#F5F5F5] shadow-lg"
+          className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end"
         >
-          <img
-            src="/capital-media.png"
-            alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
-            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
-          />
-          {/* Overlay label */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#111111]/60 to-transparent p-6 md:p-8">
-            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/60 block mb-2">
-              xCelero Capital
+          {/* Left: Image — left-aligned, not full width */}
+          <div className="lg:col-span-8">
+            <div className="relative overflow-hidden bg-[#F5F5F5] shadow-lg">
+              <img
+                src="/capital-media.png"
+                alt="Infrastructure development across Africa — solar, technology, and connectivity hubs"
+                className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
+              />
+              {/* Overlay label */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#111111]/60 to-transparent p-6 md:p-8">
+                <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/60 block mb-2">
+                  xCelero Capital
+                </span>
+                <p className="text-[16px] md:text-[20px] font-display font-medium text-white leading-[1.3]">
+                  Building infrastructure where it&apos;s needed{" "}
+                  <em className="font-serif italic text-[#FF4D00]">most</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Caption text */}
+          <div className="lg:col-span-4">
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-[#FF4D00] block mb-4">
+              Capital in Motion
             </span>
-            <p className="text-[16px] md:text-[20px] font-display font-medium text-white leading-[1.3]">
-              Building infrastructure where it&apos;s needed{" "}
-              <em className="font-serif italic text-[#FF4D00]">most</em>
+            <p className="text-[15px] md:text-[17px] leading-[1.6] text-[#111111]/55 font-medium mb-4">
+              From solar installations in Nairobi to manufacturing hubs in Lagos — xCelero deploys where the technology is most needed.
+            </p>
+            <p className="text-[13px] leading-[1.6] text-[#111111]/35 font-medium">
+              $4B target across 39 countries. 6 vehicles. 190 route hubs. Capital that moves at the speed of the Route.
             </p>
           </div>
         </motion.div>
@@ -931,7 +949,7 @@ const tierVehicleMap: Record<string, typeof investmentVehicles[number] | undefin
   anchor: investmentVehicles.find((v) => v.id === "anchor-mandate"),
 };
 
-type WizardStep = 1 | 2 | 3 | 4 | 5 | 6;
+type WizardStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 const stepLabels = [
   { step: 1 as WizardStep, label: "Choose Tier", shortLabel: "Tier" },
@@ -939,7 +957,8 @@ const stepLabels = [
   { step: 3 as WizardStep, label: "Benefits", shortLabel: "Benefits" },
   { step: 4 as WizardStep, label: "Get Started", shortLabel: "Start" },
   { step: 5 as WizardStep, label: "Fund", shortLabel: "Fund" },
-  { step: 6 as WizardStep, label: "Confirmed", shortLabel: "Done" },
+  { step: 6 as WizardStep, label: "Details", shortLabel: "Details" },
+  { step: 7 as WizardStep, label: "Confirmed", shortLabel: "Done" },
 ];
 
 /* ── Payment Methods ── */
@@ -1000,12 +1019,53 @@ function InvestmentTiers() {
 
   const [direction, setDirection] = useState<1 | -1>(1);
 
+  /* ── Payment form state ── */
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardName, setCardName] = useState("");
+
+  const [bankName, setBankName] = useState("");
+  const [accountHolder, setAccountHolder] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [swiftCode, setSwiftCode] = useState("");
+
+  const [cryptoNetwork, setCryptoNetwork] = useState("USDC");
+  const [walletAddress, setWalletAddress] = useState("");
+  const [cryptoAmount, setCryptoAmount] = useState("");
+
+  const [mobileProvider, setMobileProvider] = useState("M-Pesa");
+  const [mobilePhone, setMobilePhone] = useState("");
+  const [mobileAmount, setMobileAmount] = useState("");
+
+  const resetPaymentForm = () => {
+    setCardNumber(""); setCardExpiry(""); setCardCvv(""); setCardName("");
+    setBankName(""); setAccountHolder(""); setAccountNumber(""); setSwiftCode("");
+    setCryptoNetwork("USDC"); setWalletAddress(""); setCryptoAmount("");
+    setMobileProvider("M-Pesa"); setMobilePhone(""); setMobileAmount("");
+  };
+
+  const isFormValid = (() => {
+    if (!selectedPaymentId) return false;
+    switch (selectedPaymentId) {
+      case "card":
+        return cardNumber.replace(/\s/g, "").length >= 15 && cardExpiry.length >= 4 && cardCvv.length >= 3 && cardName.trim().length > 0;
+      case "bank-transfer":
+        return bankName.trim().length > 0 && accountHolder.trim().length > 0 && accountNumber.trim().length > 0 && swiftCode.trim().length > 0;
+      case "crypto":
+        return walletAddress.trim().length > 0 && cryptoAmount.trim().length > 0;
+      case "mobile-money":
+        return mobilePhone.trim().length >= 8 && mobileAmount.trim().length > 0;
+      default: return false;
+    }
+  })();
+
   const handleConfirmPayment = () => {
-    if (!selectedPaymentId) return;
+    if (!selectedPaymentId || !isFormValid) return;
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      goNext(); // go to step 6
+      goNext(); // go to step 7
     }, 2200);
   };
 
@@ -1014,7 +1074,7 @@ function InvestmentTiers() {
     setCurrentStep(step);
   };
   const goNext = () => {
-    if (currentStep < 6) {
+    if (currentStep < 7) {
       setDirection(1);
       setCurrentStep((currentStep + 1) as WizardStep);
     }
@@ -1048,8 +1108,9 @@ function InvestmentTiers() {
             <em className="font-serif italic text-[#FF4D00]">journey</em>
           </h2>
           <p className="text-[15px] md:text-[17px] text-[#111111]/50 font-medium leading-[1.7] max-w-xl mt-4">
-            Six steps from curiosity to commitment. Choose your tier, understand
-            your vehicle, see what you unlock, learn the process, fund, and confirm.
+            Seven steps from curiosity to commitment. Choose your tier, understand
+            your vehicle, see what you unlock, learn the process, select funding,
+            enter details, and confirm.
           </p>
         </motion.div>
 
@@ -1631,7 +1692,7 @@ function InvestmentTiers() {
                   <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6] max-w-2xl">
                     Choose how you move capital into your{" "}
                     <span className="text-[#FF4D00] font-semibold">{selectedTier.name}</span>{" "}
-                    allocation. Select a payment method, then confirm.
+                    allocation. Select a payment method to continue.
                   </p>
                 </div>
 
@@ -1715,7 +1776,7 @@ function InvestmentTiers() {
                   })}
                 </div>
 
-                {/* Confirm Payment CTA — only visible when method selected */}
+                {/* Continue CTA — only visible when method selected */}
                 <AnimatePresence>
                   {selectedPaymentId && (
                     <motion.div
@@ -1725,68 +1786,22 @@ function InvestmentTiers() {
                       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       className="border border-[#FF4D00] bg-white"
                     >
-                      <div className="p-6 md:p-8">
-                        <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-center">
-                          {/* Left: Summary */}
-                          <div className="md:col-span-7">
-                            <h4 className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-4">
-                              Confirm your payment
-                            </h4>
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center">
-                                <selectedTier.icon className="w-4 h-4 text-white" strokeWidth={1.5} />
-                              </div>
-                              <div>
-                                <span className="text-[16px] font-display font-medium">{selectedTier.name} Tier</span>
-                                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 ml-2">
-                                  via {selectedVehicle.shortName}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                              <div>
-                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Entry</span>
-                                <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
-                              </div>
-                              <div>
-                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Method</span>
-                                <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.name}</span>
-                              </div>
-                              <div>
-                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Fee</span>
-                                <span className="text-[13px] font-medium">{selectedVehicle.details[2]?.value}</span>
-                              </div>
-                              <div>
-                                <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 block mb-1">Speed</span>
-                                <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.speed}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Right: CTA */}
-                          <div className="md:col-span-5">
-                            <button
-                              onClick={handleConfirmPayment}
-                              disabled={isProcessing}
-                              className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[13px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors disabled:opacity-70 disabled:cursor-wait"
-                            >
-                              {isProcessing ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                  Processing…
-                                </>
-                              ) : (
-                                <>
-                                  Confirm & pay
-                                  <ArrowRight className="w-4 h-4" />
-                                </>
-                              )}
-                            </button>
-                            <p className="text-[10px] text-[#111111]/30 font-medium text-center mt-3 leading-[1.5]">
-                              Secure, encrypted transaction. No capital is committed until you confirm.
-                            </p>
-                          </div>
+                      <div className="p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6">
+                        <div className="flex-1 text-center sm:text-left">
+                          <h4 className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] mb-2">
+                            {paymentMethods.find((m) => m.id === selectedPaymentId)?.name} selected
+                          </h4>
+                          <p className="text-[13px] text-[#111111]/50 font-medium leading-[1.6]">
+                            You&apos;ll enter your {selectedPaymentId === "card" ? "card details" : selectedPaymentId === "bank-transfer" ? "bank account information" : selectedPaymentId === "crypto" ? "wallet and transfer details" : "mobile money details"} on the next step.
+                          </p>
                         </div>
+                        <button
+                          onClick={goNext}
+                          className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors shrink-0"
+                        >
+                          Enter payment details
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
                       </div>
                     </motion.div>
                   )}
@@ -1810,7 +1825,7 @@ function InvestmentTiers() {
                     Back
                   </button>
                   <button
-                    onClick={() => { goToStep(1 as WizardStep); setSelectedTierId("scout"); setSelectedPaymentId(null); }}
+                    onClick={() => { goToStep(1 as WizardStep); setSelectedTierId("scout"); setSelectedPaymentId(null); resetPaymentForm(); }}
                     className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 hover:text-[#FF4D00] transition-colors"
                   >
                     ← Start over
@@ -1819,10 +1834,371 @@ function InvestmentTiers() {
               </motion.div>
             )}
 
-            {/* STEP 6: Payment Confirmed — Success screen */}
-            {currentStep === 6 && selectedVehicle && (
+            {/* STEP 6: Payment Details — Method-specific form */}
+            {currentStep === 6 && selectedVehicle && selectedPaymentId && (
               <motion.div
                 key="step-6"
+                initial={{ opacity: 0, x: 40 * direction }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 * direction }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-6">
+                  <h3 className="text-[20px] md:text-[26px] font-display font-medium tracking-tight mb-2">
+                    Enter your{" "}
+                    <span className="text-[#FF4D00]">{paymentMethods.find((m) => m.id === selectedPaymentId)?.name}</span>{" "}
+                    details
+                  </h3>
+                  <p className="text-[14px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.6] max-w-2xl">
+                    All data is encrypted and processed securely. Your capital is not committed until you confirm the transaction.
+                  </p>
+                </div>
+
+                <div className="grid lg:grid-cols-12 gap-8">
+                  {/* Left: Form fields */}
+                  <div className="lg:col-span-7">
+                    <div className="border border-[#111111]/10 bg-white p-6 md:p-8">
+                      {/* Card Payment Form */}
+                      {selectedPaymentId === "card" && (
+                        <div className="space-y-5">
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Cardholder Name
+                            </label>
+                            <input
+                              type="text"
+                              value={cardName}
+                              onChange={(e) => setCardName(e.target.value)}
+                              placeholder="Full name on card"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Card Number
+                            </label>
+                            <input
+                              type="text"
+                              value={cardNumber}
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/\D/g, "").slice(0, 16);
+                                const formatted = raw.replace(/(\d{4})(?=\d)/g, "$1 ");
+                                setCardNumber(formatted);
+                              }}
+                              placeholder="0000 0000 0000 0000"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                                Expiry Date
+                              </label>
+                              <input
+                                type="text"
+                                value={cardExpiry}
+                                onChange={(e) => {
+                                  let v = e.target.value.replace(/\D/g, "").slice(0, 4);
+                                  if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
+                                  setCardExpiry(v);
+                                }}
+                                placeholder="MM/YY"
+                                className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                                CVV
+                              </label>
+                              <input
+                                type="password"
+                                value={cardCvv}
+                                onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                placeholder="•••"
+                                maxLength={4}
+                                className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                              />
+                            </div>
+                          </div>
+                          <div className="border-t border-[#111111]/5 pt-4 mt-2">
+                            <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                              <Shield className="w-3.5 h-3.5" />
+                              256-bit SSL encrypted · Visa & Mastercard accepted
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bank Transfer Form */}
+                      {selectedPaymentId === "bank-transfer" && (
+                        <div className="space-y-5">
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Bank Name
+                            </label>
+                            <input
+                              type="text"
+                              value={bankName}
+                              onChange={(e) => setBankName(e.target.value)}
+                              placeholder="e.g. Standard Bank, KCB Bank"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Account Holder Name
+                            </label>
+                            <input
+                              type="text"
+                              value={accountHolder}
+                              onChange={(e) => setAccountHolder(e.target.value)}
+                              placeholder="Full legal name on the account"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Account Number / IBAN
+                            </label>
+                            <input
+                              type="text"
+                              value={accountNumber}
+                              onChange={(e) => setAccountNumber(e.target.value.replace(/\s/g, ""))}
+                              placeholder="Account number or IBAN"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              SWIFT / BIC Code
+                            </label>
+                            <input
+                              type="text"
+                              value={swiftCode}
+                              onChange={(e) => setSwiftCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 11))}
+                              placeholder="e.g. SBICUS33"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div className="border-t border-[#111111]/5 pt-4 mt-2">
+                            <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                              <Shield className="w-3.5 h-3.5" />
+                              Wire transfers settle in 1–3 business days · No processing fee
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Crypto Transfer Form */}
+                      {selectedPaymentId === "crypto" && (
+                        <div className="space-y-5">
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Network / Token
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                              {["USDC", "USDT", "BTC"].map((net) => (
+                                <button
+                                  key={net}
+                                  type="button"
+                                  onClick={() => setCryptoNetwork(net)}
+                                  className={`py-2.5 text-[12px] font-mono font-bold uppercase tracking-widest border transition-all ${
+                                    cryptoNetwork === net
+                                      ? "border-[#FF4D00] bg-[#FF4D00]/5 text-[#FF4D00]"
+                                      : "border-[#111111]/10 text-[#111111]/40 hover:border-[#111111]/20"
+                                  }`}
+                                >
+                                  {net}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Your Wallet Address
+                            </label>
+                            <input
+                              type="text"
+                              value={walletAddress}
+                              onChange={(e) => setWalletAddress(e.target.value)}
+                              placeholder="0x... or your wallet address"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Amount ({cryptoNetwork})
+                            </label>
+                            <input
+                              type="text"
+                              value={cryptoAmount}
+                              onChange={(e) => setCryptoAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+                              placeholder="0.00"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div className="border-t border-[#111111]/5 pt-4 mt-2">
+                            <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                              <Shield className="w-3.5 h-3.5" />
+                              On-chain confirmation · Converted to USD at deposit · 0.5% conversion fee
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Mobile Money Form */}
+                      {selectedPaymentId === "mobile-money" && (
+                        <div className="space-y-5">
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Mobile Money Provider
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                              {["M-Pesa", "Airtel", "MTN"].map((prov) => (
+                                <button
+                                  key={prov}
+                                  type="button"
+                                  onClick={() => setMobileProvider(prov === "M-Pesa" ? "M-Pesa" : prov === "Airtel" ? "Airtel Money" : "MTN Mobile Money")}
+                                  className={`py-2.5 text-[11px] font-mono font-bold uppercase tracking-widest border transition-all ${
+                                    mobileProvider === prov || (prov === "Airtel" && mobileProvider === "Airtel Money") || (prov === "MTN" && mobileProvider === "MTN Mobile Money")
+                                      ? "border-[#FF4D00] bg-[#FF4D00]/5 text-[#FF4D00]"
+                                      : "border-[#111111]/10 text-[#111111]/40 hover:border-[#111111]/20"
+                                  }`}
+                                >
+                                  {prov}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Phone Number
+                            </label>
+                            <input
+                              type="tel"
+                              value={mobilePhone}
+                              onChange={(e) => setMobilePhone(e.target.value.replace(/[^\d+\-\s()]/g, ""))}
+                              placeholder="+254 7XX XXX XXX"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/40 block mb-2">
+                              Amount (Local Currency)
+                            </label>
+                            <input
+                              type="text"
+                              value={mobileAmount}
+                              onChange={(e) => setMobileAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+                              placeholder="0.00"
+                              className="w-full border border-[#111111]/10 px-4 py-3 text-[14px] font-mono font-medium text-[#111111] placeholder:text-[#111111]/25 focus:outline-none focus:border-[#FF4D00] focus:ring-1 focus:ring-[#FF4D00]/20 transition-all bg-white"
+                            />
+                          </div>
+                          <div className="border-t border-[#111111]/5 pt-4 mt-2">
+                            <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/20">
+                              <Shield className="w-3.5 h-3.5" />
+                              KES, UGX, TZS, GHS, NGN supported · No processing fee · Instant confirmation
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right: Summary + CTA */}
+                  <div className="lg:col-span-5">
+                    <div className="border border-[#111111]/10 bg-white p-6 md:p-8 lg:sticky lg:top-[120px]">
+                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF4D00] block mb-5">
+                        Payment Summary
+                      </span>
+
+                      <div className="flex items-center gap-3 mb-5 pb-5 border-b border-[#111111]/5">
+                        <div className="w-8 h-8 rounded-full bg-[#FF4D00] flex items-center justify-center">
+                          <selectedTier.icon className="w-4 h-4 text-white" strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <span className="text-[14px] font-display font-medium">{selectedTier.name} Tier</span>
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/30 ml-2">
+                            via {selectedVehicle.shortName}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 mb-6">
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Entry</span>
+                          <span className="text-[13px] font-medium">${selectedTier.min.toLocaleString()}{selectedTier.max ? ` – $${selectedTier.max.toLocaleString()}` : "+"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Method</span>
+                          <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Fee</span>
+                          <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.fee === "None" ? "No fee" : paymentMethods.find((m) => m.id === selectedPaymentId)?.fee + " fee"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#111111]/25">Speed</span>
+                          <span className="text-[13px] font-medium">{paymentMethods.find((m) => m.id === selectedPaymentId)?.speed}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleConfirmPayment}
+                        disabled={!isFormValid || isProcessing}
+                        className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#FF4D00] text-white text-[13px] font-bold uppercase tracking-[0.1em] hover:bg-[#111111] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#FF4D00]"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Processing…
+                          </>
+                        ) : (
+                          <>
+                            Confirm & pay
+                            <ArrowRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
+
+                      {!isFormValid && !isProcessing && (
+                        <p className="text-[10px] text-[#FF4D00]/60 font-medium text-center mt-3 leading-[1.5]">
+                          Please fill in all required fields above
+                        </p>
+                      )}
+
+                      {isProcessing && (
+                        <p className="text-[10px] text-[#111111]/30 font-medium text-center mt-3 leading-[1.5]">
+                          Secure, encrypted transaction. Do not close this page.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="mt-10 flex items-center justify-between border-t border-[#111111]/5 pt-6">
+                  <button
+                    onClick={goBack}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#111111]/10 text-[11px] font-bold uppercase tracking-[0.1em] text-[#111111]/40 hover:border-[#111111] hover:text-[#111111] transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                    Change method
+                  </button>
+                  <button
+                    onClick={() => { goToStep(1 as WizardStep); setSelectedTierId("scout"); setSelectedPaymentId(null); resetPaymentForm(); }}
+                    className="text-[11px] font-mono font-bold tracking-widest uppercase text-[#111111]/25 hover:text-[#FF4D00] transition-colors"
+                  >
+                    ← Start over
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 7: Payment Confirmed — Success screen */}
+            {currentStep === 7 && selectedVehicle && (
+              <motion.div
+                key="step-7"
                 initial={{ opacity: 0, x: 40 * direction }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -40 * direction }}
@@ -1924,6 +2300,7 @@ function InvestmentTiers() {
                         setCurrentStep(1);
                         setSelectedTierId("scout");
                         setSelectedPaymentId(null);
+                        resetPaymentForm();
                       }}
                       className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#111111] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00] transition-colors"
                     >

@@ -576,3 +576,43 @@ Stage Summary:
 - Routes: CapitalBridge-style section added with Routes-specific copy
 - About: New "What is xCelero Labs" section with civilization-building ambition copy
 - All changes use consistent xCelero design language (#FF4D00 accent, font-display, font-mono)
+
+---
+Task ID: 15
+Agent: Main Agent
+Task: Make payment methods functional with intermediate details step + fix CapitalMedia alignment
+
+Work Log:
+- Read current Capital.tsx to understand existing wizard structure (6 steps, Step 5 = Fund with payment methods, Step 6 = Success)
+- User requested: payment methods need intermediate step for entering credentials (card details, bank info, crypto wallet, mobile money details) BEFORE processing and success
+- Updated WizardStep type from `1|2|3|4|5|6` to `1|2|3|4|5|6|7`
+- Added stepLabels entries: Step 6 "Details", Step 7 "Confirmed"
+- Added 12 form state variables for 4 payment methods:
+  - Card: cardNumber, cardExpiry, cardCvv, cardName
+  - Bank: bankName, accountHolder, accountNumber, swiftCode
+  - Crypto: cryptoNetwork, walletAddress, cryptoAmount
+  - Mobile Money: mobileProvider, mobilePhone, mobileAmount
+- Added `resetPaymentForm()` function to clear all form state
+- Added `isFormValid` computed validation (card needs 16 digits + expiry + CVV + name; bank needs all 4 fields; crypto needs wallet + amount; mobile needs phone + amount)
+- Step 5 changes: Replaced confirm panel with "Enter payment details" continue button. Shows method name and next-step preview text
+- Step 6 (NEW): Payment details form with method-specific fields:
+  - Card: Cardholder Name, Card Number (auto-formatted with spaces), Expiry (auto-formatted MM/YY), CVV (masked password input), SSL encryption notice
+  - Bank Transfer: Bank Name, Account Holder Name, Account Number/IBAN, SWIFT/BIC Code (auto-uppercase), settlement notice
+  - Crypto: Network selector (USDC/USDT/BTC toggle buttons), Wallet Address, Amount, on-chain confirmation notice
+  - Mobile Money: Provider selector (M-Pesa/Airtel/MTN toggle buttons), Phone Number, Amount, supported currencies notice
+  - Right sidebar: Payment Summary card with tier/vehicle/fee/speed + "Confirm & pay" button (disabled until form valid)
+  - Processing animation: Loader2 spinner with "Processing..." text for 2.2s, then advances to Step 7
+- Step 7 (renamed from Step 6): Success confirmation screen (unchanged, just renumbered)
+- Updated `goNext` max step check from `< 6` to `< 7`
+- Updated "Start over" and "Start a new investment" buttons to call resetPaymentForm()
+- CapitalMedia alignment fix: Changed from full-width centered image to left-aligned 8+4 grid (image left 8 cols, caption text right 4 cols) following the left-alignment rule
+- Added "Capital in Motion" label and descriptive caption text to the right column
+- Updated header description from "Six steps" to "Seven steps"
+- Lint passes cleanly
+- Verified with Agent Browser: all 7 wizard steps work correctly, payment forms validate and process, success screen shows, CapitalMedia section renders with left-aligned layout
+
+Stage Summary:
+- Payment flow now has proper intermediate step: Select method → Enter details → Confirm & Process → Success
+- Each payment method has unique, appropriate form fields with input formatting and validation
+- CapitalMedia section now follows left-alignment rule (8-col image + 4-col caption)
+- Clean lint, browser-verified, no errors
