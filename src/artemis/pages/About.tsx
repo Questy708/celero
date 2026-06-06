@@ -260,7 +260,7 @@ function OpeningSection() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   WHAT IS XCELERO LABS — 7+5 grid: copy left, stat cards right
+   WHAT IS XCELERO LABS — Clean single-column editorial layout
    ══════════════════════════════════════════════════════════════════════════ */
 const whatIsStats = [
   { value: "4", label: "Integrated Engines" },
@@ -277,23 +277,21 @@ function WhatIsXceleroSection() {
       ref={ref}
       className="py-16 md:py-24 px-5 sm:px-6 md:px-12 lg:px-20 bg-[#FAFAFA] border-b border-[#111111]/10"
     >
-      <div className="w-full max-w-[1400px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-        {/* Left column — copy */}
+      <div className="w-full max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="lg:col-span-7"
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-[#FF4D00] mb-6 block">
             What is xCelero Labs
           </span>
 
-          <h2 className="text-[32px] sm:text-[42px] md:text-[52px] lg:text-[60px] font-display font-medium tracking-[-0.02em] leading-[1.08] mb-8">
+          <h2 className="text-[28px] sm:text-[36px] md:text-[44px] font-display font-medium tracking-[-0.02em] leading-[1.12] mb-8">
             Building the operating system for the next civilization.
           </h2>
 
-          <div className="space-y-5 max-w-xl">
+          <div className="space-y-5">
             <p className="text-[15px] md:text-[17px] leading-[1.7] text-[#111111]/55 font-medium">
               xCelero Labs is a venture platform that exists to solve one problem: critical technology doesn&apos;t commercialize in the markets that need it most. The Global South has the youngest populations, the fastest-growing economies, and the boldest ambitions — but 90% of ventures there never cross the valley of death. Not because the technology doesn&apos;t work. Because the infrastructure to scale it doesn&apos;t exist.
             </p>
@@ -310,24 +308,19 @@ function WhatIsXceleroSection() {
           </div>
         </motion.div>
 
-        {/* Right column — stat cards */}
+        {/* Stats row — horizontal, clean */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-          className="lg:col-span-5 flex flex-col"
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="mt-12 md:mt-16 flex flex-wrap gap-x-12 gap-y-6 border-t border-[#111111]/10 pt-8"
         >
           {whatIsStats.map((stat, i) => (
-            <div
-              key={i}
-              className={`py-6 ${
-                i > 0 ? "border-t border-[#111111]/10" : ""
-              }`}
-            >
-              <div className="text-[40px] sm:text-[48px] md:text-[56px] font-display font-medium tracking-[-0.03em] leading-[1] mb-2">
+            <div key={i} className="flex items-baseline gap-3">
+              <div className="text-[32px] sm:text-[40px] md:text-[48px] font-display font-medium tracking-[-0.03em] leading-[1] text-[#FF4D00]">
                 {stat.value}
               </div>
-              <div className="text-[13px] md:text-[15px] text-[#111111]/50 font-medium leading-[1.5]">
+              <div className="text-[12px] md:text-[13px] text-[#111111]/40 font-medium leading-[1.4] max-w-[100px]">
                 {stat.label}
               </div>
             </div>

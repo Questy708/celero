@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown } from "lucide-react";
+import { Search, ArrowRight, Menu, X, ArrowUp, ChevronDown, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "../router";
 import { SearchModal } from "./SearchModal";
@@ -206,6 +206,10 @@ function Nav() {
               <Search className="w-4 h-4 text-[#111111] group-hover:text-white" />
               <span className="hidden sm:inline-flex text-[10px] font-mono font-medium text-[#111111]/40 group-hover:text-white/50">⌘K</span>
             </button>
+            <Link to="/townsquare" className="px-5 py-2.5 bg-[#FF4D00] text-white text-[11px] lowercase tracking-[0.1em] font-bold hover:bg-[#FF4D00]/90 transition-colors inline-flex items-center gap-1.5">
+              <LogIn className="w-3.5 h-3.5" />
+              sign in
+            </Link>
             <Link to="/join" className="px-5 py-2.5 border border-[#111111] text-[11px] lowercase tracking-[0.1em] font-bold hover:bg-[#111111] hover:text-white transition-colors hidden sm:inline-flex">
               join
             </Link>
@@ -310,8 +314,16 @@ function Nav() {
             {/* Bottom CTAs */}
             <div className="px-6 pb-12 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
+                to="/townsquare"
+                className="px-8 py-4 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#FF4D00]/90 transition-colors inline-flex items-center gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <LogIn className="w-4 h-4" />
+                Sign In
+              </Link>
+              <Link
                 to="/capital"
-                className="px-8 py-4 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#FF4D00]/90 transition-colors"
+                className="px-8 py-4 border border-white/20 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-white hover:text-[#111111] transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Invest Now
