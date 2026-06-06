@@ -1,7 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// Auth verification helper
+async function verifyAuth(req: NextRequest): Promise<boolean> {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
+
+    if (!token) return false;
+
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+
+    const [timestampStr, randomPart, hashHex] = parts;
+    const timestamp = parseInt(timestampStr, 10);
+
+    // Check if token is expired (24 hours)
+    const now = Date.now();
+    const maxAge = 24 * 60 * 60 * 1000;
+    if (now - timestamp > maxAge) return false;
+
+    // Recompute hash
+    const secret = process.env.ADMIN_SECRET || "fallback-secret";
+    const data = `${secret}:${timestampStr}:${randomPart}`;
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const recomputedHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+
+    return recomputedHash === hashHex;
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(req: NextRequest) {
+  // Verify auth
+  const isAuthed = await verifyAuth(req);
+  if (!isAuthed) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const section = searchParams.get("section"); // subscribers, inquiries, applications, stats
@@ -10,7 +50,7 @@ export async function GET(req: NextRequest) {
     if (section === "subscribers") {
       const subscribers = await db.subscriber.findMany({
         orderBy: { createdAt: "desc" },
-        take: 200,
+        take: 500,
       });
       return NextResponse.json({ subscribers });
     }
@@ -18,7 +58,7 @@ export async function GET(req: NextRequest) {
     if (section === "inquiries") {
       const inquiries = await db.investmentInquiry.findMany({
         orderBy: { createdAt: "desc" },
-        take: 200,
+        take: 500,
       });
       return NextResponse.json({ inquiries });
     }
@@ -26,7 +66,7 @@ export async function GET(req: NextRequest) {
     if (section === "applications") {
       const applications = await db.application.findMany({
         orderBy: { createdAt: "desc" },
-        take: 200,
+        take: 500,
       });
       return NextResponse.json({ applications });
     }
@@ -98,9 +138,9 @@ export async function GET(req: NextRequest) {
 
     // Default: return all data
     const [subscribers, inquiries, applications] = await Promise.all([
-      db.subscriber.findMany({ orderBy: { createdAt: "desc" }, take: 200 }),
-      db.investmentInquiry.findMany({ orderBy: { createdAt: "desc" }, take: 200 }),
-      db.application.findMany({ orderBy: { createdAt: "desc" }, take: 200 }),
+      db.subscriber.findMany({ orderBy: { createdAt: "desc" }, take: 500 }),
+      db.investmentInquiry.findMany({ orderBy: { createdAt: "desc" }, take: 500 }),
+      db.application.findMany({ orderBy: { createdAt: "desc" }, take: 500 }),
     ]);
 
     return NextResponse.json({ subscribers, inquiries, applications });
@@ -115,6 +155,12 @@ export async function GET(req: NextRequest) {
 
 // Update status for inquiries and applications
 export async function PATCH(req: NextRequest) {
+  // Verify auth
+  const isAuthed = await verifyAuth(req);
+  if (!isAuthed) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { model, id, status, notes } = body;
@@ -167,6 +213,12 @@ export async function PATCH(req: NextRequest) {
 
 // Delete a record
 export async function DELETE(req: NextRequest) {
+  // Verify auth
+  const isAuthed = await verifyAuth(req);
+  if (!isAuthed) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const model = searchParams.get("model");

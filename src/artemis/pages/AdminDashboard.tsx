@@ -20,6 +20,12 @@ import {
   Link2,
   Heart,
   ExternalLink,
+  Download,
+  Lock,
+  LogOut,
+  Eye,
+  EyeOff,
+  Loader2,
 } from "lucide-react";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -218,6 +224,14 @@ function SkeletonRow({ cols = 4 }: { cols?: number }) {
    MAIN COMPONENT
    ══════════════════════════════════════════════════════════════════════════ */
 export function AdminDashboard() {
+  /* ── Auth state ── */
+  const [token, setToken] = useState<string | null>(null);
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
+
   const [stats, setStats] = useState<Stats | null>(null);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [inquiries, setInquiries] = useState<InvestmentInquiry[]>([]);
@@ -233,10 +247,95 @@ export function AdminDashboard() {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true, margin: "-50px" });
 
+  /* ── Auth: validate existing token on mount ── */
+  useEffect(() => {
+    const checkAuth = async () => {
+      const stored = localStorage.getItem("admin_token");
+      if (!stored) {
+        setAuthChecking(false);
+        return;
+      }
+      try {
+        const res = await fetch("/api/admin/auth", {
+          headers: { Authorization: `Bearer ${stored}` },
+        });
+        if (res.ok) {
+          setToken(stored);
+        } else {
+          localStorage.removeItem("admin_token");
+        }
+      } catch {
+        localStorage.removeItem("admin_token");
+      }
+      setAuthChecking(false);
+    };
+    checkAuth();
+  }, []);
+
+  /* ── Auth: login handler ── */
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError("");
+    setLoginLoading(true);
+    try {
+      const res = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: loginPassword }),
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        localStorage.setItem("admin_token", data.token);
+        setToken(data.token);
+        setLoginPassword("");
+      } else {
+        setLoginError(data.message || "Invalid password");
+      }
+    } catch {
+      setLoginError("Connection failed. Please try again.");
+    }
+    setLoginLoading(false);
+  };
+
+  /* ── Auth: logout handler ── */
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    setToken(null);
+    setStats(null);
+    setSubscribers([]);
+    setInquiries([]);
+    setApplications([]);
+  };
+
+  /* ── Auth: helper to clear token on 401 ── */
+  const handleUnauthorized = useCallback(() => {
+    localStorage.removeItem("admin_token");
+    setToken(null);
+  }, []);
+
+  /* ── Auth: fetch with auth header + 401 check ── */
+  const authFetch = useCallback(
+    (url: string, options?: RequestInit) => {
+      const headers: Record<string, string> = {
+        ...(options?.headers as Record<string, string> || {}),
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      return fetch(url, { ...options, headers }).then((res) => {
+        if (res.status === 401) {
+          handleUnauthorized();
+        }
+        return res;
+      });
+    },
+    [token, handleUnauthorized]
+  );
+
   /* ── Data fetching ── */
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin?section=stats");
+      const res = await authFetch("/api/admin?section=stats");
       if (res.ok) {
         const data = await res.json();
         setStats(data);
@@ -244,11 +343,11 @@ export function AdminDashboard() {
     } catch (err) {
       console.error("Failed to fetch stats:", err);
     }
-  }, []);
+  }, [authFetch]);
 
   const fetchSubscribers = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin?section=subscribers");
+      const res = await authFetch("/api/admin?section=subscribers");
       if (res.ok) {
         const data = await res.json();
         setSubscribers(data.subscribers || []);
@@ -256,11 +355,11 @@ export function AdminDashboard() {
     } catch (err) {
       console.error("Failed to fetch subscribers:", err);
     }
-  }, []);
+  }, [authFetch]);
 
   const fetchInquiries = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin?section=inquiries");
+      const res = await authFetch("/api/admin?section=inquiries");
       if (res.ok) {
         const data = await res.json();
         setInquiries(data.inquiries || []);
@@ -268,11 +367,11 @@ export function AdminDashboard() {
     } catch (err) {
       console.error("Failed to fetch inquiries:", err);
     }
-  }, []);
+  }, [authFetch]);
 
   const fetchApplications = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin?section=applications");
+      const res = await authFetch("/api/admin?section=applications");
       if (res.ok) {
         const data = await res.json();
         setApplications(data.applications || []);
@@ -280,7 +379,7 @@ export function AdminDashboard() {
     } catch (err) {
       console.error("Failed to fetch applications:", err);
     }
-  }, []);
+  }, [authFetch]);
 
   const refreshAll = useCallback(async () => {
     setRefreshing(true);
@@ -290,6 +389,7 @@ export function AdminDashboard() {
   }, [fetchStats, fetchSubscribers, fetchInquiries, fetchApplications]);
 
   useEffect(() => {
+    if (!token) return;
     const load = async () => {
       setLoading(true);
       await Promise.all([fetchStats(), fetchSubscribers(), fetchInquiries(), fetchApplications()]);
@@ -297,13 +397,13 @@ export function AdminDashboard() {
       setLoading(false);
     };
     load();
-  }, [fetchStats, fetchSubscribers, fetchInquiries, fetchApplications]);
+  }, [token, fetchStats, fetchSubscribers, fetchInquiries, fetchApplications]);
 
   /* ── Actions ── */
   const updateStatus = async (model: "inquiry" | "application", id: string, status: string) => {
     setUpdatingStatus(id);
     try {
-      const res = await fetch("/api/admin", {
+      const res = await authFetch("/api/admin", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model, id, status }),
@@ -325,7 +425,7 @@ export function AdminDashboard() {
   const deleteRecord = async (model: "subscriber" | "inquiry" | "application", id: string) => {
     if (!window.confirm("Are you sure you want to delete this record? This cannot be undone.")) return;
     try {
-      const res = await fetch(`/api/admin?model=${model}&id=${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/admin?model=${model}&id=${id}`, { method: "DELETE" });
       if (res.ok) {
         if (model === "subscriber") setSubscribers((prev) => prev.filter((s) => s.id !== id));
         if (model === "inquiry") setInquiries((prev) => prev.filter((i) => i.id !== id));
@@ -337,6 +437,28 @@ export function AdminDashboard() {
       }
     } catch (err) {
       console.error("Failed to delete:", err);
+    }
+  };
+
+  /* ── CSV Export ── */
+  const handleExport = async (section: string) => {
+    try {
+      const res = await authFetch(`/api/admin/export?section=${section}`);
+      if (!res.ok) {
+        console.error("Export failed:", res.status);
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${section}-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
     }
   };
 
@@ -355,7 +477,109 @@ export function AdminDashboard() {
   ];
 
   /* ══════════════════════════════════════════════════════════════════════════
-     RENDER
+     AUTH CHECKING SPINNER
+     ══════════════════════════════════════════════════════════════════════════ */
+  if (authChecking) {
+    return (
+      <div className="bg-[#111111] text-white min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#FF4D00]" />
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ══════════════════════════════════════════════════════════════════════════ */
+  if (!token) {
+    return (
+      <div className="bg-[#111111] text-white min-h-screen flex items-center justify-center px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md"
+        >
+          <div className="border border-white/10 bg-white/[0.02] p-8 md:p-12">
+            {/* Branding */}
+            <div className="mb-8">
+              <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-[#FF4D00] mb-4 block">
+                xCelero Labs
+              </span>
+              <h1 className="text-[28px] sm:text-[36px] font-display font-medium tracking-[-0.02em] mb-2">
+                Admin Access
+              </h1>
+              <p className="text-sm text-white/40 font-medium">
+                Enter the admin password to continue.
+              </p>
+            </div>
+
+            {/* Error */}
+            {loginError && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 px-4 py-3 border border-red-500/30 bg-red-500/10 text-red-400 text-[12px] font-medium"
+              >
+                {loginError}
+              </motion.div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleLogin}>
+              <div className="mb-6">
+                <label className="block text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-white/30 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    autoFocus
+                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:border-[#FF4D00]/50 transition-colors pr-12"
+                    placeholder="Enter password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading || !loginPassword}
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#FF4D00] text-white text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-[#FF4D00]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Authenticating...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5" />
+                    Sign In
+                  </>
+                )}
+              </button>
+            </form>
+
+            <p className="text-[10px] font-mono text-white/15 mt-6 text-center">
+              Access restricted to authorized personnel only.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     DASHBOARD RENDER
      ══════════════════════════════════════════════════════════════════════════ */
   return (
     <div className="bg-[#111111] text-white min-h-screen">
@@ -390,6 +614,14 @@ export function AdminDashboard() {
               <span className="text-[11px] font-mono text-white/30">
                 Last refreshed: {formatTimestamp(lastRefreshed.toISOString())}
               </span>
+              <div className="flex-1" />
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/10 text-white/40 text-[11px] font-bold uppercase tracking-[0.1em] hover:border-red-500/30 hover:text-red-400 transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Logout
+              </button>
             </div>
           </motion.div>
         </div>
@@ -480,6 +712,7 @@ export function AdminDashboard() {
                   subscribers={subscribers}
                   loading={loading}
                   onDelete={(id) => deleteRecord("subscriber", id)}
+                  onExport={() => handleExport("subscribers")}
                 />
               </motion.div>
             )}
@@ -498,6 +731,7 @@ export function AdminDashboard() {
                   updatingStatus={updatingStatus}
                   onUpdateStatus={(id, status) => updateStatus("inquiry", id, status)}
                   onDelete={(id) => deleteRecord("inquiry", id)}
+                  onExport={() => handleExport("inquiries")}
                 />
               </motion.div>
             )}
@@ -520,6 +754,7 @@ export function AdminDashboard() {
                   updatingStatus={updatingStatus}
                   onUpdateStatus={(id, status) => updateStatus("application", id, status)}
                   onDelete={(id) => deleteRecord("application", id)}
+                  onExport={() => handleExport("applications")}
                 />
               </motion.div>
             )}
@@ -600,10 +835,12 @@ function SubscribersTab({
   subscribers,
   loading: isLoading,
   onDelete,
+  onExport,
 }: {
   subscribers: Subscriber[];
   loading: boolean;
   onDelete: (id: string) => void;
+  onExport: () => void;
 }) {
   return (
     <div>
@@ -611,6 +848,13 @@ function SubscribersTab({
         <span className="text-[11px] font-mono text-white/40">
           Showing {subscribers.length} subscriber{subscribers.length !== 1 ? "s" : ""}
         </span>
+        <button
+          onClick={onExport}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono font-bold tracking-wider uppercase text-white/40 hover:text-white hover:border-white/30 transition-colors"
+        >
+          <Download className="w-3 h-3" />
+          Export CSV
+        </button>
       </div>
 
       {/* Table header */}
@@ -693,6 +937,7 @@ function InquiriesTab({
   updatingStatus,
   onUpdateStatus,
   onDelete,
+  onExport,
 }: {
   inquiries: InvestmentInquiry[];
   loading: boolean;
@@ -700,6 +945,7 @@ function InquiriesTab({
   updatingStatus: string | null;
   onUpdateStatus: (id: string, status: string) => void;
   onDelete: (id: string) => void;
+  onExport: () => void;
 }) {
   const inquiryStatuses = ["pending", "reviewing", "contacted", "declined", "invested"];
 
@@ -710,6 +956,13 @@ function InquiriesTab({
           {inquiries.length} inquir{inquiries.length !== 1 ? "ies" : "y"} · Total:{" "}
           <span className="text-[#FF4D00]">{formatCurrency(totalAmount)}</span>
         </span>
+        <button
+          onClick={onExport}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono font-bold tracking-wider uppercase text-white/40 hover:text-white hover:border-white/30 transition-colors"
+        >
+          <Download className="w-3 h-3" />
+          Export CSV
+        </button>
       </div>
 
       {/* Table header */}
@@ -847,6 +1100,7 @@ function ApplicationsTab({
   updatingStatus,
   onUpdateStatus,
   onDelete,
+  onExport,
 }: {
   applications: Application[];
   totalCount: number;
@@ -858,6 +1112,7 @@ function ApplicationsTab({
   updatingStatus: string | null;
   onUpdateStatus: (id: string, status: string) => void;
   onDelete: (id: string) => void;
+  onExport: () => void;
 }) {
   const appStatuses = ["pending", "reviewing", "contacted", "accepted", "declined"];
   const filters: { key: AppFilter; label: string }[] = [
@@ -885,9 +1140,18 @@ function ApplicationsTab({
             </button>
           ))}
         </div>
-        <span className="text-[11px] font-mono text-white/40">
-          Showing {applications.length} of {totalCount}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-[11px] font-mono text-white/40">
+            Showing {applications.length} of {totalCount}
+          </span>
+          <button
+            onClick={onExport}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-[10px] font-mono font-bold tracking-wider uppercase text-white/40 hover:text-white hover:border-white/30 transition-colors"
+          >
+            <Download className="w-3 h-3" />
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Table header */}

@@ -877,3 +877,67 @@ Stage Summary:
 - All forms now functional (previously just called e.preventDefault())
 - Admin dashboard at #/admin with full CRUD capabilities
 - Admin link accessible from footer
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Add password-protected login gate, CSV export buttons, and logout button to AdminDashboard.tsx
+
+Work Log:
+- Read the full 1115-line AdminDashboard.tsx to understand all existing components and structure
+- Added new lucide-react imports: Download, Lock, LogOut, Eye, EyeOff, Loader2
+- Added auth state to AdminDashboard component: token, loginPassword, loginError, loginLoading, showPassword, authChecking
+- Added token validation on mount: checks localStorage for admin_token, validates via GET /api/admin/auth
+- Added login screen UI with dark theme, centered card, xCelero Labs branding (#FF4D00 accent), password input with eye toggle, error display, loading state
+- Added authFetch helper that includes Authorization: Bearer header on all API calls and handles 401 by clearing token
+- Modified all existing fetch calls (fetchStats, fetchSubscribers, fetchInquiries, fetchApplications, updateStatus, deleteRecord) to use authFetch
+- Added useEffect guard: data fetching only runs when token is set
+- Added handleLogout function that clears localStorage and resets state
+- Added Logout button in header next to Refresh button with LogOut icon
+- Added handleExport(section) function that fetches /api/admin/export?section=... with auth, receives blob, triggers browser download
+- Added "Export CSV" button with Download icon in all three tabs (Subscribers, Inquiries, Applications)
+- Added onExport prop to SubscribersTab, InquiriesTab, and ApplicationsTab components
+- Preserved ALL existing UI: StatCard, badges (Status, Tier, Type, Consent, Accredited), SkeletonRow, tab navigation, stat cards, status dropdowns, delete buttons, expanded application details with DetailField, getStatusColor utility
+- Added auth checking spinner (Loader2) shown while validating stored token
+- Lint passes cleanly with no errors
+
+Stage Summary:
+- AdminDashboard.tsx fully rewritten with auth gate, CSV export, and logout functionality
+- Login screen matches dark theme with xCelero Labs branding
+- All API calls include Bearer token; 401 responses trigger logout
+- CSV export buttons added to all three tabs
+- All existing UI preserved exactly
+- File grew from 1115 to 1379 lines
+
+---
+Task ID: 16
+Agent: Main Agent
+Task: Add admin dashboard authentication and CSV export functionality
+
+Work Log:
+- Analyzed current project: AdminDashboard.tsx exists with stats, tabs, tables but NO authentication and NO export
+- API routes exist: /api/admin (GET/PATCH/DELETE), /api/applications, /api/capital/invest, /api/capital/subscribe
+- Prisma schema has 3 models: Subscriber, InvestmentInquiry, Application
+- Added ADMIN_PASSWORD and ADMIN_SECRET to .env file
+- Created /api/admin/auth/route.ts: POST endpoint validates password and returns SHA-256 signed token; GET endpoint verifies existing tokens
+- Updated /api/admin/route.ts: Added verifyAuth() helper to all GET/PATCH/DELETE handlers - returns 401 if no valid Authorization header
+- Created /api/admin/export/route.ts: GET endpoint with auth, returns CSV download for subscribers/inquiries/applications sections with proper Content-Disposition headers
+- Rewrote AdminDashboard.tsx with:
+  - Login gate: password form with show/hide toggle, error messages, loading state
+  - Token persistence: stored in localStorage, validated on mount via GET /api/admin/auth
+  - authFetch helper: wraps all API calls with Authorization: Bearer header
+  - 401 handling: auto-logout on any unauthorized response
+  - Logout button: clears token from localStorage and state
+  - Export CSV buttons: in each tab (Subscribers, Inquiries, Applications), triggers browser download via blob
+  - All existing UI preserved: stat cards, badges, tabs, tables, status dropdowns, delete buttons, expanded application details
+- Verified via curl: unauthorized access returns 401, wrong password returns error, correct password generates token, authorized access works, CSV export works
+- Verified via browser: login screen shows, password entry works, dashboard loads with data, logout clears session, export button present
+- Lint passes cleanly
+
+Stage Summary:
+- Admin dashboard now requires password authentication (password: xcelero2025)
+- All admin API endpoints protected with Bearer token authentication (24h expiry)
+- CSV export working for all 3 data sections (subscribers, inquiries, applications)
+- Login persists across page refreshes via localStorage
+- Logout button clears session and returns to login screen
+- Clean lint, browser-verified, no errors
