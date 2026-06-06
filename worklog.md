@@ -374,3 +374,31 @@ Stage Summary:
 - All 32 broken Unsplash image URLs replaced with working sfile.chatglm.cn direct URLs
 - No query parameters on new URLs (direct .jpg/.jpeg/.png links)
 - No lint errors
+
+---
+Task ID: 13
+Agent: Main Agent
+Task: Replace all Home page images with contextual free images featuring Black professionals (80% Black / 20% contextual African representation)
+
+Work Log:
+- Audited all images on Home.tsx: identified 15 unique image slots across 5 sections (hero carousel, bridge images, pillar images, bento card, events)
+- Searched Unsplash via web-search for contextual images featuring Black people in tech, entrepreneurship, science, finance, and community settings
+- Extracted actual CDN photo IDs by reading Unsplash photo pages and search result pages via page_reader
+- Replaced all images in Home.tsx:
+  - Hero carousel (4): Black woman scientist in lab, Nairobi city skyline, Black entrepreneur at laptop, Black professionals in business meeting
+  - Bridge images (3): Black researcher in laboratory, Black professionals collaborating, African city development
+  - Infrastructure pillar (2): African urban infrastructure development, Black scientist conducting research
+  - Ventures pillar (2): Black founders building a venture, Diverse team brainstorming startup ideas
+  - Capital pillar (2): Investment discussion with data, African city lights at night
+  - Community pillar (2): Black women colleagues collaborating, Community gathering at conference
+  - Bento card (1): Team celebration
+  - Events (4): Speaker on stage, People at networking event, Lab/research, Finance meeting
+- All images are from Unsplash (free for commercial use, no attribution required)
+- Lint passes cleanly, page renders without errors
+- Verified with Agent Browser: all 23 images on the page load correctly with valid dimensions
+
+Stage Summary:
+- All 15 image slots on Home page replaced with contextual free images featuring ~80% Black representation
+- Images contextualized to xCelero's themes: African tech, Black professionals, Nairobi cityscapes, science labs, community events
+- No AI-generated images used - all are freely available Unsplash photos
+- Clean lint, all images verified loading

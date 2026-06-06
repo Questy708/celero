@@ -27,20 +27,20 @@ import { routeLegs, MAP_LOCATIONS } from "@/artemis/data/routes";
 
 const heroImages = [
   {
-    src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80",
-    alt: "Laboratory",
+    src: "https://images.unsplash.com/photo-1631556760646-50241850eb25?auto=format&fit=crop&w=1200&q=80",
+    alt: "Black woman scientist in laboratory",
   },
   {
-    src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
-    alt: "Tech workspace",
+    src: "https://images.unsplash.com/photo-1611348524140-53c9a25263d6?auto=format&fit=crop&w=1200&q=80",
+    alt: "Nairobi city skyline",
   },
   {
-    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-    alt: "Earth from space",
+    src: "https://images.unsplash.com/photo-1780567497689-025144c19b8c?auto=format&fit=crop&w=1200&q=80",
+    alt: "Black entrepreneur working on laptop",
   },
   {
-    src: "https://images.unsplash.com/photo-1565792323902-486ad4b6a110?auto=format&fit=crop&w=1200&q=80",
-    alt: "Industrial infrastructure",
+    src: "https://images.unsplash.com/photo-1573164574511-73c773193279?auto=format&fit=crop&w=1200&q=80",
+    alt: "Black professionals in business meeting",
   },
 ];
 
@@ -62,12 +62,12 @@ const pillars = [
       "We build and operate the physical and digital infrastructure that ventures need to move from prototype to production. M1 Core campuses provide 50,000+ sq ft of lab, maker, and co-working space in prime hub cities. XEmbassy nodes: compact 5,000 sq ft drop-in studios: extend reach into secondary markets. Distributed living labs connect field testing sites across the Route, giving ventures access to real-world validation environments from day one.",
     images: [
       {
-        src: "https://images.unsplash.com/photo-1565792323902-486ad4b6a110?auto=format&fit=crop&w=1200&q=80",
-        alt: "Factory infrastructure",
+        src: "https://images.unsplash.com/photo-1613457231357-a5db3bc5bd81?auto=format&fit=crop&w=1200&q=80",
+        alt: "African urban infrastructure development",
       },
       {
-        src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80",
-        alt: "Research laboratory",
+        src: "https://images.unsplash.com/photo-1579165466949-3180a3d056d5?auto=format&fit=crop&w=1200&q=80",
+        alt: "Black scientist conducting research",
       },
     ],
     link: "/platform",
@@ -82,12 +82,12 @@ const pillars = [
       "We run structured commercialization programs that take ventures from idea to revenue. Each program is co-designed with industry and government partners who provide market access, pilot opportunities, and first-customer contracts. The Quest Fellowship: our flagship semester-long program run in collaboration with DDQIC at Queen's University: uses MIT's Disciplined Entrepreneurship framework to guide founders through 24 steps of validated learning. Programs run on the Route, connecting cohorts across hub cities for shared deal flow and peer support.",
     images: [
       {
-        src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
-        alt: "Collaborative workspace",
+        src: "https://images.unsplash.com/photo-1653566031535-bcf33e1c2893?auto=format&fit=crop&w=1200&q=80",
+        alt: "Black founders building a venture",
       },
       {
-        src: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
-        alt: "Modern office space",
+        src: "https://images.unsplash.com/photo-1758691736903-c60a33e5b83f?auto=format&fit=crop&w=1200&q=80",
+        alt: "Diverse team brainstorming startup ideas",
       },
     ],
     link: "/programs",
@@ -101,12 +101,12 @@ const pillars = [
       "We mobilize capital that matches the realities of building in the Global South. Our network includes venture funds, national development allocators, development finance institutions, and non-dilutive grant programs. Solidarity pricing ensures that founders in early-stage markets access the same quality of support at a fraction of Silicon Valley costs. We also operate a non-dilutive capital desk that matches ventures with grants, prizes, and government incentives across 39+ countries on the Route.",
     images: [
       {
-        src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
-        alt: "Financial analytics",
+        src: "https://images.unsplash.com/photo-1767893609884-622503897e53?auto=format&fit=crop&w=1200&q=80",
+        alt: "Investment discussion with data",
       },
       {
-        src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-        alt: "Global network",
+        src: "https://images.unsplash.com/photo-1741991109902-98bf764fb35d?auto=format&fit=crop&w=1200&q=80",
+        alt: "African city lights at night",
       },
     ],
     link: "/capital",
@@ -121,12 +121,12 @@ const pillars = [
       "The fourth engine. Community is the connective tissue that turns individual efforts into collective momentum. The XCitizens network spans every hub on the Route: operators who run infrastructure, founders building ventures, investors deploying capital, and mentors transferring knowledge. Compound network effects mean every new member strengthens the whole, creating a flywheel that accelerates commercialization for everyone.",
     images: [
       {
-        src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
-        alt: "Team collaboration",
+        src: "https://images.unsplash.com/photo-1573496267526-08a69e46a409?auto=format&fit=crop&w=1200&q=80",
+        alt: "Black women colleagues collaborating",
       },
       {
-        src: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
-        alt: "Community gathering",
+        src: "https://images.unsplash.com/photo-1778876091184-8839210e1917?auto=format&fit=crop&w=1200&q=80",
+        alt: "Community gathering at conference",
       },
     ],
     link: "/join",
@@ -332,16 +332,16 @@ const worldDots = (() => {
 
 const bridgeImages = [
   {
-    src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
-    alt: "Laboratory research",
+    src: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80",
+    alt: "Black researcher in laboratory",
   },
   {
-    src: "https://images.unsplash.com/photo-1565792323902-486ad4b6a110?auto=format&fit=crop&w=800&q=80",
-    alt: "Industrial infrastructure",
+    src: "https://images.unsplash.com/photo-1573164574397-dd250bc8a598?auto=format&fit=crop&w=800&q=80",
+    alt: "Black professionals collaborating",
   },
   {
-    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
-    alt: "Global connectivity",
+    src: "https://images.unsplash.com/photo-1669127300649-940337f1487e?auto=format&fit=crop&w=800&q=80",
+    alt: "African city development",
   },
 ];
 
@@ -464,7 +464,7 @@ function BentoGrid() {
       icon: Rocket,
       link: "/ventures",
       className: "md:col-span-7 md:row-span-2",
-      image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80",
+      image: "https://images.unsplash.com/photo-1653565684985-0b1a64cf7afc?auto=format&fit=crop&w=1200&q=80",
       accent: true,
     },
     {
@@ -806,7 +806,7 @@ const homeEvents = [
     type: "Demo Day",
     description: "12 ventures present validated MVPs to investors and partners. Sector deep-dives in energy, life sciences, and digital finance.",
     featured: true,
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1762968274962-20c12e6e8ecd?auto=format&fit=crop&w=800&q=80",
   },
   {
     title: "Route Summit: Gulf of Guinea Arc",
@@ -816,7 +816,7 @@ const homeEvents = [
     type: "Summit",
     description: "Operators and founders from Lagos, Accra, and Abidjan convene for cross-hub deal flow and peer mentorship.",
     featured: false,
-    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1775163560631-6ff15eb2fa1f?auto=format&fit=crop&w=800&q=80",
   },
   {
     title: "Building in Life Sciences: From Lab to Market",
@@ -826,7 +826,7 @@ const homeEvents = [
     type: "Masterclass",
     description: "Regulatory pathways for diagnostics and therapeutics in African markets. Case studies from Refract and Allele.",
     featured: false,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1707944746042-e4c81c191812?auto=format&fit=crop&w=800&q=80",
   },
   {
     title: "Capital Roundtable: Thematic Fund Deep Dive",
@@ -836,7 +836,7 @@ const homeEvents = [
     type: "Investor Event",
     description: "Thematic Fund allocation strategy, portfolio construction, and co-investment opportunities for LPs.",
     featured: true,
-    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1767893609884-622503897e53?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
